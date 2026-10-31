@@ -1,6 +1,6 @@
 # F.R.I.D.A.Y. — Sistem Informasi
 
-**F.R.I.D.A.Y.** merupakan aplikasi berbasis web yang dikembangkan sebagai bagian dari proyek mata kuliah Sistem Informasi. Aplikasi ini dirancang untuk mendukung proses layanan administrasi mahasiswa melalui sistem digital yang terintegrasi dengan aplikasi utama.
+**F.R.I.D.A.Y.** merupakan aplikasi berbasis web yang dikembangkan untuk mendukung proses layanan administrasi mahasiswa melalui sistem digital yang terintegrasi dengan aplikasi utama.
 
 Pengembangan F.R.I.D.A.Y. berfokus pada layanan pengajuan surat, peminjaman barang, dan peminjaman ruangan. Aplikasi ini juga dipersiapkan untuk mendukung integrasi Single Sign-On (SSO) dengan sistem pusat agar pengguna dapat mengakses beberapa aplikasi dalam satu ekosistem menggunakan mekanisme autentikasi terintegrasi.
 
