@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CampusDirectoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,6 +50,12 @@ Route::get('/admin/schedule/download-template', function () {
         'Content-Type' => 'text/csv; charset=UTF-8',
     ]);
 })->name('admin.schedule.download-template');
+
+// Data dinamis peminjaman ruangan (gedung, denah, ruangan)
+Route::prefix('api/campus')->name('campus.')->group(function () {
+    Route::get('/layout', [CampusDirectoryController::class, 'layout'])->name('layout');
+    Route::get('/rooms', [CampusDirectoryController::class, 'rooms'])->name('rooms');
+});
 
 // Laravel Blade Version Routes
 Route::prefix('blade')->name('blade.')->group(function () {
