@@ -16,6 +16,40 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Direct Mind Mapping Download Endpoints
+Route::get('/admin/mind-mapping/download-html', function () {
+    $filePath = public_path('mind-mapping-upi-cibiru.html');
+    if (! file_exists($filePath)) {
+        abort(404, 'File HTML Offline Mind Mapping belum digenerate.');
+    }
+
+    return response()->download($filePath, 'MIND_MAPPING_JADWAL_UPI_CIBIRU_2022-2023.html', [
+        'Content-Type' => 'text/html',
+    ]);
+})->name('admin.mind-mapping.download-html');
+
+Route::get('/admin/mind-mapping/download-excel', function () {
+    $filePath = public_path('downloads/MAPPING_JADWAL_UPI_CIBIRU_2022-2023.csv');
+    if (! file_exists($filePath)) {
+        abort(404, 'File Excel CSV Mind Mapping belum digenerate.');
+    }
+
+    return response()->download($filePath, 'MAPPING_JADWAL_UPI_CIBIRU_2022-2023.csv', [
+        'Content-Type' => 'text/csv; charset=UTF-8',
+    ]);
+})->name('admin.mind-mapping.download-excel');
+
+Route::get('/admin/schedule/download-template', function () {
+    $filePath = public_path('downloads/TEMPLATE_JADWAL_KAPRODI_UPI_CIBIRU.csv');
+    if (! file_exists($filePath)) {
+        abort(404, 'File Template CSV Kaprodi belum tersedia.');
+    }
+
+    return response()->download($filePath, 'TEMPLATE_JADWAL_KAPRODI_UPI_CIBIRU.csv', [
+        'Content-Type' => 'text/csv; charset=UTF-8',
+    ]);
+})->name('admin.schedule.download-template');
+
 // Laravel Blade Version Routes
 Route::prefix('blade')->name('blade.')->group(function () {
     Route::get('/', function () {
@@ -65,6 +99,10 @@ Route::prefix('blade')->name('blade.')->group(function () {
     Route::get('/admin/schedule', function () {
         return view('pages.admin-schedule');
     })->name('admin.schedule');
+
+    Route::get('/admin/mind-mapping', function () {
+        return view('pages.admin-mind-mapping');
+    })->name('admin.mind-mapping');
 
     Route::get('/notifications', function () {
         return view('pages.notifications');

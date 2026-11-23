@@ -1,4 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react"
+import { AdminMindMapping } from "./AdminMindMapping"
+import { KaprodiScheduleIntegrator } from "./KaprodiScheduleIntegrator"
 
 type IconName = "grid" | "file" | "box" | "history" | "bell" | "settings" | "search" | "arrow" | "clock" | "check" | "calendar" | "users" | "chart" | "plus" | "download" | "filter" | "menu" | "x" | "chevron" | "logout" | "eye" | "upload"
 
@@ -397,6 +399,11 @@ const adminNav = [
     id: "admin-schedule",
     label: "Jadwal dan Ketersediaan",
     icon: "clock" as IconName,
+  },
+  {
+    id: "admin-mind-mapping",
+    label: "Mind Mapping Jadwal",
+    icon: "grid" as IconName,
   },
   { id: "components", label: "Komponen UI", icon: "chart" as IconName },
 ]
@@ -2093,6 +2100,57 @@ function AdminDashboard({ go, loans }: { go: (p: string) => void; loans: LoanReq
           {loans.filter((loan) => loan.resourceType === "Ruangan" && ["Disetujui", "Berhasil"].includes(loan.status)).slice(0, 1).map((loan) => <article key={loan.id}><span>{loan.startTime}–{loan.endTime}</span><div><strong>{loan.course || loan.purpose}</strong><small>{loan.resource} · {formatDate(loan.date)}</small></div><Badge tone="success">{loan.scheduleMode || "Peminjaman"}</Badge></article>)}
         </div>
       </section>
+      <section className="panel mind-mapping-banner">
+        <div className="panel-head">
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", padding: "2px 8px", borderRadius: 9999, fontSize: 11, fontWeight: 700 }}>
+                ✓ SIAP DIGENERATE &amp; DISETUJUI ADMIN
+              </span>
+              <span style={{ background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", padding: "2px 8px", borderRadius: 9999, fontSize: 11, fontWeight: 700 }}>
+                Format Sheet MAPPING Excel
+              </span>
+            </div>
+            <h2 style={{ marginTop: 4 }}>Mind Mapping Jadwal Perkuliahan Kampus</h2>
+            <p>Visualisasi pemetaan jadwal perkuliahan seluruh prodi &amp; ruangan UPI Kampus Cibiru yang telah disetujui Admin.</p>
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <Button variant="primary" icon="download" onClick={() => go("admin-mind-mapping")}>
+              Generate Mind Mapping
+            </Button>
+            <Button variant="ghost" onClick={() => go("admin-mind-mapping")}>
+              Buka Matriks <Icon name="arrow" size={15} />
+            </Button>
+          </div>
+        </div>
+        <div className="mind-mapping-validation-grid">
+          <div className="validation-item">
+            <span className="step-num">01</span>
+            <div><strong>Kebutuhan 5 Prodi</strong><small>5/5 Prodi Terkirim</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+          <div className="validation-item">
+            <span className="step-num">02</span>
+            <div><strong>Validasi Data</strong><small>Beban SKS &amp; Dosen Lolos</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+          <div className="validation-item">
+            <span className="step-num">03</span>
+            <div><strong>Generate Jadwal</strong><small>434 Sesi Matriks Siap</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+          <div className="validation-item">
+            <span className="step-num">04</span>
+            <div><strong>Hard Constraints</strong><small>0 Pelanggaran Ruang/Waktu</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+          <div className="validation-item">
+            <span className="step-num">05</span>
+            <div><strong>Approval Admin</strong><small>Disetujui Final</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+        </div>
+      </section>
       <div className="content-grid">
         <section className="panel">
           <div className="panel-head">
@@ -2246,13 +2304,16 @@ function AdminResources({
   page,
   loans,
   onStatus,
+  go,
 }: {
   page: string
   loans: LoanRequest[]
   onStatus: (id: string, status: Status) => void
+  go?: (page: string) => void
 }) {
   const isLoans = page === "admin-loans"
   const isSchedule = page === "admin-schedule"
+  const [scheduleViewMode, setScheduleViewMode] = useState<"integrator" | "calendar">("integrator")
   const [programFilter, setProgramFilter] = useState("Semua prodi")
   const [managedSchedules, setManagedSchedules] = useState<AcademicSchedule[]>(getAcademicSchedules)
   const [showScheduleForm, setShowScheduleForm] = useState(false)
@@ -2283,68 +2344,121 @@ function AdminResources({
     return (
       <div className="page">
         <PageIntro
-          eyebrow="KALENDER RUANG TERPUSAT"
+          eyebrow="KALENDER RUANG & INTEGRATOR TERPUSAT"
           title="Jadwal & Ketersediaan"
-          text="Pantau jadwal kuliah reguler, pemindahan pertemuan, dan peminjaman organisasi dari satu tampilan."
-          action={<Button icon={showScheduleForm ? "x" : "plus"} onClick={() => setShowScheduleForm((current) => !current)}>{showScheduleForm ? "Tutup Formulir" : "Tambah Jadwal"}</Button>}
+          text="Integrasikan template perkuliahan tiap kaprodi, kelola prioritas SKS & hari khusus dosen, generate Mind Mapping, serta pantau kalender ketersediaan ruangan."
+          action={
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+              {go && (
+                <Button variant="secondary" icon="grid" onClick={() => go("admin-mind-mapping")}>
+                  Matriks Mind Mapping
+                </Button>
+              )}
+              {scheduleViewMode === "calendar" && (
+                <Button icon={showScheduleForm ? "x" : "plus"} onClick={() => setShowScheduleForm((current) => !current)}>
+                  {showScheduleForm ? "Tutup Formulir" : "Tambah Jadwal Manual"}
+                </Button>
+              )}
+            </div>
+          }
         />
-        {showScheduleForm && <section className="form-panel schedule-create-panel">
-          <div className="section-head"><span><Icon name="calendar" size={16}/></span><div><h2>Tambah jadwal perkuliahan</h2><p>Jadwal yang disimpan langsung menjadi sumber validasi dan ketersediaan ruangan.</p></div></div>
-          <div className="form-grid">
-            <SelectField label="Program studi" value={scheduleDraft.program} options={["RPL","PGSD","PGPAUD","PMM","TEKKOM"]} onChange={(program) => setScheduleDraft((current) => ({ ...current, program }))} required />
-            <Field label="Mata kuliah" value={scheduleDraft.course} onChange={(course) => setScheduleDraft((current) => ({ ...current, course }))} required />
-            <Field label="Kelas" value={scheduleDraft.className} onChange={(className) => setScheduleDraft((current) => ({ ...current, className }))} placeholder="Contoh: RPL 2A" required />
-            <Field label="PJ/Dosen pengampu" value={scheduleDraft.lecturer} onChange={(lecturer) => setScheduleDraft((current) => ({ ...current, lecturer }))} required />
-            <SelectField label="Hari" value={scheduleDraft.dayName} options={["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]} onChange={(dayName) => setScheduleDraft((current) => ({ ...current, dayName }))} required />
-            <Field label="Kode ruangan" value={scheduleDraft.roomCode} onChange={(roomCode) => setScheduleDraft((current) => ({ ...current, roomCode }))} placeholder="Contoh: B.01.001" required />
-            <Field label="Waktu mulai" type="time" value={scheduleDraft.startTime} onChange={(startTime) => setScheduleDraft((current) => ({ ...current, startTime }))} required />
-            <Field label="Waktu selesai" type="time" value={scheduleDraft.endTime} onChange={(endTime) => setScheduleDraft((current) => ({ ...current, endTime }))} error={scheduleDraft.endTime <= scheduleDraft.startTime ? "Waktu selesai harus setelah waktu mulai." : undefined} required />
-          </div>
-          <div className={`available-check inline ${draftConflict ? "schedule-warning" : ""}`}><Icon name={draftConflict ? "clock" : "check"}/><span><strong>{draftConflict ? "Jadwal bentrok" : "Siap disimpan"}</strong>{draftConflict ? `Bentrok dengan ${draftConflict.course} (${draftConflict.program}) di ${draftConflict.roomCode}, kelas, atau dosen yang sama.` : "Sistem akan memeriksa ruangan, kelas, dan dosen sebelum menyimpan."}</span></div>
-          <div className="schedule-form-actions"><Button variant="outline" onClick={() => setShowScheduleForm(false)}>Batal</Button><Button icon="check" disabled={Boolean(draftConflict)} onClick={addSchedule}>Simpan Jadwal</Button></div>
-        </section>}
-        <div className="schedule-admin-stats">
-          <StatCard icon="calendar" tone="blue" label="Jadwal reguler" value={String(visibleSchedules.length)} note={programFilter === "Semua prodi" ? "Seluruh program studi" : `Program studi ${programFilter}`} />
-          <StatCard icon="arrow" tone="sky" label="Pemindahan kelas" value={String(scheduleChanges.length)} note="Sementara & permanen" />
-          <StatCard icon="clock" tone="yellow" label="Menunggu persetujuan" value={String(loans.filter((loan) => loan.status === "Menunggu" && loan.resourceType === "Ruangan").length)} note="Perlu keputusan admin" />
+
+        {/* View Mode Switcher Tabs */}
+        <div style={{ display: "flex", gap: 8, borderBottom: "1px solid #e2e8f0", paddingBottom: 12, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
+          <button
+            type="button"
+            className={`btn ${scheduleViewMode === "integrator" ? "btn-primary" : "btn-outline"}`}
+            onClick={() => setScheduleViewMode("integrator")}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 700 }}
+          >
+            <Icon name="grid" size={16} /> 1. Integrasi Template Kaprodi &amp; Generator Mind Mapping
+          </button>
+          <button
+            type="button"
+            className={`btn ${scheduleViewMode === "calendar" ? "btn-primary" : "btn-outline"}`}
+            onClick={() => setScheduleViewMode("calendar")}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 700 }}
+          >
+            <Icon name="calendar" size={16} /> 2. Kalender Jadwal Reguler &amp; Peminjaman
+          </button>
+          {go && (
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => go("admin-mind-mapping")}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: "auto", color: "#2563eb", fontWeight: 600 }}
+            >
+              Buka Matriks Visual Mind Mapping <Icon name="arrow" size={15} />
+            </button>
+          )}
         </div>
-        <div className="program-filter">
-          <span>Filter program studi</span>
-          <div>{programs.map((program) => <button className={programFilter === program ? "active" : ""} onClick={() => setProgramFilter(program)} key={program}>{program}</button>)}</div>
-        </div>
-        <section className="panel admin-calendar-panel">
-          <div className="panel-head"><div><h2>Jadwal perkuliahan reguler</h2><p>Sumber utama validasi jadwal asal mahasiswa</p></div><Badge tone="info">Database akademik</Badge></div>
-          <div className="admin-week-grid">
-            {["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].map((day) => (
-              <div className="admin-day" key={day}>
-                <div className="admin-day-head"><strong>{day}</strong><span>{visibleSchedules.filter((item) => item.dayName === day).length} kelas</span></div>
-                {visibleSchedules.filter((item) => item.dayName === day).map((item) => (
-                  <article key={item.id}><span>{item.startTime}–{item.endTime}</span><b>{item.program}</b><strong>{item.course}</strong><small>{item.className} · {item.roomCode}</small><small>{item.lecturer}</small></article>
-                ))}
-                {!visibleSchedules.some((item) => item.dayName === day) && <p className="empty-day">Belum ada jadwal</p>}
+
+        {scheduleViewMode === "integrator" ? (
+          <KaprodiScheduleIntegrator
+            go={go}
+            onSchedulesUpdated={() => setManagedSchedules(getAcademicSchedules())}
+          />
+        ) : (
+          <>
+            {showScheduleForm && <section className="form-panel schedule-create-panel">
+              <div className="section-head"><span><Icon name="calendar" size={16}/></span><div><h2>Tambah jadwal perkuliahan</h2><p>Jadwal yang disimpan langsung menjadi sumber validasi dan ketersediaan ruangan.</p></div></div>
+              <div className="form-grid">
+                <SelectField label="Program studi" value={scheduleDraft.program} options={["RPL","PGSD","PGPAUD","PMM","TEKKOM"]} onChange={(program) => setScheduleDraft((current) => ({ ...current, program }))} required />
+                <Field label="Mata kuliah" value={scheduleDraft.course} onChange={(course) => setScheduleDraft((current) => ({ ...current, course }))} required />
+                <Field label="Kelas" value={scheduleDraft.className} onChange={(className) => setScheduleDraft((current) => ({ ...current, className }))} placeholder="Contoh: RPL 2A" required />
+                <Field label="PJ/Dosen pengampu" value={scheduleDraft.lecturer} onChange={(lecturer) => setScheduleDraft((current) => ({ ...current, lecturer }))} required />
+                <SelectField label="Hari" value={scheduleDraft.dayName} options={["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]} onChange={(dayName) => setScheduleDraft((current) => ({ ...current, dayName }))} required />
+                <Field label="Kode ruangan" value={scheduleDraft.roomCode} onChange={(roomCode) => setScheduleDraft((current) => ({ ...current, roomCode }))} placeholder="Contoh: B.01.001" required />
+                <Field label="Waktu mulai" type="time" value={scheduleDraft.startTime} onChange={(startTime) => setScheduleDraft((current) => ({ ...current, startTime }))} required />
+                <Field label="Waktu selesai" type="time" value={scheduleDraft.endTime} onChange={(endTime) => setScheduleDraft((current) => ({ ...current, endTime }))} error={scheduleDraft.endTime <= scheduleDraft.startTime ? "Waktu selesai harus setelah waktu mulai." : undefined} required />
               </div>
-            ))}
-          </div>
-        </section>
-        <div className="content-grid">
-          <section className="panel">
-            <div className="panel-head"><div><h2>Perubahan jadwal kelas</h2><p>Slot asal dan slot pengganti tercatat berpasangan</p></div></div>
-            <div className="schedule-change-list">
-              {scheduleChanges.length ? scheduleChanges.map((change) => (
-                <article key={change.id}>
-                  <div><Badge tone={statusTone(change.status)}>{change.status}</Badge><strong>{change.course} · {change.className}</strong><small>{change.program} · {change.scheduleMode} · {change.id}</small></div>
-                  <div className="schedule-swap"><span><small>{change.scheduleMode === "Satu kali" ? "Slot asal dilepas hanya tanggal ini" : "Jadwal reguler lama"}</small><b>{formatDate(change.originalDate ?? "")}<br />{change.originalStartTime}–{change.originalEndTime} · {change.originalRoom}</b></span><Icon name="arrow" /><span><small>{change.scheduleMode === "Satu kali" ? "Pengecualian/pertemuan pengganti" : "Jadwal reguler baru"}</small><b>{formatDate(change.date)}<br />{change.startTime}–{change.endTime} · {change.resource.match(/\((.*?)\)/)?.[1]}</b></span></div>
-                </article>
-              )) : <div className="empty-mini">Belum ada pemindahan jadwal.</div>}
+              <div className={`available-check inline ${draftConflict ? "schedule-warning" : ""}`}><Icon name={draftConflict ? "clock" : "check"}/><span><strong>{draftConflict ? "Jadwal bentrok" : "Siap disimpan"}</strong>{draftConflict ? `Bentrok dengan ${draftConflict.course} (${draftConflict.program}) di ${draftConflict.roomCode}, kelas, atau dosen yang sama.` : "Sistem akan memeriksa ruangan, kelas, dan dosen sebelum menyimpan."}</span></div>
+              <div className="schedule-form-actions"><Button variant="outline" onClick={() => setShowScheduleForm(false)}>Batal</Button><Button icon="check" disabled={Boolean(draftConflict)} onClick={addSchedule}>Simpan Jadwal</Button></div>
+            </section>}
+            <div className="schedule-admin-stats">
+              <StatCard icon="calendar" tone="blue" label="Jadwal reguler" value={String(visibleSchedules.length)} note={programFilter === "Semua prodi" ? "Seluruh program studi" : `Program studi ${programFilter}`} />
+              <StatCard icon="arrow" tone="sky" label="Pemindahan kelas" value={String(scheduleChanges.length)} note="Sementara & permanen" />
+              <StatCard icon="clock" tone="yellow" label="Menunggu persetujuan" value={String(loans.filter((loan) => loan.status === "Menunggu" && loan.resourceType === "Ruangan").length)} note="Perlu keputusan admin" />
             </div>
-          </section>
-          <section className="panel">
-            <div className="panel-head"><div><h2>Peminjaman organisasi</h2><p>Slot hanya diblokir setelah disetujui</p></div></div>
-            <div className="schedule-change-list compact">
-              {roomBookings.length ? roomBookings.map((booking) => <article key={booking.id}><div><Badge tone={statusTone(booking.status)}>{booking.status}</Badge><strong>{booking.course || booking.purpose}</strong><small>{booking.resource}</small></div><span className="booking-time">{formatDate(booking.date)}<br/><b>{booking.startTime}–{booking.endTime}</b></span></article>) : <div className="empty-mini">Belum ada peminjaman organisasi.</div>}
+            <div className="program-filter">
+              <span>Filter program studi</span>
+              <div>{programs.map((program) => <button className={programFilter === program ? "active" : ""} onClick={() => setProgramFilter(program)} key={program}>{program}</button>)}</div>
             </div>
-          </section>
-        </div>
+            <section className="panel admin-calendar-panel">
+              <div className="panel-head"><div><h2>Jadwal perkuliahan reguler</h2><p>Sumber utama validasi jadwal asal mahasiswa</p></div><Badge tone="info">Database akademik</Badge></div>
+              <div className="admin-week-grid">
+                {["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].map((day) => (
+                  <div className="admin-day" key={day}>
+                    <div className="admin-day-head"><strong>{day}</strong><span>{visibleSchedules.filter((item) => item.dayName === day).length} kelas</span></div>
+                    {visibleSchedules.filter((item) => item.dayName === day).map((item) => (
+                      <article key={item.id}><span>{item.startTime}–{item.endTime}</span><b>{item.program}</b><strong>{item.course}</strong><small>{item.className} · {item.roomCode}</small><small>{item.lecturer}</small></article>
+                    ))}
+                    {!visibleSchedules.some((item) => item.dayName === day) && <p className="empty-day">Belum ada jadwal</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+            <div className="content-grid">
+              <section className="panel">
+                <div className="panel-head"><div><h2>Perubahan jadwal kelas</h2><p>Slot asal dan slot pengganti tercatat berpasangan</p></div></div>
+                <div className="schedule-change-list">
+                  {scheduleChanges.length ? scheduleChanges.map((change) => (
+                    <article key={change.id}>
+                      <div><Badge tone={statusTone(change.status)}>{change.status}</Badge><strong>{change.course} · {change.className}</strong><small>{change.program} · {change.scheduleMode} · {change.id}</small></div>
+                      <div className="schedule-swap"><span><small>{change.scheduleMode === "Satu kali" ? "Slot asal dilepas hanya tanggal ini" : "Jadwal reguler lama"}</small><b>{formatDate(change.originalDate ?? "")}<br />{change.originalStartTime}–{change.originalEndTime} · {change.originalRoom}</b></span><Icon name="arrow" /><span><small>{change.scheduleMode === "Satu kali" ? "Pengecualian/pertemuan pengganti" : "Jadwal reguler baru"}</small><b>{formatDate(change.date)}<br />{change.startTime}–{change.endTime} · {change.resource.match(/\((.*?)\)/)?.[1]}</b></span></div>
+                    </article>
+                  )) : <div className="empty-mini">Belum ada pemindahan jadwal.</div>}
+                </div>
+              </section>
+              <section className="panel">
+                <div className="panel-head"><div><h2>Peminjaman organisasi</h2><p>Slot hanya diblokir setelah disetujui</p></div></div>
+                <div className="schedule-change-list compact">
+                  {roomBookings.length ? roomBookings.map((booking) => <article key={booking.id}><div><Badge tone={statusTone(booking.status)}>{booking.status}</Badge><strong>{booking.course || booking.purpose}</strong><small>{booking.resource}</small></div><span className="booking-time">{formatDate(booking.date)}<br/><b>{booking.startTime}–{booking.endTime}</b></span></article>) : <div className="empty-mini">Belum ada peminjaman organisasi.</div>}
+                </div>
+              </section>
+            </div>
+          </>
+        )}
       </div>
     )
   }
@@ -2705,6 +2819,7 @@ const titles: Record<string, string> = {
   "admin-loans": "Data Peminjaman",
   "admin-resources": "Manajemen Resource",
   "admin-schedule": "Jadwal & Ketersediaan",
+  "admin-mind-mapping": "Mind Mapping Jadwal Perkuliahan",
   components: "Komponen UI",
 }
 
@@ -2787,7 +2902,9 @@ export default function App() {
   else if (page === "admin") content = <AdminDashboard go={setPage} loans={loans} />
   else if (page === "admin-letters") content = <AdminLetters letters={letters} onStatus={updateLetterStatus} />
   else if (["admin-loans", "admin-resources", "admin-schedule"].includes(page))
-    content = <AdminResources page={page} loans={loans} onStatus={updateLoanStatus} />
+    content = <AdminResources page={page} loans={loans} onStatus={updateLoanStatus} go={setPage} />
+  else if (page === "admin-mind-mapping")
+    content = <AdminMindMapping go={setPage} />
   else if (page === "components") content = <ComponentsPage />
   else if (page === "notifications") content = <NotificationsPage notifications={notifications} onReadAll={() => setNotifications((current) => current.map((item) => ({ ...item, read: true })))} />
   else content = <SettingsPage />
