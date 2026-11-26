@@ -58,7 +58,7 @@
                 </div>
             </div>
 
-            <form class="login-card" action="{{ route('blade.dashboard') }}" method="GET">
+            <form class="login-card" action="{{ route('mahasiswa.dashboard') }}" method="GET">
                 <span class="eyebrow">SELAMAT DATANG KEMBALI</span>
                 <h2>Masuk ke Akun</h2>
                 <p>Gunakan akun Single Sign-On (SSO) institusimu.</p>

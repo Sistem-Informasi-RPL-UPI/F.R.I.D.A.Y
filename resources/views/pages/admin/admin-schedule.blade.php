@@ -10,7 +10,7 @@
                 <a href="{{ route('admin.schedule.download-template') }}" class="btn btn-outline" download>
                     <x-icon name="download" /> Unduh Template Kaprodi (CSV)
                 </a>
-                <a href="{{ route('blade.admin.mind-mapping') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.komponen-ui') }}" class="btn btn-secondary">
                     <x-icon name="grid" /> Mind Mapping Kampus
                 </a>
                 <a href="{{ url('/') }}" class="btn btn-primary">

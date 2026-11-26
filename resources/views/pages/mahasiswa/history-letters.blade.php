@@ -6,7 +6,7 @@
                 <h1>Riwayat Pengajuan Surat</h1>
                 <p>Lihat perkembangan seluruh pengajuan surat akademikmu.</p>
             </div>
-            <a href="{{ route('blade.letters.create') }}" class="btn btn-primary">
+            <a href="{{ route('mahasiswa.surat.create') }}" class="btn btn-primary">
                 <x-icon name="file" /> Ajukan Surat
             </a>
         </div>
@@ -74,7 +74,7 @@
                             <td class="mono">RPL/SRT/2025/0148</td>
                             <td><x-badge tone="info">Sedang Ditinjau</x-badge></td>
                             <td>
-                                <a href="{{ route('blade.letters.detail') }}" class="btn btn-ghost">Detail</a>
+                                <a href="{{ route('mahasiswa.surat.detail') }}" class="btn btn-ghost">Detail</a>
                             </td>
                         </tr>
                         <tr>
@@ -92,7 +92,7 @@
                             <td class="mono">RPL/SRT/2025/0121</td>
                             <td><x-badge tone="neutral">Selesai</x-badge></td>
                             <td>
-                                <a href="{{ route('blade.letters.detail') }}" class="btn btn-ghost">Detail</a>
+                                <a href="{{ route('mahasiswa.surat.detail') }}" class="btn btn-ghost">Detail</a>
                             </td>
                         </tr>
                     </tbody>

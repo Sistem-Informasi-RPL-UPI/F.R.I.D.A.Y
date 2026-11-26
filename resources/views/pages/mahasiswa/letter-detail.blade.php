@@ -1,6 +1,6 @@
 <x-layouts.app pageTitle="Detail Pengajuan Surat" activePage="letter-history" role="student">
     <div class="page narrow">
-        <a href="{{ route('blade.history.letters') }}" class="back">
+        <a href="{{ route('mahasiswa.riwayat-pengajuan') }}" class="back">
             Riwayat Pengajuan <x-icon name="chevron" :size="15" /> Detail
         </a>
         <div class="detail-hero">

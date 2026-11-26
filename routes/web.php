@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\CampusDirectoryController;
+use App\Http\Controllers\Mahasiswa\DashboardController as MahasiswaDashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 // React SPA (1:1 with Figma Make Prototype)
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('mahasiswa.dashboard');
 })->name('home');
 
 // Direct Mind Mapping Download Endpoints
@@ -57,75 +59,26 @@ Route::prefix('api/campus')->name('campus.')->group(function () {
     Route::get('/rooms', [CampusDirectoryController::class, 'rooms'])->name('rooms');
 });
 
-// Laravel Blade Version Routes
-//Route untuk laravel nya
-//testing aja
-Route::prefix('blade')->name('blade.')->group(function () {
-    Route::get('/', function () {
-        return redirect()->route('blade.dashboard');
-    });
+// Mahasiswa Routes
+Route::prefix('mahasiswa')->name('mahasiswa.')->group(function () {
+    Route::get('/dashboard', [MahasiswaDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/pengajuan-surat', [MahasiswaDashboardController::class, 'letters'])->name('surat');
+    Route::get('/surat/create', [MahasiswaDashboardController::class, 'createLetter'])->name('surat.create');
+    Route::get('/surat/detail', [MahasiswaDashboardController::class, 'detailLetter'])->name('surat.detail');
+    Route::get('/peminjaman', [MahasiswaDashboardController::class, 'resources'])->name('peminjaman');
+    Route::get('/riwayat-pengajuan', [MahasiswaDashboardController::class, 'historyLetters'])->name('riwayat-pengajuan');
+    Route::get('/riwayat-peminjaman', [MahasiswaDashboardController::class, 'historyLoans'])->name('riwayat-peminjaman');
+    Route::get('/notifikasi', [MahasiswaDashboardController::class, 'notifications'])->name('notifikasi');
+    Route::get('/pengaturan', [MahasiswaDashboardController::class, 'settings'])->name('pengaturan');
+    Route::get('/login', [MahasiswaDashboardController::class, 'login'])->name('login');
+});
 
-    Route::get('/dashboard', function () {
-        return view('pages.dashboard');
-    })->name('dashboard');
-
-    Route::get('/letters', function () {
-        return view('pages.letters');
-    })->name('letters');
-
-    Route::get('/letters/create', function () {
-        return view('pages.letter-form');
-    })->name('letters.create');
-
-    Route::get('/letters/detail', function () {
-        return view('pages.letter-detail');
-    })->name('letters.detail');
-
-    Route::get('/resources', function () {
-        return view('pages.resources');
-    })->name('resources');
-
-    Route::get('/history/letters', function () {
-        return view('pages.history-letters');
-    })->name('history.letters');
-
-    Route::get('/history/loans', function () {
-        return view('pages.history-loans');
-    })->name('history.loans');
-
-    Route::get('/admin', function () {
-        return view('pages.admin-dashboard');
-    })->name('admin.dashboard');
-
-    Route::get('/admin/letters', function () {
-        return view('pages.admin-letters');
-    })->name('admin.letters');
-
-    Route::get('/admin/resources', function () {
-        return view('pages.admin-resources');
-    })->name('admin.resources');
-
-    Route::get('/admin/schedule', function () {
-        return view('pages.admin-schedule');
-    })->name('admin.schedule');
-
-    Route::get('/admin/mind-mapping', function () {
-        return view('pages.admin-mind-mapping');
-    })->name('admin.mind-mapping');
-
-    Route::get('/notifications', function () {
-        return view('pages.notifications');
-    })->name('notifications');
-
-    Route::get('/settings', function () {
-        return view('pages.settings');
-    })->name('settings');
-
-    Route::get('/components', function () {
-        return view('pages.components');
-    })->name('components');
-
-    Route::get('/login', function () {
-        return view('pages.login');
-    })->name('login');
+// Admin Routes
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/data-surat', [AdminDashboardController::class, 'letters'])->name('data-surat');
+    Route::get('/data-peminjaman', [AdminDashboardController::class, 'letters'])->name('data-peminjaman'); // Placeholder
+    Route::get('/manajemen-barang-ruangan', [AdminDashboardController::class, 'resources'])->name('manajemen-barang-ruangan');
+    Route::get('/jadwal', [AdminDashboardController::class, 'schedule'])->name('jadwal');
+    Route::get('/komponen-ui', [AdminDashboardController::class, 'mindMapping'])->name('komponen-ui'); // Placeholder
 });

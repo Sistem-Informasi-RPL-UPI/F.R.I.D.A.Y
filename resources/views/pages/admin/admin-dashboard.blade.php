@@ -6,7 +6,7 @@
                 <h1>Selamat pagi, Dimas</h1>
                 <p>Berikut ringkasan layanan administrasi yang memerlukan perhatianmu.</p>
             </div>
-            <a href="{{ route('blade.admin.letters') }}" class="btn btn-primary">
+            <a href="{{ route('admin.data-surat') }}" class="btn btn-primary">
                 Tinjau pengajuan <x-icon name="arrow" :size="16" />
             </a>
         </div>
@@ -24,7 +24,7 @@
                 <h2>4 pengajuan menunggu lebih dari 24 jam</h2>
                 <p>Periksa pengajuan tertua terlebih dahulu untuk menjaga waktu layanan.</p>
             </div>
-            <a href="{{ route('blade.admin.letters') }}" class="btn btn-secondary">
+            <a href="{{ route('admin.data-surat') }}" class="btn btn-secondary">
                 Lihat Prioritas <x-icon name="arrow" :size="16" />
             </a>
         </div>
@@ -36,7 +36,7 @@
                         <h2>Menunggu Peninjauan</h2>
                         <p>Pengajuan terbaru yang perlu diperiksa</p>
                     </div>
-                    <a href="{{ route('blade.admin.letters') }}" class="btn btn-ghost">Lihat semua</a>
+                    <a href="{{ route('admin.data-surat') }}" class="btn btn-ghost">Lihat semua</a>
                 </div>
                 <div class="table-wrap">
                     <table>
