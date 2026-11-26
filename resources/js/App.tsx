@@ -1,4 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react"
+import { AdminMindMapping } from "./AdminMindMapping"
+import { KaprodiScheduleIntegrator } from "./KaprodiScheduleIntegrator"
+import "../css/room-booking.css"
+import { useCampusDirectory } from "./room-booking/useCampusDirectory"
 
 type IconName = "grid" | "file" | "box" | "history" | "bell" | "settings" | "search" | "arrow" | "clock" | "check" | "calendar" | "users" | "chart" | "plus" | "download" | "filter" | "menu" | "x" | "chevron" | "logout" | "eye" | "upload"
 
@@ -56,6 +60,22 @@ type AcademicSchedule = {
 }
 
 const academicSchedules: AcademicSchedule[] = [
+  { id: "JDW001", program: "RPL", course: "Pemrograman Web", className: "RPL 3A", lecturer: "Dosen A", day: 2, dayName: "Selasa", startTime: "08:00", endTime: "10:00", roomCode: "A.01.001" },
+  { id: "JDW002", program: "RPL", course: "Basis Data", className: "RPL 3A", lecturer: "Dosen B", day: 3, dayName: "Rabu", startTime: "08:00", endTime: "10:00", roomCode: "A.02.002" },
+  { id: "JDW003", program: "RPL", course: "Rekayasa Kebutuhan", className: "RPL 2B", lecturer: "Dosen C", day: 1, dayName: "Senin", startTime: "13:00", endTime: "16:00", roomCode: "20.4E.02.006" },
+  { id: "JDW004", program: "RPL", course: "Interaksi Manusia Komputer", className: "RPL 3B", lecturer: "Dosen D", day: 4, dayName: "Kamis", startTime: "10:00", endTime: "12:00", roomCode: "B.01.005" },
+  { id: "JDW005", program: "PGSD", course: "Media Pembelajaran", className: "PGSD 2A", lecturer: "Dosen E", day: 2, dayName: "Selasa", startTime: "10:00", endTime: "12:00", roomCode: "A.01.001" },
+  { id: "JDW006", program: "PGSD", course: "Pendidikan Matematika", className: "PGSD 3B", lecturer: "Dosen F", day: 1, dayName: "Senin", startTime: "08:00", endTime: "10:00", roomCode: "A.02.003" },
+  { id: "JDW007", program: "PGSD", course: "Literasi Dasar", className: "PGSD 1A", lecturer: "Dosen G", day: 4, dayName: "Kamis", startTime: "13:00", endTime: "15:00", roomCode: "20.4E.02.001" },
+  { id: "JDW008", program: "PGPAUD", course: "Perkembangan Anak", className: "PGPAUD 2A", lecturer: "Dosen H", day: 2, dayName: "Selasa", startTime: "08:00", endTime: "10:00", roomCode: "B.02.002" },
+  { id: "JDW009", program: "PGPAUD", course: "Bermain dan Permainan", className: "PGPAUD 3A", lecturer: "Dosen I", day: 3, dayName: "Rabu", startTime: "10:00", endTime: "12:00", roomCode: "20.4E.03.001" },
+  { id: "JDW010", program: "PGPAUD", course: "Seni Anak Usia Dini", className: "PGPAUD 1B", lecturer: "Dosen J", day: 5, dayName: "Jumat", startTime: "13:00", endTime: "15:00", roomCode: "B.01.006" },
+  { id: "JDW011", program: "PMM", course: "Produksi Media Digital", className: "PMM 2A", lecturer: "Dosen K", day: 1, dayName: "Senin", startTime: "10:00", endTime: "13:00", roomCode: "A.03.006" },
+  { id: "JDW012", program: "PMM", course: "Desain Grafis", className: "PMM 1A", lecturer: "Dosen L", day: 3, dayName: "Rabu", startTime: "13:00", endTime: "16:00", roomCode: "A.03.002" },
+  { id: "JDW013", program: "PMM", course: "Sinematografi", className: "PMM 3B", lecturer: "Dosen M", day: 4, dayName: "Kamis", startTime: "08:00", endTime: "11:00", roomCode: "B.03.005" },
+  { id: "JDW014", program: "TEKKOM", course: "Jaringan Komputer", className: "TEKKOM 2A", lecturer: "Dosen N", day: 2, dayName: "Selasa", startTime: "13:00", endTime: "16:00", roomCode: "A.04.002" },
+  { id: "JDW015", program: "TEKKOM", course: "Sistem Digital", className: "TEKKOM 1B", lecturer: "Dosen O", day: 3, dayName: "Rabu", startTime: "08:00", endTime: "11:00", roomCode: "20.4E.01.003" },
+  { id: "JDW016", program: "TEKKOM", course: "Komunikasi Data", className: "TEKKOM 3A", lecturer: "Dosen P", day: 5, dayName: "Jumat", startTime: "10:00", endTime: "13:00", roomCode: "A.05.001" },
   { id: "JDW001", program: "RPL", course: "Pemrograman Web", className: "RPL 3A", lecturer: "Dosen A", day: 2, dayName: "Selasa", startTime: "08:00", endTime: "10:00", roomCode: "B.01.001" },
   { id: "JDW002", program: "RPL", course: "Basis Data", className: "RPL 3A", lecturer: "Dosen B", day: 3, dayName: "Rabu", startTime: "08:00", endTime: "10:00", roomCode: "B.02.002" },
   { id: "JDW003", program: "RPL", course: "Rekayasa Kebutuhan", className: "RPL 2B", lecturer: "Dosen C", day: 1, dayName: "Senin", startTime: "13:00", endTime: "16:00", roomCode: "A.01.003" },
@@ -95,6 +115,11 @@ const initialLetters: LetterRequest[] = [
 const initialLoans: LoanRequest[] = [
   { id: "RPL/PJM/2025/0092", resource: "Laboratorium Multimedia", resourceType: "Ruangan", student: "Alya Rahmadani", date: "2025-06-18", startTime: "10:00", endTime: "12:00", purpose: "Produksi video tugas akhir", location: "Gedung RPL, Lantai 2", status: "Disetujui" },
   { id: "RPL/PJM/2025/0087", resource: "Kamera Sony Alpha A6400", resourceType: "Barang", student: "Alya Rahmadani", date: "2025-06-20", endDate: "2025-06-22", startTime: "08:00", endTime: "15:00", quantity: 1, purpose: "Dokumentasi proyek", location: "Laboratorium Multimedia", status: "Menunggu" },
+  { id: "RPL/PJM/2025/0093", resource: "Laboratorium RPL (A.01.004)", resourceType: "Ruangan", student: "Alya Rahmadani", date: "2025-06-25", startTime: "13:00", endTime: "15:00", purpose: "Penyesuaian satu pertemuan karena kegiatan institusi.", location: "Gedung Biru, Lantai 1", status: "Berhasil", requestType: "Perkuliahan", scheduleMode: "Satu kali", program: "RPL", course: "Basis Data", className: "RPL 3A", lecturer: "Dosen B", originalScheduleId: "JDW002", originalRoom: "A.02.002", originalDate: "2025-06-25", originalStartTime: "08:00", originalEndTime: "10:00" },
+  { id: "RPL/PJM/2025/0094", resource: "Ruang Seminar (A.02.003)", resourceType: "Ruangan", student: "Nadia Putri", date: "2025-07-01", startTime: "10:00", endTime: "12:00", purpose: "Perubahan jadwal reguler Media Pembelajaran.", location: "Gedung Biru, Lantai 2", status: "Menunggu", requestType: "Perkuliahan", scheduleMode: "Jadwal tetap", program: "PGSD", course: "Media Pembelajaran", className: "PGSD 2A", lecturer: "Dosen E", originalScheduleId: "JDW005", originalRoom: "A.01.001", originalDate: "2025-07-01", originalStartTime: "10:00", originalEndTime: "12:00" },
+  { id: "RPL/PJM/2025/0095", resource: "Studio Pembelajaran (B.03.006)", resourceType: "Ruangan", student: "Raka Pratama", date: "2025-06-27", startTime: "13:00", endTime: "16:00", purpose: "Workshop produksi film pendek mahasiswa.", location: "Gedung Baru, Lantai 3", status: "Disetujui", requestType: "Organisasi", scheduleMode: "Satu kali", program: "PMM", course: "Komunitas Sinema Kampus" },
+  { id: "RPL/PJM/2025/0096", resource: "Ruang Lab IMAC RPL (20.4E.02.005)", resourceType: "Ruangan", student: "Bagas Saputra", date: "2025-07-05", startTime: "09:00", endTime: "12:00", purpose: "Pelatihan instalasi jaringan untuk anggota baru.", location: "Gedung Abu, Lantai 2", status: "Menunggu", requestType: "Organisasi", scheduleMode: "Satu kali", program: "TEKKOM", course: "Himpunan Mahasiswa TEKKOM" },
+  { id: "RPL/PJM/2025/0097", resource: "Ruang Perkuliahan (B.02.001)", resourceType: "Ruangan", student: "Salsa Aulia", date: "2025-06-26", startTime: "08:00", endTime: "10:00", purpose: "Pemindahan pertemuan Perkembangan Anak.", location: "Gedung Baru, Lantai 2", status: "Berhasil", requestType: "Perkuliahan", scheduleMode: "Satu kali", program: "PGPAUD", course: "Perkembangan Anak", className: "PGPAUD 2A", lecturer: "Dosen H", originalScheduleId: "JDW008", originalRoom: "B.02.002", originalDate: "2025-06-24", originalStartTime: "08:00", originalEndTime: "10:00" },
   { id: "RPL/PJM/2025/0093", resource: "Laboratorium RPL (B.01.004)", resourceType: "Ruangan", student: "Alya Rahmadani", date: "2025-06-25", startTime: "13:00", endTime: "15:00", purpose: "Penyesuaian satu pertemuan karena kegiatan institusi.", location: "Gedung Biru, Lantai 1", status: "Berhasil", requestType: "Perkuliahan", scheduleMode: "Satu kali", program: "RPL", course: "Basis Data", className: "RPL 3A", lecturer: "Dosen B", originalScheduleId: "JDW002", originalRoom: "B.02.002", originalDate: "2025-06-25", originalStartTime: "08:00", originalEndTime: "10:00" },
   { id: "RPL/PJM/2025/0094", resource: "Ruang Seminar (B.02.003)", resourceType: "Ruangan", student: "Nadia Putri", date: "2025-07-01", startTime: "10:00", endTime: "12:00", purpose: "Perubahan jadwal reguler Media Pembelajaran.", location: "Gedung Biru, Lantai 2", status: "Menunggu", requestType: "Perkuliahan", scheduleMode: "Jadwal tetap", program: "PGSD", course: "Media Pembelajaran", className: "PGSD 2A", lecturer: "Dosen E", originalScheduleId: "JDW005", originalRoom: "B.01.001", originalDate: "2025-07-01", originalStartTime: "10:00", originalEndTime: "12:00" },
   { id: "RPL/PJM/2025/0095", resource: "Studio Pembelajaran (N.03.006)", resourceType: "Ruangan", student: "Raka Pratama", date: "2025-06-27", startTime: "13:00", endTime: "16:00", purpose: "Workshop produksi film pendek mahasiswa.", location: "Gedung Baru, Lantai 3", status: "Disetujui", requestType: "Organisasi", scheduleMode: "Satu kali", program: "PMM", course: "Komunitas Sinema Kampus" },
@@ -397,6 +422,11 @@ const adminNav = [
     id: "admin-schedule",
     label: "Jadwal dan Ketersediaan",
     icon: "clock" as IconName,
+  },
+  {
+    id: "admin-mind-mapping",
+    label: "Mind Mapping Jadwal",
+    icon: "grid" as IconName,
   },
   { id: "components", label: "Komponen UI", icon: "chart" as IconName },
 ]
@@ -1182,6 +1212,16 @@ type CampusRoom = {
   capacity: number
   facilities: string[]
   mapArea: string
+  bookable?: boolean
+  floorLayout?: string
+  coreLabel?: string
+  bottomCenter?: string
+}
+
+const campusBuildings = [
+  { id: "biru", name: "Gedung Biru", letter: "A", short: "A", floors: 5, accent: "blue", desc: "Laboratorium Multimedia & Perkuliahan Utama" },
+  { id: "baru", name: "Gedung Baru", letter: "B", short: "B", floors: 5, accent: "yellow", desc: "Lab RPL, Lab TEKKOM, Smartclass, Microteaching & Perkuliahan" },
+  { id: "abu", name: "Gedung Abu", letter: "F", short: "F", floors: 3, accent: "gray", desc: "Lab RPL, Lab TEKKOM, Lab Robotika, Aula & Perkuliahan" },
 }
 
 const campusBuildings = [
@@ -1199,6 +1239,37 @@ const roomNames = [
   "Studio Pembelajaran",
 ]
 
+function getInitialRoomsData(): Record<string, CampusRoom[]> {
+  const initial: Record<string, CampusRoom[]> = {}
+  campusBuildings.forEach((b) => {
+    for (let f = 1; f <= b.floors; f++) {
+      const key = `${b.id}-${f}`
+      initial[key] = roomNames.map((name, index) => ({
+        code: `${b.short}.${String(f).padStart(2, "0")}.${String(index + 1).padStart(3, "0")}`,
+        name,
+        building: b.name,
+        floor: f,
+        capacity: [40, 30, 80, 32, 24, 36][index],
+        facilities: index === 2
+          ? ["Proyektor", "Audio", "AC", "Wi-Fi"]
+          : ["Proyektor", "AC", "Wi-Fi"],
+        mapArea: `area-${index + 1}`,
+      }))
+    }
+  })
+  return initial
+}
+
+function getStoredRooms(): Record<string, CampusRoom[]> {
+  return loadStored<Record<string, CampusRoom[]>>("rpl-custom-rooms", getInitialRoomsData())
+}
+
+function roomsFor(buildingId: string, floor: number): CampusRoom[] {
+  const allRooms = getStoredRooms()
+  const key = `${buildingId}-${floor}`
+  if (allRooms[key] && allRooms[key].length > 0) {
+    return allRooms[key]
+  }
 function roomsFor(buildingId: string, floor: number): CampusRoom[] {
   const building = campusBuildings.find((item) => item.id === buildingId) ?? campusBuildings[0]
   return roomNames.map((name, index) => ({
@@ -1282,6 +1353,53 @@ function timesOverlap(startA: string, endA: string, startB: string, endB: string
 }
 
 function RoomExplorer({ go }: { go: (page: string) => void }) {
+  const campusDirectory = useCampusDirectory()
+  const buildings = campusDirectory.layout
+    ? campusDirectory.layout.buildings.map((item) => ({ ...item, short: item.letter, desc: item.description }))
+    : campusBuildings
+  const [subTab, setSubTab] = useState<"denah" | "cari">("denah")
+  const [buildingId, setBuildingId] = useState("biru")
+  const [floor, setFloor] = useState(1)
+  const todayStr = new Date().toISOString().split("T")[0]
+  const [selectedDate, setSelectedDate] = useState(todayStr)
+  const getFloorRooms = (bId: string, fl: number): CampusRoom[] => {
+    const key = `${bId}-${fl}`
+    if (campusDirectory.rooms?.[key]?.length) {
+      return campusDirectory.rooms[key]
+    }
+    return roomsFor(bId, fl)
+  }
+
+  const building = buildings.find((item) => item.id === buildingId) ?? buildings[0]
+  const rooms = getFloorRooms(buildingId, floor)
+  const floorLayout = rooms[0]?.floorLayout ?? "default"
+  const coreLabel = rooms[0]?.coreLabel ?? "Tangga Akses"
+  const bottomCenter = rooms[0]?.bottomCenter ?? ""
+  const hasCoreBlock = floorLayout.startsWith("abu-") || floorLayout.startsWith("baru-")
+  const [selectedCode, setSelectedCode] = useState(rooms[0].code)
+  const [viewMode, setViewMode] = useState<"denah" | "daftar">("denah")
+  const [mapZoom, setMapZoom] = useState(1)
+  const selectedRoom = rooms.find((room) => room.code === selectedCode) ?? rooms[0]
+  const isSelectedBookable = selectedRoom.bookable !== false
+  const schedule = roomSchedule(selectedRoom, selectedDate)
+  const hasAvailableSlot = isSelectedBookable && schedule.some(([, status]) => status === "Tersedia")
+
+  const zoomOut = () => setMapZoom((z) => Math.max(0.7, Number((z - 0.15).toFixed(2))))
+  const zoomIn = () => setMapZoom((z) => Math.min(1.45, Number((z + 0.15).toFixed(2))))
+  const resetZoom = () => setMapZoom(1)
+  const scrollToDetail = () => {
+    document.getElementById("room-detail-panel")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
+  // State untuk Tab "Cari Ruangan Kosong"
+  const [searchDate, setSearchDate] = useState(todayStr)
+  const [searchStartTime, setSearchStartTime] = useState("09:00")
+  const [searchEndTime, setSearchEndTime] = useState("11:00")
+  const [searchBuildingFilter, setSearchBuildingFilter] = useState("all")
+  const [selectedOccupiedRoom, setSelectedOccupiedRoom] = useState<{
+    room: CampusRoom
+    bookingInfo: { title: string; borrower: string; time: string; type: string }
+  } | null>(null)
   const [buildingId, setBuildingId] = useState("biru")
   const [floor, setFloor] = useState(1)
   const [selectedDay, setSelectedDay] = useState(1)
@@ -1295,6 +1413,102 @@ function RoomExplorer({ go }: { go: (page: string) => void }) {
   const selectBuilding = (id: string) => {
     setBuildingId(id)
     setFloor(1)
+    setSelectedCode(getFloorRooms(id, 1)[0].code)
+  }
+  const selectFloor = (nextFloor: number) => {
+    setFloor(nextFloor)
+    setSelectedCode(getFloorRooms(buildingId, nextFloor)[0].code)
+  }
+  const continueWithRoom = () => {
+    const firstFree = schedule.find(([, status]) => status === "Tersedia")
+    const [defaultStart, defaultEnd] = firstFree
+      ? firstFree[0].replaceAll(".", ":").split("–")
+      : ["09:00", "11:00"]
+    localStorage.setItem("rpl-selected-room", JSON.stringify(selectedRoom))
+    localStorage.setItem("rpl-direct-booking", JSON.stringify({
+      fromSearch: false,
+      date: selectedDate,
+      startTime: defaultStart,
+      endTime: defaultEnd,
+    }))
+    go("loan-form")
+  }
+
+  // Cek Ketersediaan Ruangan Dinamis (Tab Cari Ruangan Kosong)
+  const validSearchInput = Boolean(searchDate && searchStartTime && searchEndTime && searchEndTime > searchStartTime)
+  const searchDay = searchDate ? new Date(`${searchDate}T00:00:00`).getDay() : 0
+  const requests = loadStored<LoanRequest[]>("rpl-loans", initialLoans)
+  const academicList = getAcademicSchedules()
+
+  const targetBuildings = searchBuildingFilter === "all"
+    ? buildings
+    : buildings.filter((b) => b.id === searchBuildingFilter)
+
+  const checkRoomStatus = (rm: CampusRoom) => {
+    if (!validSearchInput) {
+      return { room: rm, isFree: true, booking: null }
+    }
+    const academicConflict = academicList.find(
+      (s) => s.roomCode === rm.code && s.day === searchDay && timesOverlap(searchStartTime, searchEndTime, s.startTime, s.endTime)
+    )
+    if (academicConflict) {
+      return {
+        room: rm,
+        isFree: false,
+        booking: {
+          title: `${academicConflict.course} (${academicConflict.className})`,
+          borrower: academicConflict.lecturer,
+          time: `${academicConflict.startTime}–${academicConflict.endTime}`,
+          type: "Perkuliahan Reguler",
+        },
+      }
+    }
+    const loanConflict = requests.find((l) => {
+      const matchRoom = l.resource.includes(`(${rm.code})`)
+      const matchDate = l.date === searchDate
+      const activeStatus = ["Disetujui", "Berhasil"].includes(l.status)
+      return matchRoom && matchDate && activeStatus && timesOverlap(searchStartTime, searchEndTime, l.startTime, l.endTime)
+    })
+    if (loanConflict) {
+      return {
+        room: rm,
+        isFree: false,
+        booking: {
+          title: loanConflict.purpose || loanConflict.course || "Kegiatan Khusus",
+          borrower: loanConflict.student || "Mahasiswa / Organisasi",
+          time: `${loanConflict.startTime}–${loanConflict.endTime}`,
+          type: loanConflict.requestType || "Peminjaman Ruangan",
+        },
+      }
+    }
+    return { room: rm, isFree: true, booking: null }
+  }
+
+  const groupedSearchResults = targetBuildings.map((b) => {
+    const floorGroups = Array.from({ length: b.floors }, (_, index) => index + 1)
+      .map((f) => ({
+        floor: f,
+        items: getFloorRooms(b.id, f)
+          .filter((rm) => rm.bookable !== false)
+          .map(checkRoomStatus),
+      }))
+      .filter((group) => group.items.length > 0)
+    const totalFree = floorGroups.reduce((acc, g) => acc + g.items.filter((i) => i.isFree).length, 0)
+    const totalUsed = floorGroups.reduce((acc, g) => acc + g.items.filter((i) => !i.isFree).length, 0)
+    return { building: b, floorGroups, totalFree, totalUsed }
+  })
+
+  const totalFreeCount = groupedSearchResults.reduce((acc, g) => acc + g.totalFree, 0)
+  const totalUsedCount = groupedSearchResults.reduce((acc, g) => acc + g.totalUsed, 0)
+
+  const handleBookFromSearch = (rm: CampusRoom) => {
+    localStorage.setItem("rpl-selected-room", JSON.stringify(rm))
+    localStorage.setItem("rpl-direct-booking", JSON.stringify({
+      fromSearch: true,
+      date: searchDate,
+      startTime: searchStartTime,
+      endTime: searchEndTime,
+    }))
     setSelectedCode(roomsFor(id, 1)[0].code)
   }
   const selectFloor = (nextFloor: number) => {
@@ -1309,6 +1523,483 @@ function RoomExplorer({ go }: { go: (page: string) => void }) {
 
   return (
     <div className="room-explorer">
+      {/* Sub Tabs Mode */}
+      <div className="room-subtabs">
+        <button
+          className={`room-subtab-btn ${subTab === "denah" ? "active" : ""}`}
+          onClick={() => setSubTab("denah")}
+        >
+          <Icon name="grid" size={16} />
+          Pilih Gedung & Denah
+        </button>
+        <button
+          className={`room-subtab-btn ${subTab === "cari" ? "active" : ""}`}
+          onClick={() => setSubTab("cari")}
+        >
+          <Icon name="calendar" size={16} />
+          Cari Ruangan Kosong
+        </button>
+      </div>
+
+      {subTab === "denah" ? (
+        <>
+          <div className="room-progress">
+            <span className="active"><b>1</b>Pilih Gedung</span><i />
+            <span className="active"><b>2</b>Pilih Lantai</span><i />
+            <span className="active"><b>3</b>Pilih Ruangan & Cek Jam</span><i />
+            <span><b>4</b>Ajukan Peminjaman</span>
+          </div>
+
+          {/* PILIH GEDUNG */}
+          <section className="building-picker">
+            <div className="section-title">
+              <div>
+                <span className="eyebrow">PILIH GEDUNG</span>
+                <h2>Pilih Gedung Kampus</h2>
+              </div>
+              <p>Tersedia 3 gedung layanan peminjaman ruangan: Gedung Biru (A), Gedung Baru (B), dan Gedung Abu (F).</p>
+            </div>
+            <div className="building-grid">
+              {buildings.map((item) => (
+                <button
+                  className={`building-card ${item.accent} ${buildingId === item.id ? "active" : ""}`}
+                  onClick={() => selectBuilding(item.id)}
+                  key={item.id}
+                >
+                  <span className="building-mark">{item.letter}</span>
+                  <span>
+                    <strong>{item.name} (Gedung {item.letter})</strong>
+                    <small>{item.floors} lantai · {item.desc}</small>
+                  </span>
+                  {buildingId === item.id ? <Icon name="check" /> : <Icon name="chevron" />}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* PILIH LANTAI & TANGGAL CEK KETERSEDIAAN */}
+          <div className="directory-toolbar">
+            <div className="floor-tabs">
+              {Array.from({ length: building.floors }, (_, index) => index + 1).map((item) => (
+                <button
+                  className={floor === item ? "active" : ""}
+                  onClick={() => selectFloor(item)}
+                  key={item}
+                >
+                  Lantai {item}
+                </button>
+              ))}
+            </div>
+            <label className="date-control">
+              <Icon name="calendar" size={17} />
+              <span>
+                <small>Tanggal Cek Ketersediaan</small>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  min={todayStr}
+                  onChange={(e) => setSelectedDate(e.target.value || todayStr)}
+                />
+              </span>
+            </label>
+          </div>
+
+          {/* DENAH LANTAI & DETAIL RUANGAN */}
+          <div className="floor-directory">
+            <section className="floor-plan-card">
+              <div className="floor-plan-head">
+                <div>
+                  <span className="eyebrow">DENAH RUANGAN</span>
+                  <h2>{building.name} (Gedung {building.letter}) · Lantai {floor}</h2>
+                  <p>Klik ruangan pada denah untuk melihat informasi ruangan dan ketersediaan per jam.</p>
+                </div>
+                <div className="map-legend">
+                  <span><i className="legend-room" />Ruangan</span>
+                  <span><i className="legend-selected" />Terpilih</span>
+                  {rooms.some((r) => r.bookable === false) && (
+                    <span><i className="legend-muted" />Non-Peminjaman</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Bar Kontrol: Switch Denah/Daftar + Zoom In/Out */}
+              <div className="floor-controls-bar">
+                <div className="view-mode-switch" role="tablist" aria-label="Mode tampilan ruangan">
+                  <button
+                    type="button"
+                    className={viewMode === "denah" ? "active" : ""}
+                    onClick={() => setViewMode("denah")}
+                  >
+                    <Icon name="grid" size={14} /> Denah
+                  </button>
+                  <button
+                    type="button"
+                    className={viewMode === "daftar" ? "active" : ""}
+                    onClick={() => setViewMode("daftar")}
+                  >
+                    <Icon name="menu" size={14} /> Daftar
+                  </button>
+                </div>
+
+                {viewMode === "denah" && (
+                  <div className="zoom-controls" aria-label="Kontrol zoom denah">
+                    <button type="button" onClick={zoomOut} disabled={mapZoom <= 0.7} aria-label="Perkecil denah">
+                      −
+                    </button>
+                    <span className="zoom-level">{Math.round(mapZoom * 100)}%</span>
+                    <button type="button" onClick={zoomIn} disabled={mapZoom >= 1.45} aria-label="Perbesar denah">
+                      +
+                    </button>
+                    <button type="button" onClick={resetZoom} disabled={mapZoom === 1}>
+                      Reset
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {viewMode === "denah" ? (
+                <>
+                  <div className="floor-map-viewport">
+                    <div
+                      className={`floor-map ${floorLayout !== "default" ? `layout-${floorLayout}` : ""}`}
+                      style={{
+                        minWidth: `${Math.round(640 * mapZoom)}px`,
+                        fontSize: `${Math.round(11 * mapZoom * 10) / 10}px`,
+                      }}
+                    >
+                      {rooms.map((room) => (
+                        <button
+                          type="button"
+                          className={`map-room ${room.mapArea} ${room.bookable === false ? "non-bookable" : ""} ${selectedRoom.code === room.code ? "selected" : ""}`}
+                          onClick={() => setSelectedCode(room.code)}
+                          key={room.code}
+                        >
+                          <span>{room.name}</span>
+                          <strong>{room.code}</strong>
+                          <small>{room.bookable === false ? "Non-Peminjaman" : `${room.capacity} orang`}</small>
+                        </button>
+                      ))}
+                      {hasCoreBlock && (
+                        <div className="map-core">
+                          <span>{coreLabel}</span>
+                        </div>
+                      )}
+                      {bottomCenter && (
+                        <div className="map-bmid">
+                          <span>{bottomCenter}</span>
+                        </div>
+                      )}
+                      <div className="map-corridor">
+                        <span>{floorLayout.startsWith("baru-") ? "Lift & Tangga Kiri" : `Koridor & Area Sirkulasi Lantai ${floor}`}</span>
+                        <i />
+                        <span>{floorLayout.startsWith("baru-") ? `Area Tengah / Selasar Lt. ${floor}` : hasCoreBlock ? "Akses Lantai" : coreLabel}</span>
+                        {floorLayout.startsWith("baru-") && (
+                          <>
+                            <i />
+                            <span>Lift & Tangga Kanan</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="floor-map-hint">
+                    Geser denah ke kanan/kiri untuk melihat seluruh ruangan, gunakan tombol − / + untuk zoom, atau pindah ke mode Daftar.
+                  </p>
+                </>
+              ) : (
+                <div className="room-card-list">
+                  {rooms.map((room) => (
+                    <button
+                      type="button"
+                      key={room.code}
+                      className={`room-list-card ${room.bookable === false ? "non-bookable" : ""} ${selectedRoom.code === room.code ? "selected" : ""}`}
+                      onClick={() => setSelectedCode(room.code)}
+                    >
+                      <div className="room-list-card-top">
+                        <strong>{room.name}</strong>
+                        <span className="room-list-card-code">{room.code}</span>
+                      </div>
+                      <small>
+                        {room.bookable === false
+                          ? "Bukan ruang peminjaman"
+                          : `Kapasitas ${room.capacity} orang · ${room.facilities.slice(0, 3).join(", ")}`}
+                      </small>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Shortcut cepat ke panel detail pada Mobile & Tablet */}
+              <div className="mobile-detail-jump">
+                <div>
+                  <small>RUANG TERPILIH</small>
+                  <strong>{selectedRoom.name} ({selectedRoom.code})</strong>
+                </div>
+                <button type="button" onClick={scrollToDetail}>
+                  Lihat Jadwal ↓
+                </button>
+              </div>
+
+              <div className="room-list-inline">
+                <span>{rooms.length} ruangan di lantai ini:</span>
+                {rooms.map((room) => (
+                  <button
+                    className={selectedRoom.code === room.code ? "active" : ""}
+                    onClick={() => setSelectedCode(room.code)}
+                    key={room.code}
+                  >
+                    {room.code}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <aside id="room-detail-panel" className="room-detail-panel">
+              <div className="selected-room-head">
+                <span className="eyebrow">RUANG TERPILIH</span>
+                <Badge tone={!isSelectedBookable ? "neutral" : hasAvailableSlot ? "success" : "danger"}>
+                  {!isSelectedBookable ? "Non-Peminjaman" : hasAvailableSlot ? "Ada jam kosong" : "Penuh pada tanggal ini"}
+                </Badge>
+              </div>
+              <h2>{selectedRoom.name}</h2>
+              <strong className="room-code">{selectedRoom.code}</strong>
+              <p className="room-location">
+                <Icon name="grid" size={15} />
+                {selectedRoom.building} (Gedung {building.letter}) · Lantai {selectedRoom.floor}
+              </p>
+              <div className="room-facts">
+                <span>
+                  <small>Kapasitas</small>
+                  <strong>{isSelectedBookable ? `${selectedRoom.capacity} Orang` : "—"}</strong>
+                </span>
+                <span>
+                  <small>Fasilitas</small>
+                  <strong>{selectedRoom.facilities.join(" · ")}</strong>
+                </span>
+              </div>
+              {isSelectedBookable && (
+                <>
+                  <div className="schedule-head">
+                    <div>
+                      <h3>Ketersediaan per Jam</h3>
+                      <p>{formatDate(selectedDate)}</p>
+                    </div>
+                    <span>07.00–17.00</span>
+                  </div>
+                  <div className="schedule-list">
+                    {schedule.map(([time, status, description]) => (
+                      <div className={status === "Tersedia" ? "free" : "used"} key={time}>
+                        <strong>{time}</strong>
+                        <span>
+                          <b>{status}</b>
+                          <small>{description}</small>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+              <Button onClick={continueWithRoom} disabled={!hasAvailableSlot}>
+                Pinjam Ruangan Ini <Icon name="arrow" size={16} />
+              </Button>
+              <small className="availability-note">
+                {!isSelectedBookable
+                  ? "Ruangan ini adalah ruang penyimpanan internal dan tidak tersedia untuk peminjaman."
+                  : hasAvailableSlot
+                  ? "Lanjut ke formulir pengisian data & kebutuhan peminjaman."
+                  : "Tidak ada jam kosong pada tanggal ini. Ganti tanggal atau pilih ruangan lain."}
+              </small>
+            </aside>
+          </div>
+        </>
+      ) : (
+        /* TAB CARI RUANGAN KOSONG */
+        <div className="room-search-flow">
+          <section className="room-search-bar">
+            <div className="section-title">
+              <div>
+                <span className="eyebrow">CARI RUANGAN KOSONG</span>
+                <h2>Filter Tanggal, Jam & Gedung</h2>
+              </div>
+              <p>Masukkan rentang waktu untuk mengecek jadwal booking tiap ruangan secara otomatis.</p>
+            </div>
+            <div className="room-search-grid">
+              <Field
+                label="Tanggal Penggunaan"
+                type="date"
+                value={searchDate}
+                min={todayStr}
+                onChange={setSearchDate}
+                required
+              />
+              <Field
+                label="Jam Mulai"
+                type="time"
+                value={searchStartTime}
+                onChange={setSearchStartTime}
+                required
+              />
+              <Field
+                label="Jam Selesai"
+                type="time"
+                value={searchEndTime}
+                onChange={setSearchEndTime}
+                error={searchEndTime <= searchStartTime ? "Jam selesai harus setelah jam mulai." : undefined}
+                required
+              />
+              <label className="field">
+                <span>Filter Gedung</span>
+                <select
+                  value={searchBuildingFilter}
+                  onChange={(e) => setSearchBuildingFilter(e.target.value)}
+                >
+                  <option value="all">Semua Gedung (A, B, F)</option>
+                  {buildings.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      Gedung {b.letter} ({b.name})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            {!validSearchInput && (
+              <div className="room-search-error" role="alert">
+                <Icon name="clock" size={16} />
+                <span>Input waktu tidak valid. Pastikan tanggal terisi dan jam selesai lebih besar dari jam mulai.</span>
+              </div>
+            )}
+          </section>
+
+          {validSearchInput && (
+            <>
+              <div className="room-search-summary">
+                <div>
+                  <h3>Ketersediaan pada {formatDate(searchDate)} · {searchStartTime}–{searchEndTime}</h3>
+                  <div className="room-search-legend">
+                    <span><i className="legend-dot free" />Hijau: Kosong (klik untuk langsung pinjam)</span>
+                    <span><i className="legend-dot used" />Merah: Terisi (klik untuk lihat info peminjam & kegiatan)</span>
+                  </div>
+                </div>
+                <div className="room-search-counts">
+                  <Badge tone="success">{totalFreeCount} Kosong</Badge>
+                  <Badge tone="danger">{totalUsedCount} Terisi</Badge>
+                </div>
+              </div>
+
+              {groupedSearchResults.map(({ building: b, floorGroups, totalFree, totalUsed }) => (
+                <section className="search-building-group" key={b.id}>
+                  <div className="search-building-head">
+                    <div>
+                      <span className={`building-mark`}>{b.letter}</span>
+                      <span>
+                        <h3>{b.name} (Gedung {b.letter})</h3>
+                        <small>{b.floors} lantai · {b.desc}</small>
+                      </span>
+                    </div>
+                    <div className="room-search-counts">
+                      <Badge tone="success">{totalFree} Kosong</Badge>
+                      {totalUsed > 0 && <Badge tone="danger">{totalUsed} Terisi</Badge>}
+                    </div>
+                  </div>
+
+                  {floorGroups.map(({ floor: fl, items }) => (
+                    <div className="search-floor-group" key={`${b.id}-${fl}`}>
+                      <div className="search-floor-label">
+                        <span>Lantai {fl}</span>
+                        <span>{items.filter((i) => i.isFree).length} dari {items.length} kosong</span>
+                      </div>
+                      <div className="room-search-cards">
+                        {items.map(({ room: rm, isFree, booking }) => (
+                          <button
+                            type="button"
+                            key={rm.code}
+                            className={`room-status-card ${isFree ? "free" : "used"}`}
+                            onClick={() => {
+                              if (isFree) {
+                                handleBookFromSearch(rm)
+                              } else if (booking) {
+                                setSelectedOccupiedRoom({ room: rm, bookingInfo: booking })
+                              }
+                            }}
+                          >
+                            <div className="room-status-card-header">
+                              <div>
+                                <strong>{rm.name}</strong>
+                              </div>
+                              <span className="code">{rm.code}</span>
+                            </div>
+                            <div className="room-status-card-meta">
+                              <span>Kapasitas: <b>{rm.capacity} orang</b></span>
+                              <span>Fasilitas: <b>{rm.facilities.join(", ")}</b></span>
+                            </div>
+                            <div className="room-status-card-footer">
+                              <Badge tone={isFree ? "success" : "danger"}>
+                                {isFree ? "Kosong" : "Terisi"}
+                              </Badge>
+                              <span className="room-status-card-action">
+                                {isFree ? (
+                                  <>Pinjam Ruangan <Icon name="arrow" size={14} /></>
+                                ) : (
+                                  <>Info Peminjam <Icon name="eye" size={14} /></>
+                                )}
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </section>
+              ))}
+            </>
+          )}
+
+          {/* MODAL INFO PEMINJAM & KEGIATAN (RUANGAN MERAH / TERISI) */}
+          {selectedOccupiedRoom && (
+            <div className="modal-overlay" onClick={() => setSelectedOccupiedRoom(null)}>
+              <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <div>
+                    <span className="eyebrow">INFO PEMINJAM & KEGIATAN</span>
+                    <h3>{selectedOccupiedRoom.room.name} ({selectedOccupiedRoom.room.code})</h3>
+                  </div>
+                  <button className="modal-close-btn" onClick={() => setSelectedOccupiedRoom(null)} aria-label="Tutup">
+                    <Icon name="x" size={16} />
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <Badge tone="danger">Status: Ruangan Terisi</Badge>
+                  <div className="modal-info-row">
+                    <span>Mata Kuliah / Kegiatan</span>
+                    <strong>{selectedOccupiedRoom.bookingInfo.title}</strong>
+                  </div>
+                  <div className="modal-info-row">
+                    <span>Peminjam / Dosen Pengampu</span>
+                    <strong>{selectedOccupiedRoom.bookingInfo.borrower}</strong>
+                  </div>
+                  <div className="modal-info-row">
+                    <span>Waktu Penggunaan</span>
+                    <strong>{formatDate(searchDate)} · Jam {selectedOccupiedRoom.bookingInfo.time}</strong>
+                  </div>
+                  <div className="modal-info-row">
+                    <span>Jenis Kegiatan</span>
+                    <strong>{selectedOccupiedRoom.bookingInfo.type}</strong>
+                  </div>
+                  <div className="modal-info-row">
+                    <span>Lokasi Ruangan</span>
+                    <strong>{selectedOccupiedRoom.room.building} · Lantai {selectedOccupiedRoom.room.floor}</strong>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <Button variant="outline" onClick={() => setSelectedOccupiedRoom(null)}>
+                    Tutup
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       <div className="room-progress">
         <span className="active"><b>1</b>Pilih hari</span><i />
         <span className="active"><b>2</b>Pilih gedung</span><i />
@@ -1564,6 +2255,42 @@ function LoanForm({
   onSubmit: (request: Omit<LoanRequest, "id" | "status">) => void
 }) {
   const room = loadStored<CampusRoom>("rpl-selected-room", roomsFor("biru", 1)[0])
+  const directBooking = loadStored<{ fromSearch: boolean; date: string; startTime: string; endTime: string }>(
+    "rpl-direct-booking",
+    { fromSearch: false, date: "", startTime: "", endTime: "" }
+  )
+
+  const todayStr = new Date().toISOString().split("T")[0]
+  const [borrowerName, setBorrowerName] = useState("Alya Rahmadani")
+  const [requestType, setRequestType] = useState<"Perkuliahan" | "Organisasi">("Perkuliahan")
+  const [scheduleMode, setScheduleMode] = useState<"Satu kali" | "Jadwal tetap">("Satu kali")
+  const availableAcademicSchedules = getAcademicSchedules()
+  const [scheduleId, setScheduleId] = useState("")
+
+  // Tanggal & jam terisi otomatis dari pilihan sebelumnya (denah atau cari ruangan kosong)
+  const [date, setDate] = useState(directBooking.date || todayStr)
+  const [startTime, setStartTime] = useState(directBooking.startTime || "10:00")
+  const [endTime, setEndTime] = useState(directBooking.endTime || "12:00")
+
+  // Input mata kuliah dan dosen pengampu (Kegiatan Perkuliahan)
+  const [courseNameInput, setCourseNameInput] = useState("")
+  const [lecturerNameInput, setLecturerNameInput] = useState("")
+
+  // Input organisasi dan kegiatan (Kebutuhan Lainnya)
+  const [organization, setOrganization] = useState("")
+  const [purpose, setPurpose] = useState("")
+  const [proofUploaded, setProofUploaded] = useState(false)
+  const [permissionProofUploaded, setPermissionProofUploaded] = useState(false)
+
+  const eligibleSchedules = availableAcademicSchedules.filter((item) => item.program === "RPL")
+  const selectedSchedule = eligibleSchedules.find((item) => item.id === scheduleId)
+
+  const sourceValid = requestType === "Organisasi"
+    ? Boolean(organization.trim())
+    : Boolean(courseNameInput.trim() && lecturerNameInput.trim())
+
+  const targetDay = date ? new Date(`${date}T00:00:00`).getDay() : -1
+  const roomConflict = Boolean(date && endTime > startTime) && roomSchedule(room, date).some(([range, status]) => {
   const [requestType, setRequestType] = useState<"Perkuliahan" | "Organisasi">("Perkuliahan")
   const [scheduleMode, setScheduleMode] = useState<"Satu kali" | "Jadwal tetap">("Satu kali")
   const availableAcademicSchedules = getAcademicSchedules()
@@ -1588,6 +2315,21 @@ function LoanForm({
     const [eventStart, eventEnd] = range.split(".").join(":").split("–")
     return timesOverlap(startTime, endTime, eventStart, eventEnd)
   })
+  const academicConflict = requestType === "Perkuliahan" && Boolean(selectedSchedule) && availableAcademicSchedules.some((item) =>
+    item.id !== selectedSchedule?.id &&
+    item.day === targetDay &&
+    (item.className === selectedSchedule?.className || item.lecturer === selectedSchedule?.lecturer) &&
+    timesOverlap(startTime, endTime, item.startTime, item.endTime),
+  )
+  const validSchedule = Boolean(date && startTime && endTime && endTime > startTime && !roomConflict && !academicConflict)
+  const duration = validSchedule
+    ? Number(((Number(endTime.split(":")[0]) * 60 + Number(endTime.split(":")[1]) - Number(startTime.split(":")[0]) * 60 - Number(startTime.split(":")[1])) / 60).toFixed(1))
+    : 0
+
+  const isAutomatic = requestType === "Perkuliahan" && scheduleMode === "Satu kali"
+  const permanentProofValid = !(requestType === "Perkuliahan" && scheduleMode === "Jadwal tetap") || proofUploaded
+  const organizationProofValid = requestType !== "Organisasi" || (proofUploaded && permissionProofUploaded)
+  const formValid = Boolean(borrowerName.trim() && sourceValid && validSchedule && purpose.trim() && permanentProofValid && organizationProofValid)
   const academicConflict = requestType === "Perkuliahan" && availableAcademicSchedules.some((item) =>
     item.id !== selectedSchedule.id &&
     item.day === targetDay &&
@@ -1608,6 +2350,311 @@ function LoanForm({
         Peminjaman Ruangan <Icon name="chevron" size={15} /> Formulir Pengajuan
       </button>
       <PageIntro
+        eyebrow="FORMULIR PENGAJUAN PEMINJAMAN"
+        title="Ajukan Ruangan"
+        text="Lengkapi tanggal, jam, data peminjam, dan kebutuhan penggunaan ruangan."
+      />
+      <div className="selected-resource">
+        <span className="resource-thumb"><Icon name="grid" /></span>
+        <div>
+          <span className="label">RUANGAN TERPILIH</span>
+          <strong>{room.name} · {room.code}</strong>
+          <small>{room.building} · Lantai {room.floor}</small>
+        </div>
+        <button onClick={() => go("resources")}>Ubah Ruangan</button>
+      </div>
+
+      {directBooking.fromSearch && (
+        <div className="approval-rule automatic">
+          <Icon name="check" />
+          <span>
+            <strong>Tanggal & Jam Terisi Otomatis</strong>
+            <small>Jadwal telah disesuaikan dengan slot kosong yang dipilih dari pencarian ruangan.</small>
+          </span>
+        </div>
+      )}
+
+      <section className="form-panel">
+        <div className="section-head">
+          <span>01</span>
+          <div>
+            <h2>Kebutuhan Peminjaman</h2>
+            <p>Pilih apakah untuk kegiatan perkuliahan atau kebutuhan lainnya (organisasi/kepanitiaan).</p>
+          </div>
+        </div>
+        <div className="request-type-grid">
+          <button
+            className={requestType === "Perkuliahan" ? "active" : ""}
+            onClick={() => setRequestType("Perkuliahan")}
+          >
+            <Icon name="users" />
+            <span>
+              <strong>Kegiatan Perkuliahan</strong>
+              <small>Praktikum, perkuliahan pengganti, atau responsi mata kuliah.</small>
+            </span>
+          </button>
+          <button
+            className={requestType === "Organisasi" ? "active" : ""}
+            onClick={() => setRequestType("Organisasi")}
+          >
+            <Icon name="calendar" />
+            <span>
+              <strong>Kebutuhan Lainnya (Organisasi)</strong>
+              <small>Rapat, seminar, workshop, atau kepanitiaan mahasiswa.</small>
+            </span>
+          </button>
+        </div>
+        <div className="schedule-mode">
+          <button
+            className={scheduleMode === "Satu kali" ? "active" : ""}
+            onClick={() => setScheduleMode("Satu kali")}
+          >
+            <strong>Satu Kali</strong>
+            <small>Hanya untuk tanggal yang dipilih</small>
+          </button>
+          <button
+            className={scheduleMode === "Jadwal tetap" ? "active" : ""}
+            onClick={() => setScheduleMode("Jadwal tetap")}
+          >
+            <strong>Jadwal Tetap / Rutin</strong>
+            <small>Berulang dan mengubah jadwal reguler</small>
+          </button>
+        </div>
+        <div className={`approval-rule ${isAutomatic ? "automatic" : "admin-required"}`}>
+          <Icon name={isAutomatic ? "check" : "clock"} />
+          <span>
+            <strong>{isAutomatic ? "Validasi otomatis — tanpa persetujuan manual admin" : "Memerlukan persetujuan admin & verifikasi dokumen"}</strong>
+            <small>
+              {isAutomatic
+                ? "Jika lolos validasi tidak ada bentrok jadwal, pengajuan perkuliahan langsung disetujui sistem."
+                : requestType === "Organisasi"
+                ? "Semua kegiatan lainnya (organisasi) wajib mengunggah surat permohonan dan surat izin kegiatan."
+                : "Perubahan jadwal reguler tetap harus ditinjau admin program studi."}
+            </small>
+          </span>
+        </div>
+      </section>
+
+      {/* SECTION 02: DATA PEMINJAM & KEBUTUHAN */}
+      {requestType === "Perkuliahan" ? (
+        <section className="form-panel">
+          <div className="section-head">
+            <span>02</span>
+            <div>
+              <h2>Data Peminjam & Perkuliahan</h2>
+              <p>Isi nama peminjam, nama mata kuliah, dan dosen pengampu.</p>
+            </div>
+          </div>
+          <div className="form-grid">
+            <Field
+              label="Nama Peminjam"
+              value={borrowerName}
+              onChange={setBorrowerName}
+              placeholder="Nama lengkap mahasiswa"
+              required
+            />
+            <Field
+              label="Nama Mata Kuliah"
+              value={courseNameInput}
+              onChange={setCourseNameInput}
+              placeholder="Contoh: Rekayasa Kebutuhan Perangkat Lunak"
+              required
+            />
+            <Field
+              label="Nama Dosen Pengampu"
+              value={lecturerNameInput}
+              onChange={setLecturerNameInput}
+              placeholder="Contoh: Dr. Supriatna, M.T."
+              required
+            />
+            <label className="field">
+              <span>Pilih dari Jadwal Kelas Terdaftar (Opsional)</span>
+              <select
+                value={scheduleId}
+                onChange={(event) => {
+                  setScheduleId(event.target.value)
+                  const chosen = eligibleSchedules.find((item) => item.id === event.target.value)
+                  if (chosen) {
+                    setCourseNameInput(chosen.course)
+                    setLecturerNameInput(chosen.lecturer)
+                  }
+                }}
+              >
+                <option value="">-- Pilih Mata Kuliah Terdaftar --</option>
+                {eligibleSchedules.map((item) => (
+                  <option value={item.id} key={item.id}>
+                    {item.id} · {item.course} · {item.className} ({item.lecturer})
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {scheduleMode === "Jadwal tetap" && (
+            <div className="permanent-proof">
+              <span className="soft-icon"><Icon name="file" /></span>
+              <div>
+                <strong>Perubahan tetap harus memiliki dasar akademik</strong>
+                <p>Unggah persetujuan PJ mata kuliah/koordinator kelas dan program studi.</p>
+              </div>
+              <label>
+                <input type="file" onChange={(event) => setProofUploaded(Boolean(event.target.files?.length))} />
+                <Icon name={proofUploaded ? "check" : "upload"} size={16} />
+                {proofUploaded ? "Bukti Terunggah" : "Unggah Bukti"}
+              </label>
+            </div>
+          )}
+        </section>
+      ) : (
+        <section className="form-panel">
+          <div className="section-head">
+            <span>02</span>
+            <div>
+              <h2>Data Peminjam, Organisasi & Berkas</h2>
+              <p>Wajib mengunggah surat permohonan dan surat izin kegiatan.</p>
+            </div>
+          </div>
+          <div className="form-grid">
+            <Field
+              label="Nama Peminjam / Penanggung Jawab"
+              value={borrowerName}
+              onChange={setBorrowerName}
+              placeholder="Nama lengkap penanggung jawab"
+              required
+            />
+            <Field
+              label="Nama Organisasi / Komunitas"
+              value={organization}
+              onChange={setOrganization}
+              placeholder="Contoh: HIMA RPL UPI"
+              required
+            />
+            <Field
+              label="Nama Kegiatan"
+              value={purpose}
+              onChange={setPurpose}
+              placeholder="Contoh: Workshop UI/UX Design & Frontend"
+              required
+            />
+          </div>
+          <div className="upload-pair-grid">
+            <label className="upload compact-upload">
+              <input type="file" onChange={(e) => setProofUploaded(Boolean(e.target.files?.length))} />
+              <span className="upload-icon"><Icon name={proofUploaded ? "check" : "upload"} /></span>
+              <strong>{proofUploaded ? "Surat Permohonan Terunggah" : "Upload Surat Permohonan *"}</strong>
+              <small>PDF, dokumen resmi ormawa</small>
+            </label>
+            <label className="upload compact-upload">
+              <input type="file" onChange={(e) => setPermissionProofUploaded(Boolean(e.target.files?.length))} />
+              <span className="upload-icon"><Icon name={permissionProofUploaded ? "check" : "upload"} /></span>
+              <strong>{permissionProofUploaded ? "Surat Izin Kegiatan Terunggah" : "Upload Surat Izin Kegiatan *"}</strong>
+              <small>PDF bertandatangan pimpinan</small>
+            </label>
+          </div>
+        </section>
+      )}
+
+      {/* SECTION 03: TANGGAL, JAM, DAN VALIDASI */}
+      <section className="form-panel">
+        <div className="section-head">
+          <span>03</span>
+          <div>
+            <h2>Tanggal & Jam Peminjaman</h2>
+            <p>Tentukan jadwal penggunaan dan sistem akan memvalidasi bentrok secara otomatis.</p>
+          </div>
+        </div>
+        <div className="form-grid">
+          <Field
+            label="Tanggal Penggunaan"
+            type="date"
+            value={date}
+            min={todayStr}
+            onChange={setDate}
+            required
+          />
+          <Field
+            label="Waktu Mulai"
+            type="time"
+            value={startTime}
+            onChange={setStartTime}
+            required
+          />
+          <Field
+            label="Waktu Selesai"
+            type="time"
+            value={endTime}
+            onChange={setEndTime}
+            error={endTime <= startTime ? "Waktu selesai harus setelah waktu mulai." : undefined}
+            required
+          />
+          <Field
+            label="Durasi Penggunaan"
+            value={duration > 0 ? `${duration} jam` : "—"}
+          />
+        </div>
+        {requestType === "Perkuliahan" && (
+          <label className="field full">
+            <span>Alasan / Deskripsi Penggunaan Ruangan <b>*</b></span>
+            <textarea
+              rows={3}
+              value={purpose}
+              onChange={(event) => setPurpose(event.target.value)}
+              placeholder="Jelaskan kebutuhan perkuliahan atau alasan penggunaan ruangan..."
+            />
+          </label>
+        )}
+        <div className={`available-check inline ${validSchedule ? "" : "schedule-warning"}`}>
+          <Icon name={validSchedule ? "check" : "clock"} />
+          <span>
+            <strong>
+              {validSchedule
+                ? `Jadwal ${startTime}–${endTime} pada ${formatDate(date)} Tersedia!`
+                : roomConflict
+                ? "Bentrok! Ruangan sudah terpakai pada rentang jam tersebut."
+                : academicConflict
+                ? "Bentrok dengan jadwal dosen atau kelas lain."
+                : "Lengkapi rentang tanggal dan jam yang valid"}
+            </strong>
+            {validSchedule
+              ? `Durasi ${duration} jam lolos validasi sistem dan siap disimpan.`
+              : roomConflict || academicConflict
+              ? "Silakan ganti tanggal atau jam yang masih kosong."
+              : "Pastikan jam selesai lebih besar dari jam mulai."}
+          </span>
+        </div>
+      </section>
+
+      <div className="form-footer">
+        <Button variant="outline" onClick={() => go("resources")}>
+          Batal / Kembali
+        </Button>
+        <Button
+          disabled={!formValid}
+          onClick={() =>
+            onSubmit({
+              resource: `${room.name} (${room.code})`,
+              resourceType: "Ruangan",
+              student: borrowerName.trim() || "Alya Rahmadani",
+              date,
+              startTime,
+              endTime,
+              purpose,
+              location: `${room.building}, Lantai ${room.floor}`,
+              requestType,
+              scheduleMode,
+              program: requestType === "Perkuliahan" ? "RPL" : undefined,
+              course: requestType === "Perkuliahan" ? (courseNameInput || selectedSchedule?.course) : organization,
+              className: requestType === "Perkuliahan" ? (selectedSchedule?.className || "RPL") : undefined,
+              lecturer: requestType === "Perkuliahan" ? (lecturerNameInput || selectedSchedule?.lecturer) : undefined,
+              originalScheduleId: requestType === "Perkuliahan" ? selectedSchedule?.id : undefined,
+              originalRoom: requestType === "Perkuliahan" ? selectedSchedule?.roomCode : undefined,
+              originalStartTime: requestType === "Perkuliahan" ? selectedSchedule?.startTime : undefined,
+              originalEndTime: requestType === "Perkuliahan" ? selectedSchedule?.endTime : undefined,
+            })
+          }
+        >
+          {isAutomatic ? "Simpan Pengajuan Peminjaman" : "Kirim untuk Persetujuan Admin"}
+          <Icon name="arrow" size={16} />
+        </Button>
         eyebrow="PENGGUNAAN RUANGAN"
         title="Ajukan Ruangan"
         text="Pilih kebutuhan perkuliahan atau organisasi. Sistem menerapkan alur persetujuan yang berbeda secara otomatis."
@@ -2093,6 +3140,57 @@ function AdminDashboard({ go, loans }: { go: (p: string) => void; loans: LoanReq
           {loans.filter((loan) => loan.resourceType === "Ruangan" && ["Disetujui", "Berhasil"].includes(loan.status)).slice(0, 1).map((loan) => <article key={loan.id}><span>{loan.startTime}–{loan.endTime}</span><div><strong>{loan.course || loan.purpose}</strong><small>{loan.resource} · {formatDate(loan.date)}</small></div><Badge tone="success">{loan.scheduleMode || "Peminjaman"}</Badge></article>)}
         </div>
       </section>
+      <section className="panel mind-mapping-banner">
+        <div className="panel-head">
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ background: "#dcfce7", color: "#15803d", border: "1px solid #86efac", padding: "2px 8px", borderRadius: 9999, fontSize: 11, fontWeight: 700 }}>
+                ✓ SIAP DIGENERATE &amp; DISETUJUI ADMIN
+              </span>
+              <span style={{ background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", padding: "2px 8px", borderRadius: 9999, fontSize: 11, fontWeight: 700 }}>
+                Format Sheet MAPPING Excel
+              </span>
+            </div>
+            <h2 style={{ marginTop: 4 }}>Mind Mapping Jadwal Perkuliahan Kampus</h2>
+            <p>Visualisasi pemetaan jadwal perkuliahan seluruh prodi &amp; ruangan UPI Kampus Cibiru yang telah disetujui Admin.</p>
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <Button variant="primary" icon="download" onClick={() => go("admin-mind-mapping")}>
+              Generate Mind Mapping
+            </Button>
+            <Button variant="ghost" onClick={() => go("admin-mind-mapping")}>
+              Buka Matriks <Icon name="arrow" size={15} />
+            </Button>
+          </div>
+        </div>
+        <div className="mind-mapping-validation-grid">
+          <div className="validation-item">
+            <span className="step-num">01</span>
+            <div><strong>Kebutuhan 5 Prodi</strong><small>5/5 Prodi Terkirim</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+          <div className="validation-item">
+            <span className="step-num">02</span>
+            <div><strong>Validasi Data</strong><small>Beban SKS &amp; Dosen Lolos</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+          <div className="validation-item">
+            <span className="step-num">03</span>
+            <div><strong>Generate Jadwal</strong><small>434 Sesi Matriks Siap</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+          <div className="validation-item">
+            <span className="step-num">04</span>
+            <div><strong>Hard Constraints</strong><small>0 Pelanggaran Ruang/Waktu</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+          <div className="validation-item">
+            <span className="step-num">05</span>
+            <div><strong>Approval Admin</strong><small>Disetujui Final</small></div>
+            <span className="step-status ok">✓</span>
+          </div>
+        </div>
+      </section>
       <div className="content-grid">
         <section className="panel">
           <div className="panel-head">
@@ -2246,10 +3344,16 @@ function AdminResources({
   page,
   loans,
   onStatus,
+  go,
 }: {
   page: string
   loans: LoanRequest[]
   onStatus: (id: string, status: Status) => void
+  go?: (page: string) => void
+}) {
+  const isLoans = page === "admin-loans"
+  const isSchedule = page === "admin-schedule"
+  const [scheduleViewMode, setScheduleViewMode] = useState<"integrator" | "calendar">("integrator")
 }) {
   const isLoans = page === "admin-loans"
   const isSchedule = page === "admin-schedule"
@@ -2283,6 +3387,121 @@ function AdminResources({
     return (
       <div className="page">
         <PageIntro
+          eyebrow="KALENDER RUANG & INTEGRATOR TERPUSAT"
+          title="Jadwal & Ketersediaan"
+          text="Integrasikan template perkuliahan tiap kaprodi, kelola prioritas SKS & hari khusus dosen, generate Mind Mapping, serta pantau kalender ketersediaan ruangan."
+          action={
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+              {go && (
+                <Button variant="secondary" icon="grid" onClick={() => go("admin-mind-mapping")}>
+                  Matriks Mind Mapping
+                </Button>
+              )}
+              {scheduleViewMode === "calendar" && (
+                <Button icon={showScheduleForm ? "x" : "plus"} onClick={() => setShowScheduleForm((current) => !current)}>
+                  {showScheduleForm ? "Tutup Formulir" : "Tambah Jadwal Manual"}
+                </Button>
+              )}
+            </div>
+          }
+        />
+
+        {/* View Mode Switcher Tabs */}
+        <div style={{ display: "flex", gap: 8, borderBottom: "1px solid #e2e8f0", paddingBottom: 12, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
+          <button
+            type="button"
+            className={`btn ${scheduleViewMode === "integrator" ? "btn-primary" : "btn-outline"}`}
+            onClick={() => setScheduleViewMode("integrator")}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 700 }}
+          >
+            <Icon name="grid" size={16} /> 1. Integrasi Template Kaprodi &amp; Generator Mind Mapping
+          </button>
+          <button
+            type="button"
+            className={`btn ${scheduleViewMode === "calendar" ? "btn-primary" : "btn-outline"}`}
+            onClick={() => setScheduleViewMode("calendar")}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 700 }}
+          >
+            <Icon name="calendar" size={16} /> 2. Kalender Jadwal Reguler &amp; Peminjaman
+          </button>
+          {go && (
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => go("admin-mind-mapping")}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: "auto", color: "#2563eb", fontWeight: 600 }}
+            >
+              Buka Matriks Visual Mind Mapping <Icon name="arrow" size={15} />
+            </button>
+          )}
+        </div>
+
+        {scheduleViewMode === "integrator" ? (
+          <KaprodiScheduleIntegrator
+            go={go}
+            onSchedulesUpdated={() => setManagedSchedules(getAcademicSchedules())}
+          />
+        ) : (
+          <>
+            {showScheduleForm && <section className="form-panel schedule-create-panel">
+              <div className="section-head"><span><Icon name="calendar" size={16}/></span><div><h2>Tambah jadwal perkuliahan</h2><p>Jadwal yang disimpan langsung menjadi sumber validasi dan ketersediaan ruangan.</p></div></div>
+              <div className="form-grid">
+                <SelectField label="Program studi" value={scheduleDraft.program} options={["RPL","PGSD","PGPAUD","PMM","TEKKOM"]} onChange={(program) => setScheduleDraft((current) => ({ ...current, program }))} required />
+                <Field label="Mata kuliah" value={scheduleDraft.course} onChange={(course) => setScheduleDraft((current) => ({ ...current, course }))} required />
+                <Field label="Kelas" value={scheduleDraft.className} onChange={(className) => setScheduleDraft((current) => ({ ...current, className }))} placeholder="Contoh: RPL 2A" required />
+                <Field label="PJ/Dosen pengampu" value={scheduleDraft.lecturer} onChange={(lecturer) => setScheduleDraft((current) => ({ ...current, lecturer }))} required />
+                <SelectField label="Hari" value={scheduleDraft.dayName} options={["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]} onChange={(dayName) => setScheduleDraft((current) => ({ ...current, dayName }))} required />
+                <Field label="Kode ruangan" value={scheduleDraft.roomCode} onChange={(roomCode) => setScheduleDraft((current) => ({ ...current, roomCode }))} placeholder="Contoh: B.01.001" required />
+                <Field label="Waktu mulai" type="time" value={scheduleDraft.startTime} onChange={(startTime) => setScheduleDraft((current) => ({ ...current, startTime }))} required />
+                <Field label="Waktu selesai" type="time" value={scheduleDraft.endTime} onChange={(endTime) => setScheduleDraft((current) => ({ ...current, endTime }))} error={scheduleDraft.endTime <= scheduleDraft.startTime ? "Waktu selesai harus setelah waktu mulai." : undefined} required />
+              </div>
+              <div className={`available-check inline ${draftConflict ? "schedule-warning" : ""}`}><Icon name={draftConflict ? "clock" : "check"}/><span><strong>{draftConflict ? "Jadwal bentrok" : "Siap disimpan"}</strong>{draftConflict ? `Bentrok dengan ${draftConflict.course} (${draftConflict.program}) di ${draftConflict.roomCode}, kelas, atau dosen yang sama.` : "Sistem akan memeriksa ruangan, kelas, dan dosen sebelum menyimpan."}</span></div>
+              <div className="schedule-form-actions"><Button variant="outline" onClick={() => setShowScheduleForm(false)}>Batal</Button><Button icon="check" disabled={Boolean(draftConflict)} onClick={addSchedule}>Simpan Jadwal</Button></div>
+            </section>}
+            <div className="schedule-admin-stats">
+              <StatCard icon="calendar" tone="blue" label="Jadwal reguler" value={String(visibleSchedules.length)} note={programFilter === "Semua prodi" ? "Seluruh program studi" : `Program studi ${programFilter}`} />
+              <StatCard icon="arrow" tone="sky" label="Pemindahan kelas" value={String(scheduleChanges.length)} note="Sementara & permanen" />
+              <StatCard icon="clock" tone="yellow" label="Menunggu persetujuan" value={String(loans.filter((loan) => loan.status === "Menunggu" && loan.resourceType === "Ruangan").length)} note="Perlu keputusan admin" />
+            </div>
+            <div className="program-filter">
+              <span>Filter program studi</span>
+              <div>{programs.map((program) => <button className={programFilter === program ? "active" : ""} onClick={() => setProgramFilter(program)} key={program}>{program}</button>)}</div>
+            </div>
+            <section className="panel admin-calendar-panel">
+              <div className="panel-head"><div><h2>Jadwal perkuliahan reguler</h2><p>Sumber utama validasi jadwal asal mahasiswa</p></div><Badge tone="info">Database akademik</Badge></div>
+              <div className="admin-week-grid">
+                {["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].map((day) => (
+                  <div className="admin-day" key={day}>
+                    <div className="admin-day-head"><strong>{day}</strong><span>{visibleSchedules.filter((item) => item.dayName === day).length} kelas</span></div>
+                    {visibleSchedules.filter((item) => item.dayName === day).map((item) => (
+                      <article key={item.id}><span>{item.startTime}–{item.endTime}</span><b>{item.program}</b><strong>{item.course}</strong><small>{item.className} · {item.roomCode}</small><small>{item.lecturer}</small></article>
+                    ))}
+                    {!visibleSchedules.some((item) => item.dayName === day) && <p className="empty-day">Belum ada jadwal</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+            <div className="content-grid">
+              <section className="panel">
+                <div className="panel-head"><div><h2>Perubahan jadwal kelas</h2><p>Slot asal dan slot pengganti tercatat berpasangan</p></div></div>
+                <div className="schedule-change-list">
+                  {scheduleChanges.length ? scheduleChanges.map((change) => (
+                    <article key={change.id}>
+                      <div><Badge tone={statusTone(change.status)}>{change.status}</Badge><strong>{change.course} · {change.className}</strong><small>{change.program} · {change.scheduleMode} · {change.id}</small></div>
+                      <div className="schedule-swap"><span><small>{change.scheduleMode === "Satu kali" ? "Slot asal dilepas hanya tanggal ini" : "Jadwal reguler lama"}</small><b>{formatDate(change.originalDate ?? "")}<br />{change.originalStartTime}–{change.originalEndTime} · {change.originalRoom}</b></span><Icon name="arrow" /><span><small>{change.scheduleMode === "Satu kali" ? "Pengecualian/pertemuan pengganti" : "Jadwal reguler baru"}</small><b>{formatDate(change.date)}<br />{change.startTime}–{change.endTime} · {change.resource.match(/\((.*?)\)/)?.[1]}</b></span></div>
+                    </article>
+                  )) : <div className="empty-mini">Belum ada pemindahan jadwal.</div>}
+                </div>
+              </section>
+              <section className="panel">
+                <div className="panel-head"><div><h2>Peminjaman organisasi</h2><p>Slot hanya diblokir setelah disetujui</p></div></div>
+                <div className="schedule-change-list compact">
+                  {roomBookings.length ? roomBookings.map((booking) => <article key={booking.id}><div><Badge tone={statusTone(booking.status)}>{booking.status}</Badge><strong>{booking.course || booking.purpose}</strong><small>{booking.resource}</small></div><span className="booking-time">{formatDate(booking.date)}<br/><b>{booking.startTime}–{booking.endTime}</b></span></article>) : <div className="empty-mini">Belum ada peminjaman organisasi.</div>}
+                </div>
+              </section>
+            </div>
+          </>
+        )}
           eyebrow="KALENDER RUANG TERPUSAT"
           title="Jadwal & Ketersediaan"
           text="Pantau jadwal kuliah reguler, pemindahan pertemuan, dan peminjaman organisasi dari satu tampilan."
@@ -2705,6 +3924,7 @@ const titles: Record<string, string> = {
   "admin-loans": "Data Peminjaman",
   "admin-resources": "Manajemen Resource",
   "admin-schedule": "Jadwal & Ketersediaan",
+  "admin-mind-mapping": "Mind Mapping Jadwal Perkuliahan",
   components: "Komponen UI",
 }
 
@@ -2787,6 +4007,9 @@ export default function App() {
   else if (page === "admin") content = <AdminDashboard go={setPage} loans={loans} />
   else if (page === "admin-letters") content = <AdminLetters letters={letters} onStatus={updateLetterStatus} />
   else if (["admin-loans", "admin-resources", "admin-schedule"].includes(page))
+    content = <AdminResources page={page} loans={loans} onStatus={updateLoanStatus} go={setPage} />
+  else if (page === "admin-mind-mapping")
+    content = <AdminMindMapping go={setPage} />
     content = <AdminResources page={page} loans={loans} onStatus={updateLoanStatus} />
   else if (page === "components") content = <ComponentsPage />
   else if (page === "notifications") content = <NotificationsPage notifications={notifications} onReadAll={() => setNotifications((current) => current.map((item) => ({ ...item, read: true })))} />
