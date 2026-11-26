@@ -59,6 +59,7 @@ Route::prefix('api/campus')->name('campus.')->group(function () {
 
 // Laravel Blade Version Routes
 //Route untuk laravel nya
+//testing aja
 Route::prefix('blade')->name('blade.')->group(function () {
     Route::get('/', function () {
         return redirect()->route('blade.dashboard');
