@@ -706,7 +706,9 @@ table.matrix-table {
     <button class="btn-ctrl" onclick="toggleTvSize('up')" title="Perbesar Ukuran Huruf (TV Mode)">A+</button>
     <button class="btn-ctrl" id="btnAutoScroll" onclick="toggleAutoScroll()" title="Mode Siaran TV Layar Penuh">&#9654; Auto-Scroll TV</button>
     <button class="btn-ctrl btn-primary" onclick="toggleFullscreen()" title="Layar Penuh TV 16:9">&#x26F6; Fullscreen TV</button>
-    <button class="btn-ctrl" onclick="exportExcelCsv()" title="Unduh CSV Format MAPPING">&#128190; Unduh Excel (CSV)</button>
+    <button class="btn-ctrl" onclick="exportExcelCsv()" title="Unduh CSV Format MAPPING">&#128190; Unduh CSV</button>
+    <button class="btn-ctrl" onclick="exportHdImage('png')" title="Unduh Gambar PNG Resolusi Ultra-HD">&#128444; Unduh PNG (HD)</button>
+    <button class="btn-ctrl" onclick="exportHdImage('jpg')" title="Unduh Gambar JPG Resolusi Ultra-HD">&#128248; Unduh JPG (HD)</button>
     <button class="btn-ctrl" onclick="window.print()" title="Cetak / Simpan PDF">&#128438; Cetak PDF</button>
   </div>
 </header>
@@ -1611,39 +1613,290 @@ function toggleAutoScroll() {
   }
 }
 
-// CSV EXPORT (MAPPING Sheet Format)
+// CSV EXPORT (MAPPING Sheet Format with 3-Row Room Header & Course Details)
 function exportExcelCsv() {
-  const rooms = SCHEDULE_DATA.rooms;
-  let csv = 'HARI;JAM;' + rooms.join(';') + '\r\n';
-  
+  const rooms = SCHEDULE_DATA.rooms || [];
+  const roomDetails = SCHEDULE_DATA.room_details || [];
+  const esc = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+
+  const lines = [];
+  lines.push([esc('MIND MAPPING JADWAL PERKULIAHAN - UPI KAMPUS CIBIRU'), esc('Tahun Akademik: ' + (SCHEDULE_DATA.metadata.academic_year || '2023/2024'))].join(';'));
+  lines.push('');
+
+  lines.push(['HARI', 'JAM', 'POS', ...rooms.map((r, i) => {
+    const d = roomDetails.find(item => item.code === r);
+    return d ? d.label : (i < 22 ? 'Ruang Kelas' : r);
+  })].map(esc).join(';'));
+  lines.push(['', '', '', ...rooms].map(esc).join(';'));
+  lines.push(['', '', '', ...rooms.map((r, i) => {
+    const d = roomDetails.find(item => item.code === r);
+    return String(d ? d.number : i + 1);
+  })].map(esc).join(';'));
+
   SCHEDULE_DATA.metadata.days.forEach(day => {
     const slots = SCHEDULE_DATA.days_slots[day] || [];
-    slots.forEach(slot => {
-      let row = `${day};${slot.time};`;
+    slots.forEach((slot, sIdx) => {
+      const dayCell = sIdx === 0 ? day.toUpperCase() : day;
       if (slot.is_break) {
-        row += rooms.map(() => 'ISTIRAHAT').join(';');
+        const bLabel = slot.label || 'ISTIRAHAT';
+        lines.push([dayCell, slot.time, '-', ...rooms.map(() => bLabel)].map(esc).join(';'));
       } else {
         const cells = rooms.map(room => {
           const key = `${day}|${slot.time}|${room}`;
           const cId = SCHEDULE_DATA.matrix_cells[key];
           if (!cId) return '';
           const c = SCHEDULE_DATA.courses.find(item => item.id === cId);
-          return c ? `${c.course_code}, ${c.class_name}` : '';
+          return c ? `${c.course_code}, ${c.class_name} (${c.course_name} - ${c.lecturer_1})` : '';
         });
-        row += cells.join(';');
+        lines.push([dayCell, slot.time, String(slot.slot), ...cells].map(esc).join(';'));
       }
-      csv += row + '\r\n';
     });
   });
 
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `MAPPING_JADWAL_UPI_CIBIRU_${SCHEDULE_DATA.metadata.academic_year.replace('/', '-')}.csv`;
+  a.download = `MAPPING_JADWAL_UPI_CIBIRU_${(SCHEDULE_DATA.metadata.academic_year || '2023-2024').replace('/', '-')}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ULTRA-HD IMAGE EXPORT (PNG / JPG via 2x Canvas)
+function exportHdImage(format) {
+  const bObj = SCHEDULE_DATA.buildings.find(b => b.id === currentBuildingId);
+  const roomsToDraw = bObj ? bObj.rooms : SCHEDULE_DATA.rooms;
+  const daysToDraw = currentDay === 'all' ? SCHEDULE_DATA.metadata.days : [currentDay];
+  if (!roomsToDraw.length || !daysToDraw.length) return;
+
+  showDndBanner(`🖼 Merender gambar matriks kualitas Ultra-HD (${format.toUpperCase()})...`, '#1e3a8a');
+
+  setTimeout(() => {
+    const scale = 2;
+    const colDayW = 82, colTimeW = 108, colPosW = 42, colRoomW = 148;
+    const stickyW = colDayW + colTimeW + colPosW;
+    const titleBannerH = 74, headerRow1H = 34, headerRow2H = 28, headerRow3H = 22;
+    const tableHeaderH = headerRow1H + headerRow2H + headerRow3H;
+    const slotRowH = 44, breakRowH = 26, dayDividerH = 6, footerH = 38;
+
+    let bodyH = 0;
+    daysToDraw.forEach((day, dIdx) => {
+      const slots = SCHEDULE_DATA.days_slots[day] || [];
+      slots.forEach(s => { bodyH += s.is_break ? breakRowH : slotRowH; });
+      if (dIdx < daysToDraw.length - 1) bodyH += dayDividerH;
+    });
+
+    const totalW = stickyW + roomsToDraw.length * colRoomW;
+    const totalH = titleBannerH + tableHeaderH + bodyH + footerH;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = totalW * scale;
+    canvas.height = totalH * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+
+    const fillRoundRect = (x, y, w, h, r, fill, stroke) => {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke(); }
+    };
+
+    const fitText = (text, maxW) => {
+      const str = String(text || '');
+      if (ctx.measureText(str).width <= maxW) return str;
+      let t = str;
+      while (t.length > 3 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+      return t + '…';
+    };
+
+    const getProdiColors = (prodi) => {
+      const p = (prodi || '').toLowerCase();
+      if (p.includes('pgsd')) return { bg: '#064e3b', border: '#10b981', badge: '#34d399', text: '#ecfdf5' };
+      if (p.includes('pgpaud')) return { bg: '#78350f', border: '#f59e0b', badge: '#fbbf24', text: '#fffbeb' };
+      if (p.includes('rpl')) return { bg: '#1e3a8a', border: '#3b82f6', badge: '#60a5fa', text: '#eff6ff' };
+      if (p.includes('multi') || p.includes('pmm')) return { bg: '#581c87', border: '#a855f7', badge: '#c084fc', text: '#faf5ff' };
+      if (p.includes('tekom') || p.includes('komputer')) return { bg: '#881337', border: '#f43f5e', badge: '#fb7185', text: '#fff1f2' };
+      return { bg: '#312e81', border: '#6366f1', badge: '#818cf8', text: '#eef2ff' };
+    };
+
+    ctx.fillStyle = '#0b1120';
+    ctx.fillRect(0, 0, totalW, totalH);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, totalW, titleBannerH);
+
+    fillRoundRect(18, 15, 44, 44, 10, '#2563eb');
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 15px Inter, Segoe UI, Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('UPI', 40, 37);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = 'bold 20px Inter, Segoe UI, Arial, sans-serif';
+    ctx.fillText(`MIND MAPPING JADWAL PERKULIAHAN UPI KAMPUS CIBIRU (${SCHEDULE_DATA.metadata.academic_year || '2023/2024'})`, 74, 28);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 12.5px Inter, Segoe UI, Arial, sans-serif';
+    ctx.fillText(`Ruangan: ${bObj ? bObj.name : 'Semua Ruangan'} (${roomsToDraw.length} Ruang) • Hari: ${currentDay === 'all' ? 'Senin–Sabtu' : currentDay}`, 74, 50);
+
+    const thY = titleBannerH;
+    [{ label: 'HARI', x: 0, w: colDayW }, { label: 'JAM', x: colDayW, w: colTimeW }, { label: 'Pos', x: colDayW + colTimeW, w: colPosW }].forEach(sh => {
+      ctx.fillStyle = '#0f172a'; ctx.fillRect(sh.x, thY, sh.w, tableHeaderH);
+      ctx.strokeStyle = '#334155'; ctx.strokeRect(sh.x, thY, sh.w, tableHeaderH);
+      ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 12px Inter, Segoe UI, Arial, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(sh.label, sh.x + sh.w / 2, thY + tableHeaderH / 2);
+    });
+
+    roomsToDraw.forEach((room, rIdx) => {
+      const rx = stickyW + rIdx * colRoomW;
+      const d = (SCHEDULE_DATA.room_details || []).find(item => item.code === room);
+      const isCls = d ? d.is_classroom : rIdx < 22;
+      const lbl = d ? d.label : (isCls ? 'Ruang Kelas' : room);
+      const num = d ? d.number : rIdx + 1;
+
+      ctx.fillStyle = isCls ? '#1e293b' : '#172554'; ctx.fillRect(rx, thY, colRoomW, headerRow1H);
+      ctx.strokeStyle = '#334155'; ctx.strokeRect(rx, thY, colRoomW, headerRow1H);
+      ctx.fillStyle = isCls ? '#cbd5e1' : '#93c5fd'; ctx.font = 'bold 10.5px Inter, Segoe UI, Arial, sans-serif';
+      ctx.textAlign = 'center'; ctx.fillText(fitText(lbl, colRoomW - 10), rx + colRoomW / 2, thY + headerRow1H / 2);
+
+      const r2Y = thY + headerRow1H;
+      ctx.fillStyle = isCls ? '#0f172a' : '#0c1938'; ctx.fillRect(rx, r2Y, colRoomW, headerRow2H);
+      ctx.strokeStyle = '#334155'; ctx.strokeRect(rx, r2Y, colRoomW, headerRow2H);
+      ctx.fillStyle = isCls ? '#38bdf8' : '#fbbf24'; ctx.font = 'bold 13px Inter, Segoe UI, Arial, sans-serif';
+      ctx.fillText(room, rx + colRoomW / 2, r2Y + headerRow2H / 2);
+
+      const r3Y = r2Y + headerRow2H;
+      ctx.fillStyle = '#090e1a'; ctx.fillRect(rx, r3Y, colRoomW, headerRow3H);
+      ctx.strokeStyle = '#334155'; ctx.strokeRect(rx, r3Y, colRoomW, headerRow3H);
+      ctx.fillStyle = isCls ? '#94a3b8' : '#f59e0b'; ctx.font = 'bold 11px Inter, Segoe UI, Arial, sans-serif';
+      ctx.fillText(String(num), rx + colRoomW / 2, r3Y + headerRow3H / 2);
+    });
+
+    let curY = titleBannerH + tableHeaderH;
+    daysToDraw.forEach((day, dayIdx) => {
+      const slots = SCHEDULE_DATA.days_slots[day] || [];
+      const dayStartY = curY;
+      const dayTotalH = slots.reduce((acc, s) => acc + (s.is_break ? breakRowH : slotRowH), 0);
+      const slotYMap = [];
+      let tempY = dayStartY;
+      slots.forEach(s => { slotYMap.push(tempY); tempY += s.is_break ? breakRowH : slotRowH; });
+
+      slots.forEach((slot, sIdx) => {
+        const rowY = slotYMap[sIdx], rowH = slot.is_break ? breakRowH : slotRowH;
+        ctx.fillStyle = slot.is_break ? '#1e293b' : '#0f172a';
+        ctx.fillRect(colDayW, rowY, colTimeW, rowH);
+        ctx.strokeStyle = '#1e293b'; ctx.strokeRect(colDayW, rowY, colTimeW, rowH);
+        ctx.fillStyle = slot.is_break ? '#facc15' : '#cbd5e1';
+        ctx.font = '600 11px Inter, Segoe UI, Arial, sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(slot.time, colDayW + colTimeW / 2, rowY + rowH / 2);
+
+        ctx.fillStyle = slot.is_break ? '#1e293b' : '#0f172a';
+        ctx.fillRect(colDayW + colTimeW, rowY, colPosW, rowH);
+        ctx.strokeStyle = '#1e293b'; ctx.strokeRect(colDayW + colTimeW, rowY, colPosW, rowH);
+        ctx.fillStyle = '#64748b'; ctx.font = 'bold 10.5px Inter, Segoe UI, Arial, sans-serif';
+        ctx.fillText(slot.is_break ? '-' : String(slot.slot), colDayW + colTimeW + colPosW / 2, rowY + rowH / 2);
+
+        if (slot.is_break) {
+          const breakW = roomsToDraw.length * colRoomW;
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(stickyW, rowY, breakW, rowH);
+          ctx.strokeStyle = '#334155'; ctx.strokeRect(stickyW, rowY, breakW, rowH);
+          ctx.fillStyle = '#facc15'; ctx.font = 'bold 11px Inter, Segoe UI, Arial, sans-serif';
+          ctx.textAlign = 'left';
+          const bTxt = `☕ ${slot.label || 'ISTIRAHAT / SHOLAT'} (${slot.time})`;
+          for (let ox = 24; ox < breakW; ox += 460) ctx.fillText(bTxt, stickyW + ox, rowY + rowH / 2);
+        } else {
+          roomsToDraw.forEach((_, rIdx) => {
+            const rx = stickyW + rIdx * colRoomW;
+            ctx.fillStyle = '#0b1120'; ctx.fillRect(rx, rowY, colRoomW, rowH);
+            ctx.strokeStyle = '#1e293b'; ctx.strokeRect(rx, rowY, colRoomW, rowH);
+          });
+        }
+      });
+
+      ctx.fillStyle = '#0f172a'; ctx.fillRect(0, dayStartY, colDayW, dayTotalH);
+      ctx.strokeStyle = '#334155'; ctx.strokeRect(0, dayStartY, colDayW, dayTotalH);
+      ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 14px Inter, Segoe UI, Arial, sans-serif';
+      ctx.textAlign = 'center'; ctx.fillText(day.toUpperCase(), colDayW / 2, dayStartY + dayTotalH / 2);
+
+      const spanned = new Set();
+      slots.forEach((slot, sIdx) => {
+        if (slot.is_break) return;
+        roomsToDraw.forEach((room, rIdx) => {
+          if (spanned.has(`${sIdx}|${room}`)) return;
+          const cId = SCHEDULE_DATA.matrix_cells[`${day}|${slot.time}|${room}`];
+          if (!cId) return;
+          let spanCount = 1;
+          for (let nx = sIdx + 1; nx < slots.length; nx++) {
+            if (slots[nx].is_break) break;
+            if (SCHEDULE_DATA.matrix_cells[`${day}|${slots[nx].time}|${room}`] === cId) {
+              spanCount++; spanned.add(`${nx}|${room}`);
+            } else break;
+          }
+          const course = SCHEDULE_DATA.courses.find(c => c.id === cId);
+          if (!course) return;
+          const rx = stickyW + rIdx * colRoomW + 3, ry = slotYMap[sIdx] + 3;
+          const cw = colRoomW - 6, ch = spanCount * slotRowH - 6;
+          const theme = getProdiColors(course.prodi);
+          fillRoundRect(rx, ry, cw, ch, 6, theme.bg, theme.border);
+          ctx.fillStyle = theme.border; ctx.fillRect(rx, ry + 3, 4, ch - 6);
+          ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+          ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11.5px Inter, Segoe UI, Arial, sans-serif';
+          ctx.fillText(fitText(course.display_label, cw - 44), rx + 8, ry + 6);
+          ctx.textAlign = 'right'; ctx.fillStyle = theme.badge; ctx.font = 'bold 9.5px Inter, Segoe UI, Arial, sans-serif';
+          ctx.fillText(`${course.sks}SKS`, rx + cw - 6, ry + 7);
+          ctx.textAlign = 'left'; ctx.fillStyle = theme.text; ctx.font = '600 10px Inter, Segoe UI, Arial, sans-serif';
+          ctx.fillText(fitText(course.course_name, cw - 14), rx + 8, ry + 23);
+          if (ch >= 52) {
+            ctx.fillStyle = '#cbd5e1'; ctx.font = '500 9.5px Inter, Segoe UI, Arial, sans-serif';
+            ctx.fillText(fitText(course.lecturer_1, cw - 14), rx + 8, ry + 38);
+          }
+          if (ch >= 68 && course.lecturer_2) {
+            ctx.fillStyle = '#94a3b8'; ctx.font = '500 9px Inter, Segoe UI, Arial, sans-serif';
+            ctx.fillText(fitText(course.lecturer_2, cw - 14), rx + 8, ry + 52);
+          }
+        });
+      });
+
+      curY += dayTotalH;
+      if (dayIdx < daysToDraw.length - 1) {
+        ctx.fillStyle = '#334155'; ctx.fillRect(0, curY, totalW, dayDividerH);
+        curY += dayDividerH;
+      }
+    });
+
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(0, curY, totalW, footerH);
+    ctx.fillStyle = '#94a3b8'; ctx.font = '600 11.5px Inter, Segoe UI, Arial, sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(`UPI Kampus Cibiru • Mind Mapping Jadwal Perkuliahan`, 18, curY + footerH / 2);
+
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `MIND_MAPPING_HD_${currentBuildingId.toUpperCase()}_${currentDay.toUpperCase()}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showDndBanner(`✓ Gambar Mind Mapping Ultra-HD (${format.toUpperCase()} • ${canvas.width}x${canvas.height}px) berhasil diunduh!`, '#064e3b');
+    }, format === 'png' ? 'image/png' : 'image/jpeg', format === 'png' ? undefined : 0.96);
+  }, 80);
 }
 </script>
 </body>

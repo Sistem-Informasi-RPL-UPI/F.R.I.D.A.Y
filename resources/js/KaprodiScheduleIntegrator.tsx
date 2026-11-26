@@ -1685,13 +1685,51 @@ export function KaprodiScheduleIntegrator({ go, onSchedulesUpdated }: Props) {
                       🗺️ Buka Mind Mapping Lengkap
                     </button>
                   )}
-                  <a
-                    href="/admin/mind-mapping/download-excel"
+                  <button
+                    type="button"
                     className="btn btn-outline"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+                    onClick={() => {
+                      const iframe = document.getElementById("previewMindMappingIframe") as HTMLIFrameElement | null
+                      if (iframe?.contentWindow && typeof (iframe.contentWindow as any).exportExcelCsv === "function") {
+                        ;(iframe.contentWindow as any).exportExcelCsv()
+                      } else if (go) {
+                        go("admin-mind-mapping")
+                      }
+                    }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 700, borderColor: "#10b981", color: "#047857", background: "#ecfdf5" }}
                   >
-                    📊 Unduh Excel (CSV)
-                  </a>
+                    📊 Unduh CSV (Excel)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline"
+                    onClick={() => {
+                      const iframe = document.getElementById("previewMindMappingIframe") as HTMLIFrameElement | null
+                      if (iframe?.contentWindow && typeof (iframe.contentWindow as any).exportHdImage === "function") {
+                        ;(iframe.contentWindow as any).exportHdImage("png")
+                      } else if (go) {
+                        go("admin-mind-mapping")
+                      }
+                    }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 700, borderColor: "#6366f1", color: "#4338ca", background: "#eef2ff" }}
+                  >
+                    🖼️ Unduh PNG (HD)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline"
+                    onClick={() => {
+                      const iframe = document.getElementById("previewMindMappingIframe") as HTMLIFrameElement | null
+                      if (iframe?.contentWindow && typeof (iframe.contentWindow as any).exportHdImage === "function") {
+                        ;(iframe.contentWindow as any).exportHdImage("jpg")
+                      } else if (go) {
+                        go("admin-mind-mapping")
+                      }
+                    }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 700, borderColor: "#8b5cf6", color: "#6d28d9", background: "#f5f3ff" }}
+                  >
+                    📸 Unduh JPG (HD)
+                  </button>
                   <a
                     href="/mind-mapping-upi-cibiru.html"
                     target="_blank"
@@ -1782,6 +1820,7 @@ export function KaprodiScheduleIntegrator({ go, onSchedulesUpdated }: Props) {
               </div>
             </div>
             <iframe
+              id="previewMindMappingIframe"
               src="/mind-mapping-upi-cibiru.html"
               style={{ width: "100%", height: 600, border: "none", display: "block" }}
               title="Preview Matriks Mind Mapping"

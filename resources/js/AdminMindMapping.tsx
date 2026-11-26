@@ -422,14 +422,502 @@ export function AdminMindMapping({ go }: Props) {
     document.body.removeChild(link)
   }
 
-  // Trigger download of Excel CSV format
+  // Trigger dynamic download of Excel CSV format (reflects all latest generated schedules, time settings, and drag & drop moves!)
   const downloadExcelCsv = () => {
+    const rooms: string[] = data.rooms || []
+    const roomDetails: any[] = data.room_details || []
+    const days: string[] = data.metadata?.days || ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"]
+    const escapeCell = (val: string) => `"${String(val ?? "").replace(/"/g, '""')}"`
+
+    const lines: string[] = []
+    // Title & Metadata Header matching UPI Cibiru Excel MAPPING template
+    lines.push([escapeCell("MIND MAPPING JADWAL PERKULIAHAN - UPI KAMPUS CIBIRU"), escapeCell(`Tahun Akademik: ${data.metadata?.academic_year || "2023/2024"}`), escapeCell(`Digenerate: ${genTimestamp}`)].join(";"))
+    lines.push("")
+
+    // 3-Row Room Header (Row 1: Label/Kategori, Row 2: Kode Ruang B2.002..A3.010, Row 3: Nomor Urut 1..37)
+    const labelRow = ["HARI", "JAM", "POS", ...rooms.map((r, i) => {
+      const d = roomDetails.find((item: any) => item.code === r)
+      return d ? d.label : i < 22 ? "Ruang Kelas" : r
+    })].map(escapeCell).join(";")
+
+    const codeRow = ["", "", "", ...rooms].map(escapeCell).join(";")
+    const numRow = ["", "", "", ...rooms.map((r, i) => {
+      const d = roomDetails.find((item: any) => item.code === r)
+      return String(d ? d.number : i + 1)
+    })].map(escapeCell).join(";")
+
+    lines.push(labelRow)
+    lines.push(codeRow)
+    lines.push(numRow)
+
+    // Matrix Rows per Day & Slot
+    days.forEach((day) => {
+      const slots: any[] = data.days_slots[day as keyof typeof data.days_slots] || []
+      slots.forEach((slot: any, sIdx: number) => {
+        const dayCell = sIdx === 0 ? day.toUpperCase() : day
+        if (slot.is_break) {
+          const breakLabel = slot.label || "ISTIRAHAT / BREAK"
+          const row = [dayCell, slot.time, "-", ...rooms.map(() => breakLabel)].map(escapeCell).join(";")
+          lines.push(row)
+        } else {
+          const cells = rooms.map((room) => {
+            const key = `${day}|${slot.time}|${room}`
+            const cId = data.matrix_cells[key as keyof typeof data.matrix_cells]
+            if (!cId) return ""
+            const course = data.courses.find((c: any) => c.id === cId)
+            if (!course) return ""
+            return `${course.course_code}, ${course.class_name} (${course.course_name} - ${course.lecturer_1}${course.lecturer_2 ? " / " + course.lecturer_2 : ""})`
+          })
+          const row = [dayCell, slot.time, String(slot.slot), ...cells].map(escapeCell).join(";")
+          lines.push(row)
+        }
+      })
+    })
+
+    // Append Detailed Course List & Parked Courses at the bottom of the CSV
+    lines.push("")
+    lines.push([escapeCell("DAFTAR RINCIAN MATA KULIAH TERJADWAL")].join(";"))
+    lines.push(["ID", "HARI", "JAM", "RUANG", "GEDUNG", "PRODI", "KODE_MK", "NAMA_MATA_KULIAH", "SKS", "SEMESTER", "KELAS", "KATEGORI", "DOSEN_1", "DOSEN_2", "STATUS"].map(escapeCell).join(";"))
+
+    const parkedIds = new Set((data.parked_courses || []).map((p: any) => p.id))
+    data.courses.forEach((c: any) => {
+      const isParked = parkedIds.has(c.id)
+      lines.push([
+        c.id,
+        isParked ? "-" : c.day,
+        isParked ? "-" : c.time_display,
+        isParked ? "PARKIR SEMENTARA" : c.room,
+        isParked ? "-" : c.building,
+        c.prodi,
+        c.course_code,
+        c.course_name,
+        c.sks,
+        c.semester,
+        c.class_name,
+        c.course_category || "Teori",
+        c.lecturer_1,
+        c.lecturer_2 || "",
+        isParked ? "Tempat Simpan Sementara" : "Terjadwal di Matriks",
+      ].map(escapeCell).join(";"))
+    })
+
+    const csvContent = "\uFEFF" + lines.join("\r\n")
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
-    link.href = "/downloads/MAPPING_JADWAL_UPI_CIBIRU_2022-2023.csv"
-    link.download = `MAPPING_JADWAL_UPI_CIBIRU_${data.metadata.academic_year.replace("/", "-")}.csv`
+    link.href = url
+    link.download = `MAPPING_JADWAL_UPI_CIBIRU_${(data.metadata?.academic_year || "2023-2024").replace("/", "-")}.csv`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    setDndFeedback({
+      type: "success",
+      message: "📊 Berkas CSV Mind Mapping terbaru berhasil diunduh (mencakup seluruh perubahan matriks & rincian mata kuliah).",
+    })
+  }
+
+  // Trigger Ultra-HD PNG or JPG Image Export of the Mind Mapping Matrix (renders current active building & day filter in crisp 2x HD Canvas)
+  const downloadHdImage = (format: "png" | "jpg") => {
+    const roomsToDraw: string[] = activeRooms
+    const daysToDraw: string[] = daysToRender
+    if (!roomsToDraw.length || !daysToDraw.length) return
+
+    setDndFeedback({
+      type: "info",
+      message: `🖼️ Sedang merender gambar matriks kualitas HD (${format.toUpperCase()})...`,
+    })
+
+    setTimeout(() => {
+      try {
+        const scale = 2 // 2x Retina / Ultra-HD sharpness
+        const colDayW = 82
+        const colTimeW = 108
+        const colPosW = 42
+        const colRoomW = 148
+        const stickyW = colDayW + colTimeW + colPosW
+
+        const titleBannerH = 74
+        const headerRow1H = 34
+        const headerRow2H = 28
+        const headerRow3H = 22
+        const tableHeaderH = headerRow1H + headerRow2H + headerRow3H
+        const slotRowH = 44
+        const breakRowH = 26
+        const dayDividerH = 6
+
+        // Calculate total height across daysToDraw
+        let bodyH = 0
+        daysToDraw.forEach((day, dIdx) => {
+          const slots: any[] = data.days_slots[day as keyof typeof data.days_slots] || []
+          slots.forEach((s: any) => {
+            bodyH += s.is_break ? breakRowH : slotRowH
+          })
+          if (dIdx < daysToDraw.length - 1) bodyH += dayDividerH
+        })
+
+        const footerH = 38
+        const totalW = stickyW + roomsToDraw.length * colRoomW
+        const totalH = titleBannerH + tableHeaderH + bodyH + footerH
+
+        const canvas = document.createElement("canvas")
+        canvas.width = totalW * scale
+        canvas.height = totalH * scale
+        const ctx = canvas.getContext("2d")
+        if (!ctx) return
+        ctx.scale(scale, scale)
+
+        // Helper for rounded rectangle
+        const fillRoundRect = (x: number, y: number, w: number, h: number, r: number, fill: string, stroke?: string) => {
+          ctx.beginPath()
+          ctx.moveTo(x + r, y)
+          ctx.lineTo(x + w - r, y)
+          ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+          ctx.lineTo(x + w, y + h - r)
+          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+          ctx.lineTo(x + r, y + h)
+          ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+          ctx.lineTo(x, y + r)
+          ctx.quadraticCurveTo(x, y, x + r, y)
+          ctx.closePath()
+          ctx.fillStyle = fill
+          ctx.fill()
+          if (stroke) {
+            ctx.strokeStyle = stroke
+            ctx.lineWidth = 1.2
+            ctx.stroke()
+          }
+        }
+
+        // Helper to truncate text to fit maxW
+        const fitText = (text: string, maxW: number): string => {
+          const str = String(text || "")
+          if (ctx.measureText(str).width <= maxW) return str
+          let truncated = str
+          while (truncated.length > 3 && ctx.measureText(truncated + "…").width > maxW) {
+            truncated = truncated.slice(0, -1)
+          }
+          return truncated + "…"
+        }
+
+        // Prodi theme colors (matching CSS cards)
+        const getProdiColors = (prodi: string) => {
+          const p = (prodi || "").toLowerCase()
+          if (p.includes("pgsd")) return { bg: "#064e3b", border: "#10b981", badge: "#34d399", text: "#ecfdf5" }
+          if (p.includes("pgpaud")) return { bg: "#78350f", border: "#f59e0b", badge: "#fbbf24", text: "#fffbeb" }
+          if (p.includes("rpl")) return { bg: "#1e3a8a", border: "#3b82f6", badge: "#60a5fa", text: "#eff6ff" }
+          if (p.includes("multi") || p.includes("pmm")) return { bg: "#581c87", border: "#a855f7", badge: "#c084fc", text: "#faf5ff" }
+          if (p.includes("tekom") || p.includes("komputer")) return { bg: "#881337", border: "#f43f5e", badge: "#fb7185", text: "#fff1f2" }
+          return { bg: "#312e81", border: "#6366f1", badge: "#818cf8", text: "#eef2ff" }
+        }
+
+        // 1. Background
+        ctx.fillStyle = "#0b1120"
+        ctx.fillRect(0, 0, totalW, totalH)
+
+        // 2. Top Title Banner
+        ctx.fillStyle = "#0f172a"
+        ctx.fillRect(0, 0, totalW, titleBannerH)
+        ctx.strokeStyle = "#334155"
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        ctx.moveTo(0, titleBannerH)
+        ctx.lineTo(totalW, titleBannerH)
+        ctx.stroke()
+
+        // UPI Badge
+        fillRoundRect(18, 15, 44, 44, 10, "#2563eb")
+        ctx.fillStyle = "#ffffff"
+        ctx.font = "bold 15px Inter, Segoe UI, Arial, sans-serif"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText("UPI", 40, 37)
+
+        // Title & Subtitle
+        ctx.textAlign = "left"
+        ctx.fillStyle = "#f8fafc"
+        ctx.font = "bold 20px Inter, Segoe UI, Arial, sans-serif"
+        const activeBuildingObj = data.buildings.find((b: any) => b.id === selectedBuilding)
+        const buildingLabel = activeBuildingObj ? activeBuildingObj.name : "Semua Ruangan"
+        const dayLabel = selectedDay === "all" ? "Senin – Sabtu" : `Hari ${selectedDay}`
+        ctx.fillText(
+          `MIND MAPPING JADWAL PERKULIAHAN UPI KAMPUS CIBIRU (${data.metadata?.academic_year || "2023/2024"})`,
+          74,
+          28
+        )
+        ctx.fillStyle = "#94a3b8"
+        ctx.font = "600 12.5px Inter, Segoe UI, Arial, sans-serif"
+        ctx.fillText(
+          `Filter Ruangan: ${buildingLabel} (${roomsToDraw.length} Ruang)  •  Hari: ${dayLabel}  •  Setting SKS: ${timeSettings.sksMinutes} Menit/SKS  •  Digenerate: ${genTimestamp}`,
+          74,
+          50
+        )
+
+        // 3. Draw 3-Row Table Header
+        const thY = titleBannerH
+        // Sticky header columns (HARI, JAM, Pos)
+        const stickyHeaders = [
+          { label: "HARI", x: 0, w: colDayW },
+          { label: "JAM", x: colDayW, w: colTimeW },
+          { label: "Pos", x: colDayW + colTimeW, w: colPosW },
+        ]
+        stickyHeaders.forEach((sh) => {
+          ctx.fillStyle = "#0f172a"
+          ctx.fillRect(sh.x, thY, sh.w, tableHeaderH)
+          ctx.strokeStyle = "#334155"
+          ctx.strokeRect(sh.x, thY, sh.w, tableHeaderH)
+          ctx.fillStyle = "#e2e8f0"
+          ctx.font = "bold 12px Inter, Segoe UI, Arial, sans-serif"
+          ctx.textAlign = "center"
+          ctx.textBaseline = "middle"
+          ctx.fillText(sh.label, sh.x + sh.w / 2, thY + tableHeaderH / 2)
+        })
+
+        // Room header columns (3 rows: Label, Code, Number)
+        roomsToDraw.forEach((room, rIdx) => {
+          const rx = stickyW + rIdx * colRoomW
+          const meta = getRoomMeta(room, rIdx)
+
+          // Row 1: Category / Lab Label
+          ctx.fillStyle = meta.isClassroom ? "#1e293b" : "#172554"
+          ctx.fillRect(rx, thY, colRoomW, headerRow1H)
+          ctx.strokeStyle = "#334155"
+          ctx.strokeRect(rx, thY, colRoomW, headerRow1H)
+          ctx.fillStyle = meta.isClassroom ? "#cbd5e1" : "#93c5fd"
+          ctx.font = "bold 10.5px Inter, Segoe UI, Arial, sans-serif"
+          ctx.textAlign = "center"
+          ctx.textBaseline = "middle"
+          ctx.fillText(fitText(meta.label, colRoomW - 10), rx + colRoomW / 2, thY + headerRow1H / 2)
+
+          // Row 2: Room Code (B2.002 .. A3.010)
+          const r2Y = thY + headerRow1H
+          ctx.fillStyle = meta.isClassroom ? "#0f172a" : "#0c1938"
+          ctx.fillRect(rx, r2Y, colRoomW, headerRow2H)
+          ctx.strokeStyle = "#334155"
+          ctx.strokeRect(rx, r2Y, colRoomW, headerRow2H)
+          ctx.fillStyle = meta.isClassroom ? "#38bdf8" : "#fbbf24"
+          ctx.font = "bold 13px Inter, Segoe UI, Arial, sans-serif"
+          ctx.fillText(room, rx + colRoomW / 2, r2Y + headerRow2H / 2)
+
+          // Row 3: Room Number (1..37)
+          const r3Y = r2Y + headerRow2H
+          ctx.fillStyle = "#090e1a"
+          ctx.fillRect(rx, r3Y, colRoomW, headerRow3H)
+          ctx.strokeStyle = "#334155"
+          ctx.strokeRect(rx, r3Y, colRoomW, headerRow3H)
+          ctx.fillStyle = meta.isClassroom ? "#94a3b8" : "#f59e0b"
+          ctx.font = "bold 11px Inter, Segoe UI, Arial, sans-serif"
+          ctx.fillText(String(meta.number), rx + colRoomW / 2, r3Y + headerRow3H / 2)
+        })
+
+        // 4. Draw Body Rows & Courses per Day
+        let curY = titleBannerH + tableHeaderH
+        daysToDraw.forEach((day, dayIdx) => {
+          const slots: any[] = data.days_slots[day as keyof typeof data.days_slots] || []
+          const dayStartY = curY
+          const dayTotalH = slots.reduce((acc, s) => acc + (s.is_break ? breakRowH : slotRowH), 0)
+
+          // Precompute row Y positions for each slot index
+          const slotYMap: number[] = []
+          let tempY = dayStartY
+          slots.forEach((s) => {
+            slotYMap.push(tempY)
+            tempY += s.is_break ? breakRowH : slotRowH
+          })
+
+          // Draw background grid cells & time/pos columns first
+          slots.forEach((slot: any, sIdx: number) => {
+            const rowY = slotYMap[sIdx]
+            const rowH = slot.is_break ? breakRowH : slotRowH
+
+            // Time column
+            ctx.fillStyle = slot.is_break ? "#1e293b" : "#0f172a"
+            ctx.fillRect(colDayW, rowY, colTimeW, rowH)
+            ctx.strokeStyle = "#1e293b"
+            ctx.strokeRect(colDayW, rowY, colTimeW, rowH)
+            ctx.fillStyle = slot.is_break ? "#facc15" : "#cbd5e1"
+            ctx.font = slot.is_break ? "bold 10.5px Inter, Segoe UI, Arial, sans-serif" : "600 11px Inter, Segoe UI, Arial, sans-serif"
+            ctx.textAlign = "center"
+            ctx.textBaseline = "middle"
+            ctx.fillText(slot.time, colDayW + colTimeW / 2, rowY + rowH / 2)
+
+            // Pos column
+            ctx.fillStyle = slot.is_break ? "#1e293b" : "#0f172a"
+            ctx.fillRect(colDayW + colTimeW, rowY, colPosW, rowH)
+            ctx.strokeStyle = "#1e293b"
+            ctx.strokeRect(colDayW + colTimeW, rowY, colPosW, rowH)
+            ctx.fillStyle = "#64748b"
+            ctx.font = "bold 10.5px Inter, Segoe UI, Arial, sans-serif"
+            ctx.fillText(slot.is_break ? "-" : String(slot.slot), colDayW + colTimeW + colPosW / 2, rowY + rowH / 2)
+
+            if (slot.is_break) {
+              // Break bar across all rooms
+              const breakW = roomsToDraw.length * colRoomW
+              ctx.fillStyle = "#1e293b"
+              ctx.fillRect(stickyW, rowY, breakW, rowH)
+              ctx.strokeStyle = "#334155"
+              ctx.strokeRect(stickyW, rowY, breakW, rowH)
+              ctx.fillStyle = "#facc15"
+              ctx.font = "bold 11px Inter, Segoe UI, Arial, sans-serif"
+              ctx.textAlign = "left"
+              const breakText = `☕ ${slot.label || "ISTIRAHAT / SHOLAT"} (${slot.time})`
+              for (let rxOffset = 24; rxOffset < breakW; rxOffset += 460) {
+                ctx.fillText(breakText, stickyW + rxOffset, rowY + rowH / 2)
+              }
+            } else {
+              // Empty room cells grid
+              roomsToDraw.forEach((_, rIdx) => {
+                const rx = stickyW + rIdx * colRoomW
+                ctx.fillStyle = "#0b1120"
+                ctx.fillRect(rx, rowY, colRoomW, rowH)
+                ctx.strokeStyle = "#1e293b"
+                ctx.strokeRect(rx, rowY, colRoomW, rowH)
+              })
+            }
+          })
+
+          // Draw Day column merged vertically
+          ctx.fillStyle = "#0f172a"
+          ctx.fillRect(0, dayStartY, colDayW, dayTotalH)
+          ctx.strokeStyle = "#334155"
+          ctx.strokeRect(0, dayStartY, colDayW, dayTotalH)
+          ctx.fillStyle = "#38bdf8"
+          ctx.font = "bold 14px Inter, Segoe UI, Arial, sans-serif"
+          ctx.textAlign = "center"
+          ctx.textBaseline = "middle"
+          ctx.fillText(day.toUpperCase(), colDayW / 2, dayStartY + dayTotalH / 2)
+
+          // Draw Course Cards with vertical span
+          const spannedTracker = new Set<string>()
+          slots.forEach((slot: any, sIdx: number) => {
+            if (slot.is_break) return
+            roomsToDraw.forEach((room, rIdx) => {
+              const spanKey = `${sIdx}|${room}`
+              if (spannedTracker.has(spanKey)) return
+
+              const cellKey = `${day}|${slot.time}|${room}`
+              const courseId = data.matrix_cells[cellKey as keyof typeof data.matrix_cells]
+              if (!courseId) return
+
+              // Calculate consecutive span
+              let spanCount = 1
+              for (let nextIdx = sIdx + 1; nextIdx < slots.length; nextIdx++) {
+                const nextSlot = slots[nextIdx]
+                if (nextSlot.is_break) break
+                const nextKey = `${day}|${nextSlot.time}|${room}`
+                if (data.matrix_cells[nextKey as keyof typeof data.matrix_cells] === courseId) {
+                  spanCount++
+                  spannedTracker.add(`${nextIdx}|${room}`)
+                } else {
+                  break
+                }
+              }
+
+              const course = data.courses.find((c: any) => c.id === courseId)
+              if (!course) return
+
+              const rx = stickyW + rIdx * colRoomW + 3
+              const ry = slotYMap[sIdx] + 3
+              const cw = colRoomW - 6
+              const ch = spanCount * slotRowH - 6
+              const theme = getProdiColors(course.prodi)
+
+              fillRoundRect(rx, ry, cw, ch, 6, theme.bg, theme.border)
+
+              // Left accent bar
+              ctx.fillStyle = theme.border
+              ctx.fillRect(rx, ry + 3, 4, ch - 6)
+
+              // Top row: Code - Class & SKS
+              ctx.textAlign = "left"
+              ctx.textBaseline = "top"
+              ctx.fillStyle = "#ffffff"
+              ctx.font = "bold 11.5px Inter, Segoe UI, Arial, sans-serif"
+              ctx.fillText(fitText(course.display_label, cw - 44), rx + 8, ry + 6)
+
+              ctx.textAlign = "right"
+              ctx.fillStyle = theme.badge
+              ctx.font = "bold 9.5px Inter, Segoe UI, Arial, sans-serif"
+              ctx.fillText(`${course.sks}SKS`, rx + cw - 6, ry + 7)
+
+              // Course Name
+              ctx.textAlign = "left"
+              ctx.fillStyle = theme.text
+              ctx.font = "600 10px Inter, Segoe UI, Arial, sans-serif"
+              ctx.fillText(fitText(course.course_name, cw - 14), rx + 8, ry + 23)
+
+              // Lecturer 1 & 2 (if height permits)
+              if (ch >= 52) {
+                ctx.fillStyle = "#cbd5e1"
+                ctx.font = "500 9.5px Inter, Segoe UI, Arial, sans-serif"
+                ctx.fillText(fitText(course.lecturer_1, cw - 14), rx + 8, ry + 38)
+              }
+              if (ch >= 68 && course.lecturer_2) {
+                ctx.fillStyle = "#94a3b8"
+                ctx.font = "500 9px Inter, Segoe UI, Arial, sans-serif"
+                ctx.fillText(fitText(course.lecturer_2, cw - 14), rx + 8, ry + 52)
+              }
+
+              // Bottom Time & Prodi tag if tall enough
+              if (ch >= 80) {
+                ctx.fillStyle = theme.badge
+                ctx.font = "bold 9px Inter, Segoe UI, Arial, sans-serif"
+                ctx.fillText(`${course.prodi} • ${course.time_display}`, rx + 8, ry + ch - 14)
+              }
+            })
+          })
+
+          curY += dayTotalH
+          if (dayIdx < daysToDraw.length - 1) {
+            ctx.fillStyle = "#334155"
+            ctx.fillRect(0, curY, totalW, dayDividerH)
+            curY += dayDividerH
+          }
+        })
+
+        // 5. Footer
+        ctx.fillStyle = "#0f172a"
+        ctx.fillRect(0, curY, totalW, footerH)
+        ctx.fillStyle = "#94a3b8"
+        ctx.font = "600 11.5px Inter, Segoe UI, Arial, sans-serif"
+        ctx.textAlign = "left"
+        ctx.textBaseline = "middle"
+        ctx.fillText(
+          `UPI Kampus Cibiru • Sistem Informasi Penjadwalan & Mind Mapping Terpadu • Total Terjadwal: ${data.courses.length - parkedCourses.length} MK (${parkedCourses.length} di Tempat Simpan Sementara)`,
+          18,
+          curY + footerH / 2
+        )
+
+        const mimeType = format === "png" ? "image/png" : "image/jpeg"
+        const quality = format === "png" ? undefined : 0.96
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            link.href = url
+            const daySlug = selectedDay === "all" ? "SENIN-SABTU" : selectedDay.toUpperCase()
+            const bldSlug = selectedBuilding.toUpperCase()
+            link.download = `MIND_MAPPING_HD_${bldSlug}_${daySlug}_${(data.metadata?.academic_year || "2023-2024").replace("/", "-")}.${format}`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            URL.revokeObjectURL(url)
+            setDndFeedback({
+              type: "success",
+              message: `🖼️ Gambar Mind Mapping kualitas Ultra-HD (${format.toUpperCase()} • ${canvas.width}×${canvas.height}px) berhasil diunduh!`,
+            })
+          },
+          mimeType,
+          quality
+        )
+      } catch (err) {
+        setDndFeedback({
+          type: "error",
+          message: "Gagal mengekspor gambar Mind Mapping.",
+        })
+      }
+    }, 80)
   }
 
   // Toggle TV Fullscreen
@@ -1198,10 +1686,53 @@ export function AdminMindMapping({ go }: Props) {
           <button
             type="button"
             className="btn btn-outline"
-            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              fontWeight: 700,
+              borderColor: "#10b981",
+              color: "#047857",
+              background: "#ecfdf5",
+            }}
             onClick={downloadExcelCsv}
+            title="Unduh hasil Mind Mapping terbaru dalam format CSV (Excel)"
           >
-            📊 Unduh Excel (CSV)
+            📊 Unduh CSV (Excel)
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              fontWeight: 700,
+              borderColor: "#6366f1",
+              color: "#4338ca",
+              background: "#eef2ff",
+            }}
+            onClick={() => downloadHdImage("png")}
+            title="Unduh gambar tabel Mind Mapping resolusi Ultra-HD (PNG tajam & jelas)"
+          >
+            🖼️ Unduh PNG (HD)
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              fontWeight: 700,
+              borderColor: "#8b5cf6",
+              color: "#6d28d9",
+              background: "#f5f3ff",
+            }}
+            onClick={() => downloadHdImage("jpg")}
+            title="Unduh gambar tabel Mind Mapping resolusi Ultra-HD (JPG tajam & jelas)"
+          >
+            📸 Unduh JPG (HD)
           </button>
           <button
             type="button"
