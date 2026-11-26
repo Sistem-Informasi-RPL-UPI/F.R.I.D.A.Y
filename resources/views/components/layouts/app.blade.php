@@ -29,7 +29,8 @@
             ['id' => 'admin-letters', 'route' => 'admin.data-surat', 'label' => 'Data Pengajuan Surat', 'icon' => 'file'],
             ['id' => 'admin-resources', 'route' => 'admin.manajemen-barang-ruangan', 'label' => 'Manajemen Barang & Ruangan', 'icon' => 'box'],
             ['id' => 'admin-schedule', 'route' => 'admin.jadwal', 'label' => 'Jadwal dan Ketersediaan', 'icon' => 'clock'],
-            ['id' => 'components', 'route' => 'admin.komponen-ui', 'label' => 'Komponen UI', 'icon' => 'chart'],
+            ['id' => 'admin-mind-mapping', 'route' => 'admin.mind-mapping', 'label' => 'Mind Mapping Jadwal', 'icon' => 'chart'],
+            ['id' => 'components', 'route' => 'admin.komponen-ui', 'label' => 'Komponen UI', 'icon' => 'settings'],
         ];
 
         $navItems = $isMahasiswa ? $studentNav : $adminNav;

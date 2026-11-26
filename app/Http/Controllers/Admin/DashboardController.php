@@ -31,4 +31,9 @@ class DashboardController extends Controller
     {
         return view('pages.admin.admin-mind-mapping');
     }
+
+    public function komponenUi(): View
+    {
+        return view('pages.admin.admin-komponen-ui');
+    }
 }

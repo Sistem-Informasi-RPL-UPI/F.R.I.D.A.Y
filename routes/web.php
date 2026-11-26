@@ -80,5 +80,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/data-peminjaman', [AdminDashboardController::class, 'letters'])->name('data-peminjaman'); // Placeholder
     Route::get('/manajemen-barang-ruangan', [AdminDashboardController::class, 'resources'])->name('manajemen-barang-ruangan');
     Route::get('/jadwal', [AdminDashboardController::class, 'schedule'])->name('jadwal');
-    Route::get('/komponen-ui', [AdminDashboardController::class, 'mindMapping'])->name('komponen-ui'); // Placeholder
+    Route::get('/mind-mapping', [AdminDashboardController::class, 'mindMapping'])->name('mind-mapping');
+    Route::get('/komponen-ui', [AdminDashboardController::class, 'komponenUi'])->name('komponen-ui');
 });
