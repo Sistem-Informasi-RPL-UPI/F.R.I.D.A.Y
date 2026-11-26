@@ -76,22 +76,6 @@ const academicSchedules: AcademicSchedule[] = [
   { id: "JDW014", program: "TEKKOM", course: "Jaringan Komputer", className: "TEKKOM 2A", lecturer: "Dosen N", day: 2, dayName: "Selasa", startTime: "13:00", endTime: "16:00", roomCode: "A.04.002" },
   { id: "JDW015", program: "TEKKOM", course: "Sistem Digital", className: "TEKKOM 1B", lecturer: "Dosen O", day: 3, dayName: "Rabu", startTime: "08:00", endTime: "11:00", roomCode: "20.4E.01.003" },
   { id: "JDW016", program: "TEKKOM", course: "Komunikasi Data", className: "TEKKOM 3A", lecturer: "Dosen P", day: 5, dayName: "Jumat", startTime: "10:00", endTime: "13:00", roomCode: "A.05.001" },
-  { id: "JDW001", program: "RPL", course: "Pemrograman Web", className: "RPL 3A", lecturer: "Dosen A", day: 2, dayName: "Selasa", startTime: "08:00", endTime: "10:00", roomCode: "B.01.001" },
-  { id: "JDW002", program: "RPL", course: "Basis Data", className: "RPL 3A", lecturer: "Dosen B", day: 3, dayName: "Rabu", startTime: "08:00", endTime: "10:00", roomCode: "B.02.002" },
-  { id: "JDW003", program: "RPL", course: "Rekayasa Kebutuhan", className: "RPL 2B", lecturer: "Dosen C", day: 1, dayName: "Senin", startTime: "13:00", endTime: "16:00", roomCode: "A.01.003" },
-  { id: "JDW004", program: "RPL", course: "Interaksi Manusia Komputer", className: "RPL 3B", lecturer: "Dosen D", day: 4, dayName: "Kamis", startTime: "10:00", endTime: "12:00", roomCode: "N.01.005" },
-  { id: "JDW005", program: "PGSD", course: "Media Pembelajaran", className: "PGSD 2A", lecturer: "Dosen E", day: 2, dayName: "Selasa", startTime: "10:00", endTime: "12:00", roomCode: "B.01.001" },
-  { id: "JDW006", program: "PGSD", course: "Pendidikan Matematika", className: "PGSD 3B", lecturer: "Dosen F", day: 1, dayName: "Senin", startTime: "08:00", endTime: "10:00", roomCode: "B.02.003" },
-  { id: "JDW007", program: "PGSD", course: "Literasi Dasar", className: "PGSD 1A", lecturer: "Dosen G", day: 4, dayName: "Kamis", startTime: "13:00", endTime: "15:00", roomCode: "A.02.001" },
-  { id: "JDW008", program: "PGPAUD", course: "Perkembangan Anak", className: "PGPAUD 2A", lecturer: "Dosen H", day: 2, dayName: "Selasa", startTime: "08:00", endTime: "10:00", roomCode: "N.02.002" },
-  { id: "JDW009", program: "PGPAUD", course: "Bermain dan Permainan", className: "PGPAUD 3A", lecturer: "Dosen I", day: 3, dayName: "Rabu", startTime: "10:00", endTime: "12:00", roomCode: "A.01.004" },
-  { id: "JDW010", program: "PGPAUD", course: "Seni Anak Usia Dini", className: "PGPAUD 1B", lecturer: "Dosen J", day: 5, dayName: "Jumat", startTime: "13:00", endTime: "15:00", roomCode: "N.01.006" },
-  { id: "JDW011", program: "PMM", course: "Produksi Media Digital", className: "PMM 2A", lecturer: "Dosen K", day: 1, dayName: "Senin", startTime: "10:00", endTime: "13:00", roomCode: "B.03.006" },
-  { id: "JDW012", program: "PMM", course: "Desain Grafis", className: "PMM 1A", lecturer: "Dosen L", day: 3, dayName: "Rabu", startTime: "13:00", endTime: "16:00", roomCode: "B.03.002" },
-  { id: "JDW013", program: "PMM", course: "Sinematografi", className: "PMM 3B", lecturer: "Dosen M", day: 4, dayName: "Kamis", startTime: "08:00", endTime: "11:00", roomCode: "N.03.005" },
-  { id: "JDW014", program: "TEKKOM", course: "Jaringan Komputer", className: "TEKKOM 2A", lecturer: "Dosen N", day: 2, dayName: "Selasa", startTime: "13:00", endTime: "16:00", roomCode: "B.04.002" },
-  { id: "JDW015", program: "TEKKOM", course: "Sistem Digital", className: "TEKKOM 1B", lecturer: "Dosen O", day: 3, dayName: "Rabu", startTime: "08:00", endTime: "11:00", roomCode: "A.03.004" },
-  { id: "JDW016", program: "TEKKOM", course: "Komunikasi Data", className: "TEKKOM 3A", lecturer: "Dosen P", day: 5, dayName: "Jumat", startTime: "10:00", endTime: "13:00", roomCode: "B.05.001" },
 ]
 
 function getAcademicSchedules() {
@@ -120,11 +104,6 @@ const initialLoans: LoanRequest[] = [
   { id: "RPL/PJM/2025/0095", resource: "Studio Pembelajaran (B.03.006)", resourceType: "Ruangan", student: "Raka Pratama", date: "2025-06-27", startTime: "13:00", endTime: "16:00", purpose: "Workshop produksi film pendek mahasiswa.", location: "Gedung Baru, Lantai 3", status: "Disetujui", requestType: "Organisasi", scheduleMode: "Satu kali", program: "PMM", course: "Komunitas Sinema Kampus" },
   { id: "RPL/PJM/2025/0096", resource: "Ruang Lab IMAC RPL (20.4E.02.005)", resourceType: "Ruangan", student: "Bagas Saputra", date: "2025-07-05", startTime: "09:00", endTime: "12:00", purpose: "Pelatihan instalasi jaringan untuk anggota baru.", location: "Gedung Abu, Lantai 2", status: "Menunggu", requestType: "Organisasi", scheduleMode: "Satu kali", program: "TEKKOM", course: "Himpunan Mahasiswa TEKKOM" },
   { id: "RPL/PJM/2025/0097", resource: "Ruang Perkuliahan (B.02.001)", resourceType: "Ruangan", student: "Salsa Aulia", date: "2025-06-26", startTime: "08:00", endTime: "10:00", purpose: "Pemindahan pertemuan Perkembangan Anak.", location: "Gedung Baru, Lantai 2", status: "Berhasil", requestType: "Perkuliahan", scheduleMode: "Satu kali", program: "PGPAUD", course: "Perkembangan Anak", className: "PGPAUD 2A", lecturer: "Dosen H", originalScheduleId: "JDW008", originalRoom: "B.02.002", originalDate: "2025-06-24", originalStartTime: "08:00", originalEndTime: "10:00" },
-  { id: "RPL/PJM/2025/0093", resource: "Laboratorium RPL (B.01.004)", resourceType: "Ruangan", student: "Alya Rahmadani", date: "2025-06-25", startTime: "13:00", endTime: "15:00", purpose: "Penyesuaian satu pertemuan karena kegiatan institusi.", location: "Gedung Biru, Lantai 1", status: "Berhasil", requestType: "Perkuliahan", scheduleMode: "Satu kali", program: "RPL", course: "Basis Data", className: "RPL 3A", lecturer: "Dosen B", originalScheduleId: "JDW002", originalRoom: "B.02.002", originalDate: "2025-06-25", originalStartTime: "08:00", originalEndTime: "10:00" },
-  { id: "RPL/PJM/2025/0094", resource: "Ruang Seminar (B.02.003)", resourceType: "Ruangan", student: "Nadia Putri", date: "2025-07-01", startTime: "10:00", endTime: "12:00", purpose: "Perubahan jadwal reguler Media Pembelajaran.", location: "Gedung Biru, Lantai 2", status: "Menunggu", requestType: "Perkuliahan", scheduleMode: "Jadwal tetap", program: "PGSD", course: "Media Pembelajaran", className: "PGSD 2A", lecturer: "Dosen E", originalScheduleId: "JDW005", originalRoom: "B.01.001", originalDate: "2025-07-01", originalStartTime: "10:00", originalEndTime: "12:00" },
-  { id: "RPL/PJM/2025/0095", resource: "Studio Pembelajaran (N.03.006)", resourceType: "Ruangan", student: "Raka Pratama", date: "2025-06-27", startTime: "13:00", endTime: "16:00", purpose: "Workshop produksi film pendek mahasiswa.", location: "Gedung Baru, Lantai 3", status: "Disetujui", requestType: "Organisasi", scheduleMode: "Satu kali", program: "PMM", course: "Komunitas Sinema Kampus" },
-  { id: "RPL/PJM/2025/0096", resource: "Ruang Kolaborasi (A.02.005)", resourceType: "Ruangan", student: "Bagas Saputra", date: "2025-07-05", startTime: "09:00", endTime: "12:00", purpose: "Pelatihan instalasi jaringan untuk anggota baru.", location: "Gedung Abu, Lantai 2", status: "Menunggu", requestType: "Organisasi", scheduleMode: "Satu kali", program: "TEKKOM", course: "Himpunan Mahasiswa TEKKOM" },
-  { id: "RPL/PJM/2025/0097", resource: "Ruang Perkuliahan (N.02.001)", resourceType: "Ruangan", student: "Salsa Aulia", date: "2025-06-26", startTime: "08:00", endTime: "10:00", purpose: "Pemindahan pertemuan Perkembangan Anak.", location: "Gedung Baru, Lantai 2", status: "Berhasil", requestType: "Perkuliahan", scheduleMode: "Satu kali", program: "PGPAUD", course: "Perkembangan Anak", className: "PGPAUD 2A", lecturer: "Dosen H", originalScheduleId: "JDW008", originalRoom: "N.02.002", originalDate: "2025-06-24", originalStartTime: "08:00", originalEndTime: "10:00" },
 ]
 
 const initialNotifications: AppNotification[] = [
@@ -1222,12 +1201,6 @@ const campusBuildings = [
   { id: "biru", name: "Gedung Biru", letter: "A", short: "A", floors: 5, accent: "blue", desc: "Laboratorium Multimedia & Perkuliahan Utama" },
   { id: "baru", name: "Gedung Baru", letter: "B", short: "B", floors: 5, accent: "yellow", desc: "Lab RPL, Lab TEKKOM, Smartclass, Microteaching & Perkuliahan" },
   { id: "abu", name: "Gedung Abu", letter: "F", short: "F", floors: 3, accent: "gray", desc: "Lab RPL, Lab TEKKOM, Lab Robotika, Aula & Perkuliahan" },
-}
-
-const campusBuildings = [
-  { id: "biru", name: "Gedung Biru", short: "B", floors: 5, accent: "blue" },
-  { id: "abu", name: "Gedung Abu", short: "A", floors: 4, accent: "gray" },
-  { id: "baru", name: "Gedung Baru", short: "N", floors: 3, accent: "yellow" },
 ]
 
 const roomNames = [
@@ -1270,7 +1243,6 @@ function roomsFor(buildingId: string, floor: number): CampusRoom[] {
   if (allRooms[key] && allRooms[key].length > 0) {
     return allRooms[key]
   }
-function roomsFor(buildingId: string, floor: number): CampusRoom[] {
   const building = campusBuildings.find((item) => item.id === buildingId) ?? campusBuildings[0]
   return roomNames.map((name, index) => ({
     code: `${building.short}.${String(floor).padStart(2, "0")}.${String(index + 1).padStart(3, "0")}`,
@@ -1400,15 +1372,6 @@ function RoomExplorer({ go }: { go: (page: string) => void }) {
     room: CampusRoom
     bookingInfo: { title: string; borrower: string; time: string; type: string }
   } | null>(null)
-  const [buildingId, setBuildingId] = useState("biru")
-  const [floor, setFloor] = useState(1)
-  const [selectedDay, setSelectedDay] = useState(1)
-  const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"]
-  const building = campusBuildings.find((item) => item.id === buildingId) ?? campusBuildings[0]
-  const rooms = roomsFor(buildingId, floor)
-  const [selectedCode, setSelectedCode] = useState(rooms[0].code)
-  const selectedRoom = rooms.find((room) => room.code === selectedCode) ?? rooms[0]
-  const schedule = roomWeeklySchedule(selectedRoom, selectedDay)
 
   const selectBuilding = (id: string) => {
     setBuildingId(id)
@@ -1509,15 +1472,6 @@ function RoomExplorer({ go }: { go: (page: string) => void }) {
       startTime: searchStartTime,
       endTime: searchEndTime,
     }))
-    setSelectedCode(roomsFor(id, 1)[0].code)
-  }
-  const selectFloor = (nextFloor: number) => {
-    setFloor(nextFloor)
-    setSelectedCode(roomsFor(buildingId, nextFloor)[0].code)
-  }
-  const continueWithRoom = () => {
-    localStorage.setItem("rpl-selected-room", JSON.stringify(selectedRoom))
-    localStorage.setItem("rpl-selected-room-day", String(selectedDay))
     go("loan-form")
   }
 
@@ -2000,100 +1954,6 @@ function RoomExplorer({ go }: { go: (page: string) => void }) {
           )}
         </div>
       )}
-      <div className="room-progress">
-        <span className="active"><b>1</b>Pilih hari</span><i />
-        <span className="active"><b>2</b>Pilih gedung</span><i />
-        <span className="active"><b>3</b>Pilih lantai & ruangan</span><i />
-        <span><b>4</b>Ajukan peminjaman</span>
-      </div>
-
-      <section className="date-planning">
-        <span className="planning-icon"><Icon name="calendar" /></span>
-        <div><span className="eyebrow">LANGKAH PERTAMA</span><h2>Tentukan hari penggunaan</h2><p>Denah menampilkan pola jadwal mingguan yang berlaku tetap pada hari pilihan.</p></div>
-        <div className="weekday-picker">
-          {[1, 2, 3, 4, 5, 6, 0].map((day) => <button className={selectedDay === day ? "active" : ""} onClick={() => setSelectedDay(day)} key={day}>{dayNames[day]}</button>)}
-        </div>
-      </section>
-
-      <section className="building-picker">
-        <div className="section-title">
-          <div><span className="eyebrow">DIREKTORI RUANG KAMPUS</span><h2>Pilih gedung</h2></div>
-          <p>Tiga gedung tersedia untuk ditelusuri melalui denah interaktif.</p>
-        </div>
-        <div className="building-grid">
-          {campusBuildings.map((item) => (
-            <button
-              className={`building-card ${item.accent} ${buildingId === item.id ? "active" : ""}`}
-              onClick={() => selectBuilding(item.id)}
-              key={item.id}
-            >
-              <span className="building-mark">{item.short}</span>
-              <span><strong>{item.name}</strong><small>{item.floors} lantai · ruang dapat dipesan</small></span>
-              {buildingId === item.id ? <Icon name="check" /> : <Icon name="chevron" />}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <div className="directory-toolbar">
-        <div className="floor-tabs">
-          {Array.from({ length: building.floors }, (_, index) => index + 1).map((item) => (
-            <button className={floor === item ? "active" : ""} onClick={() => selectFloor(item)} key={item}>
-              Lantai {item}
-            </button>
-          ))}
-        </div>
-        <span className="selected-date-label"><Icon name="calendar" size={15} />Jadwal rutin hari {dayNames[selectedDay]}</span>
-      </div>
-
-      <div className="floor-directory">
-        <section className="floor-plan-card">
-          <div className="floor-plan-head">
-            <div><span className="eyebrow">DENAH INTERAKTIF</span><h2>{building.name} · Lantai {floor}</h2><p>Klik ruangan pada denah untuk melihat detail dan jadwalnya.</p></div>
-            <div className="map-legend"><span><i className="legend-room" />Ruangan</span><span><i className="legend-selected" />Dipilih</span></div>
-          </div>
-          <div className="floor-map">
-            {rooms.map((room) => (
-              <button
-                className={`map-room ${room.mapArea} ${selectedRoom.code === room.code ? "selected" : ""}`}
-                onClick={() => setSelectedCode(room.code)}
-                key={room.code}
-              >
-                <span>{room.name}</span><strong>{room.code}</strong><small>{room.capacity} orang</small>
-              </button>
-            ))}
-            <div className="map-corridor"><span>Koridor & area sirkulasi</span><i /><span>Tangga</span></div>
-          </div>
-          <div className="room-list-inline">
-            <span>{rooms.length} ruangan di lantai ini</span>
-            {rooms.map((room) => <button className={selectedRoom.code === room.code ? "active" : ""} onClick={() => setSelectedCode(room.code)} key={room.code}>{room.code}</button>)}
-          </div>
-        </section>
-
-        <aside className="room-detail-panel">
-          <div className="selected-room-head">
-            <span className="eyebrow">RUANG TERPILIH</span>
-            <Badge tone="success">Ada jadwal tersedia</Badge>
-          </div>
-          <h2>{selectedRoom.name}</h2>
-          <strong className="room-code">{selectedRoom.code}</strong>
-          <p className="room-location"><Icon name="grid" size={15} />{selectedRoom.building} · Lantai {selectedRoom.floor}</p>
-          <div className="room-facts">
-            <span><small>Kapasitas</small><strong>{selectedRoom.capacity} orang</strong></span>
-            <span><small>Fasilitas</small><strong>{selectedRoom.facilities.join(" · ")}</strong></span>
-          </div>
-          <div className="schedule-head"><div><h3>Jadwal penggunaan</h3><p>Setiap hari {dayNames[selectedDay]}</p></div><span>Pola mingguan</span></div>
-          <div className="schedule-list">
-            {schedule.map(([time, status, description]) => (
-              <div className={status === "Tersedia" ? "free" : "used"} key={time}>
-                <strong>{time}</strong><span><b>{status}</b><small>{description}</small></span>
-              </div>
-            ))}
-          </div>
-          <Button onClick={continueWithRoom}>Pilih ruangan ini <Icon name="arrow" size={16} /></Button>
-          <small className="availability-note">Ketersediaan diperiksa kembali saat pengajuan dikirim.</small>
-        </aside>
-      </div>
     </div>
   )
 }
@@ -2291,26 +2151,6 @@ function LoanForm({
 
   const targetDay = date ? new Date(`${date}T00:00:00`).getDay() : -1
   const roomConflict = Boolean(date && endTime > startTime) && roomSchedule(room, date).some(([range, status]) => {
-  const [requestType, setRequestType] = useState<"Perkuliahan" | "Organisasi">("Perkuliahan")
-  const [scheduleMode, setScheduleMode] = useState<"Satu kali" | "Jadwal tetap">("Satu kali")
-  const availableAcademicSchedules = getAcademicSchedules()
-  const [scheduleId, setScheduleId] = useState(availableAcademicSchedules[0].id)
-  const [originalDate, setOriginalDate] = useState("")
-  const [date, setDate] = useState("")
-  const selectedRoomDay = Number(localStorage.getItem("rpl-selected-room-day") ?? "1")
-  const selectedRoomDayName = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][selectedRoomDay]
-  const [startTime, setStartTime] = useState("10:00")
-  const [endTime, setEndTime] = useState("12:00")
-  const [organization, setOrganization] = useState("")
-  const [purpose, setPurpose] = useState("")
-  const [proofUploaded, setProofUploaded] = useState(false)
-  const eligibleSchedules = availableAcademicSchedules.filter((item) => item.program === "RPL")
-  const selectedSchedule = eligibleSchedules.find((item) => item.id === scheduleId) ?? eligibleSchedules[0]
-  const originalDayMatches = Boolean(originalDate) && new Date(`${originalDate}T00:00:00`).getDay() === selectedSchedule.day
-  const sourceValid = requestType === "Organisasi" || (Boolean(scheduleId && originalDate) && originalDayMatches)
-  const targetDay = date ? new Date(`${date}T00:00:00`).getDay() : -1
-  const targetDayMatches = Boolean(date) && targetDay === selectedRoomDay
-  const roomConflict = date && endTime > startTime && roomSchedule(room, date).some(([range, status]) => {
     if (status !== "Terpakai") return false
     const [eventStart, eventEnd] = range.split(".").join(":").split("–")
     return timesOverlap(startTime, endTime, eventStart, eventEnd)
@@ -2330,19 +2170,6 @@ function LoanForm({
   const permanentProofValid = !(requestType === "Perkuliahan" && scheduleMode === "Jadwal tetap") || proofUploaded
   const organizationProofValid = requestType !== "Organisasi" || (proofUploaded && permissionProofUploaded)
   const formValid = Boolean(borrowerName.trim() && sourceValid && validSchedule && purpose.trim() && permanentProofValid && organizationProofValid)
-  const academicConflict = requestType === "Perkuliahan" && availableAcademicSchedules.some((item) =>
-    item.id !== selectedSchedule.id &&
-    item.day === targetDay &&
-    (item.className === selectedSchedule.className || item.lecturer === selectedSchedule.lecturer) &&
-    timesOverlap(startTime, endTime, item.startTime, item.endTime),
-  )
-  const validSchedule = Boolean(date && targetDayMatches && startTime && endTime && endTime > startTime && !roomConflict && !academicConflict)
-  const duration = validSchedule
-    ? (Number(endTime.split(":")[0]) * 60 + Number(endTime.split(":")[1]) - Number(startTime.split(":")[0]) * 60 - Number(startTime.split(":")[1])) / 60
-    : 0
-  const isAutomatic = requestType === "Perkuliahan" && scheduleMode === "Satu kali"
-  const permanentProofValid = !(requestType === "Perkuliahan" && scheduleMode === "Jadwal tetap") || proofUploaded
-  const formValid = sourceValid && validSchedule && purpose.trim() && permanentProofValid && (requestType === "Perkuliahan" || organization.trim())
 
   return (
     <div className="page narrow">
@@ -2655,78 +2482,6 @@ function LoanForm({
           {isAutomatic ? "Simpan Pengajuan Peminjaman" : "Kirim untuk Persetujuan Admin"}
           <Icon name="arrow" size={16} />
         </Button>
-        eyebrow="PENGGUNAAN RUANGAN"
-        title="Ajukan Ruangan"
-        text="Pilih kebutuhan perkuliahan atau organisasi. Sistem menerapkan alur persetujuan yang berbeda secara otomatis."
-      />
-      <div className="selected-resource">
-        <span className="resource-thumb"><Icon name="grid" /></span>
-        <div><span className="label">RUANGAN PENGGANTI</span><strong>{room.name} · {room.code}</strong><small>{room.building} · Lantai {room.floor}</small></div>
-        <button onClick={() => go("resources")}>Ubah</button>
-      </div>
-
-      <section className="form-panel">
-        <div className="section-head"><span>01</span><div><h2>Jenis kebutuhan</h2><p>Tentukan konteks penggunaan dan apakah hanya satu pertemuan atau menjadi jadwal tetap.</p></div></div>
-        <div className="request-type-grid">
-          <button className={requestType === "Perkuliahan" ? "active" : ""} onClick={() => setRequestType("Perkuliahan")}><Icon name="users" /><span><strong>Perkuliahan</strong><small>Memindahkan jadwal kelas yang sudah terdaftar.</small></span></button>
-          <button className={requestType === "Organisasi" ? "active" : ""} onClick={() => setRequestType("Organisasi")}><Icon name="calendar" /><span><strong>Kegiatan organisasi</strong><small>Rapat, seminar, pelatihan, atau kepanitiaan.</small></span></button>
-        </div>
-        <div className="schedule-mode">
-          <button className={scheduleMode === "Satu kali" ? "active" : ""} onClick={() => setScheduleMode("Satu kali")}><strong>Satu kali</strong><small>Hanya untuk tanggal yang dipilih</small></button>
-          <button className={scheduleMode === "Jadwal tetap" ? "active" : ""} onClick={() => setScheduleMode("Jadwal tetap")}><strong>Jadwal tetap</strong><small>Berulang dan mengubah jadwal reguler</small></button>
-        </div>
-        <div className={`approval-rule ${isAutomatic ? "automatic" : "admin-required"}`}>
-          <Icon name={isAutomatic ? "check" : "clock"} />
-          <span><strong>{isAutomatic ? "Validasi otomatis — tanpa persetujuan admin" : "Memerlukan persetujuan admin"}</strong><small>{isAutomatic ? "Jika lolos validasi, pertemuan langsung dipindahkan dan slot lama dilepas pada tanggal tersebut." : requestType === "Organisasi" ? "Semua kegiatan organisasi wajib ditinjau admin." : "Perubahan jadwal reguler harus ditinjau admin akademik."}</small></span>
-        </div>
-      </section>
-
-      {requestType === "Perkuliahan" ? <section className="form-panel">
-        <div className="section-head"><span>02</span><div><h2>Validasi jadwal asal</h2><p>Jadwal asal wajib dipilih dari database akademik, tidak dapat dimasukkan secara bebas.</p></div></div>
-        <div className="form-grid">
-          <label className="field full"><span>Jadwal kelas yang diikuti <b>*</b></span><select value={scheduleId} onChange={(event) => { setScheduleId(event.target.value); setOriginalDate("") }}>{eligibleSchedules.map((item) => <option value={item.id} key={item.id}>{item.id} · {item.program} · {item.course} · {item.className} · {item.dayName} {item.startTime}–{item.endTime}</option>)}</select><small className="field-hint">Daftar berasal dari keanggotaan kelas akun mahasiswa, bukan seluruh jadwal kampus.</small></label>
-          <Field label="Tanggal pertemuan yang dipindahkan" type="date" value={originalDate} onChange={setOriginalDate} error={originalDate && !originalDayMatches ? `Tanggal harus jatuh pada hari ${selectedSchedule.dayName}.` : undefined} required />
-          <div className="source-schedule-card"><span><small>Program studi</small><strong>{selectedSchedule.program}</strong></span><span><small>Ruangan asal</small><strong>{selectedSchedule.roomCode}</strong></span><span><small>PJ/Dosen</small><strong>{selectedSchedule.lecturer}</strong></span><span><small>Waktu asal</small><strong>{selectedSchedule.dayName}, {selectedSchedule.startTime}–{selectedSchedule.endTime}</strong></span></div>
-        </div>
-        <div className={`available-check inline ${sourceValid ? "" : "schedule-warning"}`}><Icon name={sourceValid ? "check" : "clock"}/><span><strong>{sourceValid ? "Jadwal asal terverifikasi" : "Jadwal asal belum valid"}</strong>{sourceValid ? `${selectedSchedule.course} terdaftar untuk ${selectedSchedule.className}.` : "Pilih tanggal yang sesuai dengan hari jadwal reguler."}</span></div>
-        {scheduleMode === "Jadwal tetap" && <div className="permanent-proof">
-          <span className="soft-icon"><Icon name="file" /></span>
-          <div><strong>Perubahan tetap harus memiliki dasar akademik</strong><p>Unggah persetujuan PJ mata kuliah/koordinator kelas dan persetujuan program studi. Jika jadwal belum pernah ada, gunakan proses penetapan jadwal baru melalui admin akademik—bukan pemindahan jadwal.</p></div>
-          <label><input type="file" onChange={(event) => setProofUploaded(Boolean(event.target.files?.length))} /><Icon name={proofUploaded ? "check" : "upload"} size={16}/>{proofUploaded ? "Bukti terunggah" : "Unggah bukti"}</label>
-        </div>}
-      </section> : <section className="form-panel">
-        <div className="section-head"><span>02</span><div><h2>Informasi organisasi</h2><p>Semua pengajuan organisasi, satu kali maupun tetap, akan masuk ke admin.</p></div></div>
-        <div className="form-grid"><Field label="Nama organisasi" value={organization} onChange={setOrganization} placeholder="Contoh: Himpunan Mahasiswa RPL" required /><Field label="Nama kegiatan" value={purpose} onChange={setPurpose} placeholder="Contoh: Seminar Teknologi" required /></div>
-        <label className="upload compact-upload"><input type="file"/><span className="upload-icon"><Icon name="upload" /></span><strong>Unggah surat permohonan dan dokumen pendukung</strong><small>PDF, maksimal 5 MB</small></label>
-      </section>}
-
-      <section className="form-panel">
-        <div className="section-head"><span>03</span><div><h2>{requestType === "Perkuliahan" ? "Jadwal pengganti" : "Jadwal kegiatan"}</h2><p>Jam tidak dibatasi satu jam. Isi waktu mulai dan selesai sesuai durasi kegiatan atau jumlah SKS.</p></div></div>
-        <div className="form-grid">
-          <Field label={scheduleMode === "Satu kali" ? `Tanggal penggunaan (${selectedRoomDayName})` : `Tanggal mulai berlaku (${selectedRoomDayName})`} type="date" value={date} onChange={setDate} error={date && !targetDayMatches ? `Tanggal harus jatuh pada hari ${selectedRoomDayName} sesuai pilihan denah.` : undefined} required />
-          <Field label="Waktu mulai" type="time" value={startTime} onChange={setStartTime} required />
-          <Field label="Waktu selesai" type="time" value={endTime} onChange={setEndTime} error={endTime <= startTime ? "Waktu selesai harus setelah waktu mulai." : undefined} required />
-          <Field label="Durasi" value={duration > 0 ? `${duration} jam` : "—"} />
-        </div>
-        {requestType === "Perkuliahan" && <label className="field full"><span>Alasan pemindahan <b>*</b></span><textarea rows={3} value={purpose} onChange={(event) => setPurpose(event.target.value)} placeholder="Jelaskan alasan pemindahan jadwal..." /></label>}
-        <div className={`available-check inline ${validSchedule ? "" : "schedule-warning"}`}><Icon name={validSchedule ? "check" : "clock"}/><span><strong>{validSchedule ? `Rentang ${startTime}–${endTime} tersedia` : !targetDayMatches && date ? `Tanggal bukan hari ${selectedRoomDayName}` : roomConflict ? "Bentrok dengan penggunaan ruangan" : academicConflict ? "Bentrok dengan jadwal kelas atau dosen" : "Lengkapi rentang waktu"}</strong>{validSchedule ? `Durasi ${duration} jam lolos pemeriksaan ruangan, kelas, dan dosen.` : roomConflict || academicConflict || (!targetDayMatches && Boolean(date)) ? "Pilih tanggal, ruangan, atau rentang waktu lain." : "Durasi bebas, tetapi waktu selesai harus setelah waktu mulai."}</span></div>
-      </section>
-
-      <div className="form-footer">
-        <Button variant="outline" onClick={() => go("resources")}>Kembali</Button>
-        <Button disabled={!formValid} onClick={() => onSubmit({
-          resource: `${room.name} (${room.code})`, resourceType: "Ruangan", student: "Alya Rahmadani", date, startTime, endTime,
-          purpose, location: `${room.building}, Lantai ${room.floor}`, requestType, scheduleMode,
-          program: requestType === "Perkuliahan" ? selectedSchedule.program : undefined,
-          course: requestType === "Perkuliahan" ? selectedSchedule.course : organization,
-          className: requestType === "Perkuliahan" ? selectedSchedule.className : undefined,
-          lecturer: requestType === "Perkuliahan" ? selectedSchedule.lecturer : undefined,
-          originalScheduleId: requestType === "Perkuliahan" ? selectedSchedule.id : undefined,
-          originalRoom: requestType === "Perkuliahan" ? selectedSchedule.roomCode : undefined,
-          originalDate: requestType === "Perkuliahan" ? originalDate : undefined,
-          originalStartTime: requestType === "Perkuliahan" ? selectedSchedule.startTime : undefined,
-          originalEndTime: requestType === "Perkuliahan" ? selectedSchedule.endTime : undefined,
-        })}>{isAutomatic ? "Pindahkan Pertemuan" : "Kirim untuk Persetujuan"}<Icon name="arrow" size={16}/></Button>
       </div>
     </div>
   )
@@ -3354,9 +3109,6 @@ function AdminResources({
   const isLoans = page === "admin-loans"
   const isSchedule = page === "admin-schedule"
   const [scheduleViewMode, setScheduleViewMode] = useState<"integrator" | "calendar">("integrator")
-}) {
-  const isLoans = page === "admin-loans"
-  const isSchedule = page === "admin-schedule"
   const [programFilter, setProgramFilter] = useState("Semua prodi")
   const [managedSchedules, setManagedSchedules] = useState<AcademicSchedule[]>(getAcademicSchedules)
   const [showScheduleForm, setShowScheduleForm] = useState(false)
@@ -3502,68 +3254,6 @@ function AdminResources({
             </div>
           </>
         )}
-          eyebrow="KALENDER RUANG TERPUSAT"
-          title="Jadwal & Ketersediaan"
-          text="Pantau jadwal kuliah reguler, pemindahan pertemuan, dan peminjaman organisasi dari satu tampilan."
-          action={<Button icon={showScheduleForm ? "x" : "plus"} onClick={() => setShowScheduleForm((current) => !current)}>{showScheduleForm ? "Tutup Formulir" : "Tambah Jadwal"}</Button>}
-        />
-        {showScheduleForm && <section className="form-panel schedule-create-panel">
-          <div className="section-head"><span><Icon name="calendar" size={16}/></span><div><h2>Tambah jadwal perkuliahan</h2><p>Jadwal yang disimpan langsung menjadi sumber validasi dan ketersediaan ruangan.</p></div></div>
-          <div className="form-grid">
-            <SelectField label="Program studi" value={scheduleDraft.program} options={["RPL","PGSD","PGPAUD","PMM","TEKKOM"]} onChange={(program) => setScheduleDraft((current) => ({ ...current, program }))} required />
-            <Field label="Mata kuliah" value={scheduleDraft.course} onChange={(course) => setScheduleDraft((current) => ({ ...current, course }))} required />
-            <Field label="Kelas" value={scheduleDraft.className} onChange={(className) => setScheduleDraft((current) => ({ ...current, className }))} placeholder="Contoh: RPL 2A" required />
-            <Field label="PJ/Dosen pengampu" value={scheduleDraft.lecturer} onChange={(lecturer) => setScheduleDraft((current) => ({ ...current, lecturer }))} required />
-            <SelectField label="Hari" value={scheduleDraft.dayName} options={["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]} onChange={(dayName) => setScheduleDraft((current) => ({ ...current, dayName }))} required />
-            <Field label="Kode ruangan" value={scheduleDraft.roomCode} onChange={(roomCode) => setScheduleDraft((current) => ({ ...current, roomCode }))} placeholder="Contoh: B.01.001" required />
-            <Field label="Waktu mulai" type="time" value={scheduleDraft.startTime} onChange={(startTime) => setScheduleDraft((current) => ({ ...current, startTime }))} required />
-            <Field label="Waktu selesai" type="time" value={scheduleDraft.endTime} onChange={(endTime) => setScheduleDraft((current) => ({ ...current, endTime }))} error={scheduleDraft.endTime <= scheduleDraft.startTime ? "Waktu selesai harus setelah waktu mulai." : undefined} required />
-          </div>
-          <div className={`available-check inline ${draftConflict ? "schedule-warning" : ""}`}><Icon name={draftConflict ? "clock" : "check"}/><span><strong>{draftConflict ? "Jadwal bentrok" : "Siap disimpan"}</strong>{draftConflict ? `Bentrok dengan ${draftConflict.course} (${draftConflict.program}) di ${draftConflict.roomCode}, kelas, atau dosen yang sama.` : "Sistem akan memeriksa ruangan, kelas, dan dosen sebelum menyimpan."}</span></div>
-          <div className="schedule-form-actions"><Button variant="outline" onClick={() => setShowScheduleForm(false)}>Batal</Button><Button icon="check" disabled={Boolean(draftConflict)} onClick={addSchedule}>Simpan Jadwal</Button></div>
-        </section>}
-        <div className="schedule-admin-stats">
-          <StatCard icon="calendar" tone="blue" label="Jadwal reguler" value={String(visibleSchedules.length)} note={programFilter === "Semua prodi" ? "Seluruh program studi" : `Program studi ${programFilter}`} />
-          <StatCard icon="arrow" tone="sky" label="Pemindahan kelas" value={String(scheduleChanges.length)} note="Sementara & permanen" />
-          <StatCard icon="clock" tone="yellow" label="Menunggu persetujuan" value={String(loans.filter((loan) => loan.status === "Menunggu" && loan.resourceType === "Ruangan").length)} note="Perlu keputusan admin" />
-        </div>
-        <div className="program-filter">
-          <span>Filter program studi</span>
-          <div>{programs.map((program) => <button className={programFilter === program ? "active" : ""} onClick={() => setProgramFilter(program)} key={program}>{program}</button>)}</div>
-        </div>
-        <section className="panel admin-calendar-panel">
-          <div className="panel-head"><div><h2>Jadwal perkuliahan reguler</h2><p>Sumber utama validasi jadwal asal mahasiswa</p></div><Badge tone="info">Database akademik</Badge></div>
-          <div className="admin-week-grid">
-            {["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].map((day) => (
-              <div className="admin-day" key={day}>
-                <div className="admin-day-head"><strong>{day}</strong><span>{visibleSchedules.filter((item) => item.dayName === day).length} kelas</span></div>
-                {visibleSchedules.filter((item) => item.dayName === day).map((item) => (
-                  <article key={item.id}><span>{item.startTime}–{item.endTime}</span><b>{item.program}</b><strong>{item.course}</strong><small>{item.className} · {item.roomCode}</small><small>{item.lecturer}</small></article>
-                ))}
-                {!visibleSchedules.some((item) => item.dayName === day) && <p className="empty-day">Belum ada jadwal</p>}
-              </div>
-            ))}
-          </div>
-        </section>
-        <div className="content-grid">
-          <section className="panel">
-            <div className="panel-head"><div><h2>Perubahan jadwal kelas</h2><p>Slot asal dan slot pengganti tercatat berpasangan</p></div></div>
-            <div className="schedule-change-list">
-              {scheduleChanges.length ? scheduleChanges.map((change) => (
-                <article key={change.id}>
-                  <div><Badge tone={statusTone(change.status)}>{change.status}</Badge><strong>{change.course} · {change.className}</strong><small>{change.program} · {change.scheduleMode} · {change.id}</small></div>
-                  <div className="schedule-swap"><span><small>{change.scheduleMode === "Satu kali" ? "Slot asal dilepas hanya tanggal ini" : "Jadwal reguler lama"}</small><b>{formatDate(change.originalDate ?? "")}<br />{change.originalStartTime}–{change.originalEndTime} · {change.originalRoom}</b></span><Icon name="arrow" /><span><small>{change.scheduleMode === "Satu kali" ? "Pengecualian/pertemuan pengganti" : "Jadwal reguler baru"}</small><b>{formatDate(change.date)}<br />{change.startTime}–{change.endTime} · {change.resource.match(/\((.*?)\)/)?.[1]}</b></span></div>
-                </article>
-              )) : <div className="empty-mini">Belum ada pemindahan jadwal.</div>}
-            </div>
-          </section>
-          <section className="panel">
-            <div className="panel-head"><div><h2>Peminjaman organisasi</h2><p>Slot hanya diblokir setelah disetujui</p></div></div>
-            <div className="schedule-change-list compact">
-              {roomBookings.length ? roomBookings.map((booking) => <article key={booking.id}><div><Badge tone={statusTone(booking.status)}>{booking.status}</Badge><strong>{booking.course || booking.purpose}</strong><small>{booking.resource}</small></div><span className="booking-time">{formatDate(booking.date)}<br/><b>{booking.startTime}–{booking.endTime}</b></span></article>) : <div className="empty-mini">Belum ada peminjaman organisasi.</div>}
-            </div>
-          </section>
-        </div>
       </div>
     )
   }
@@ -4010,7 +3700,6 @@ export default function App() {
     content = <AdminResources page={page} loans={loans} onStatus={updateLoanStatus} go={setPage} />
   else if (page === "admin-mind-mapping")
     content = <AdminMindMapping go={setPage} />
-    content = <AdminResources page={page} loans={loans} onStatus={updateLoanStatus} />
   else if (page === "components") content = <ComponentsPage />
   else if (page === "notifications") content = <NotificationsPage notifications={notifications} onReadAll={() => setNotifications((current) => current.map((item) => ({ ...item, read: true })))} />
   else content = <SettingsPage />
