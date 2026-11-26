@@ -1,20 +1,20 @@
-# PETUNJUK PENGISIAN TEMPLATE KAPRODI UPI KAMPUS CIBIRU:
+# PETUNJUK PENGISIAN TEMPLATE KAPRODI UPI KAMPUS CIBIRU (FORMAT TERBARU 2023/2024):
 # 1. Kolom Program_Studi diisi: RPL, PGSD, PGPAUD, PMM, atau TEKKOM
 # 2. Kolom SKS diisi angka: 2, 3, atau 4
 # 3. Kolom Dosen_2 bersifat opsional (diisi bila Team Teaching 2 dosen)
-# 4. Kolom Kebutuhan_Ruang diisi: Lab Komputer, Lab Khusus, atau Kelas Teori
+# 4. Kolom Kebutuhan_Ruang diisi: Kelas Teori, Lab Komputer, atau Lab Khusus (Generator mengutamakan Kelas Teori ke Ruang Kelas 1-22 Gedung B & E terlebih dahulu, sedangkan yang butuh Lab dapat di-drag ke Laboratorium 23-37)
 # 5. Kolom Hari_Khusus_Dosen diisi jika dosen bersangkutan hanya bisa hari tertentu (contoh: "Senin, Rabu" atau kosong untuk bebas)
 Program_Studi;Kode_MK;Nama_Mata_Kuliah;SKS;Semester;Kelas;Dosen_1;Dosen_2;Kebutuhan_Ruang;Hari_Khusus_Dosen
+RPL;RL205;Rekayasa Perangkat Lunak;3;3;3A;Dr. Dosen C, M.T;Dr. Dosen A, M.Kom;Kelas Teori;
 RPL;RL101;Algoritma dan Pemrograman;4;1;1A;Dr. Dosen A, M.Kom;Dosen C, M.T;Lab Komputer;
 RPL;RL203;Basis Data Terdistribusi;3;3;3A;Prof. Dosen B, M.T;;Lab Komputer;Senin, Rabu
-RPL;RL205;Rekayasa Perangkat Lunak;3;3;3A;Dr. Dosen C, M.T;Dr. Dosen A, M.Kom;Kelas Teori;
 RPL;RL301;Pemrograman Web Lanjut;3;5;5A;Dosen D, M.Kom;;Lab Komputer;Selasa, Kamis
 PGSD;GD103;Pendidikan Bahasa Indonesia SD;3;1;1A;Dr. Dosen E, M.Pd;;Kelas Teori;Selasa, Kamis
 PGSD;GD201;Matematika Dasar SD;3;3;3B;Dosen F, M.Pd;;Kelas Teori;
 PGSD;GD208;Praktikum IPA Terpadu SD;3;3;3A;Dr. Dosen G, M.Pd;Dosen H, M.Pd;Lab Khusus;Rabu, Jumat
-PGPAUD;UD206;Bermain dan Permainan Edukatif;3;3;3A;Dr. Dosen J, M.Pd;;Lab Khusus;Rabu, Jumat
 PGPAUD;UD102;Perkembangan Anak Usia Dini;3;1;1B;Dosen K, M.Pd;;Kelas Teori;
-PMM;PM204;Animasi 2D & 3D Interaktif;4;3;3A;Dr. Dosen M, M.Ds;;Lab Komputer;Senin, Kamis
+PGPAUD;UD206;Bermain dan Permainan Edukatif;3;3;3A;Dr. Dosen J, M.Pd;;Lab Khusus;Rabu, Jumat
 PMM;PM102;Pengantar Multimedia Digital;3;1;1A;Dosen N, M.Ds;;Kelas Teori;
-TEKKOM;CM204;Sistem Tertanam & Robotika;4;3;3A;Dr. Dosen Q, M.Eng;;Lab Khusus;Selasa, Jumat
+PMM;PM204;Animasi 2D & 3D Interaktif;4;3;3A;Dr. Dosen M, M.Ds;;Lab Komputer;Senin, Kamis
 TEKKOM;CM101;Dasar Teknik Komputer;3;1;1A;Dosen R, M.T;;Kelas Teori;
+TEKKOM;CM204;Sistem Tertanam & Robotika;4;3;3A;Dr. Dosen Q, M.Eng;;Lab Khusus;Selasa, Jumat
