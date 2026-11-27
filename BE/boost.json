@@ -1,0 +1,8 @@
+{
+    "agents": [
+        "opencode"
+    ],
+    "guidelines": true,
+    "mcp": false,
+    "skills": false
+}
