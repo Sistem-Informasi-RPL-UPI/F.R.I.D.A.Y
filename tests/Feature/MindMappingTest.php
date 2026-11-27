@@ -11,7 +11,7 @@ class MindMappingTest extends TestCase
      */
     public function test_admin_mind_mapping_blade_page_loads_successfully(): void
     {
-        $response = $this->get('/blade/admin/mind-mapping');
+        $response = $this->get('/admin/komponen-ui');
 
         $response->assertStatus(200);
         $response->assertSee('Mind Mapping Jadwal Perkuliahan');
@@ -56,7 +56,7 @@ class MindMappingTest extends TestCase
      */
     public function test_admin_schedule_blade_page_displays_integrator_banner(): void
     {
-        $response = $this->get('/blade/admin/schedule');
+        $response = $this->get('/admin/jadwal');
 
         $response->assertStatus(200);
         $response->assertSee('Integrasi Template Kaprodi &amp; Mind Mapping Generator', false);

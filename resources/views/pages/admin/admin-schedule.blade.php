@@ -10,7 +10,7 @@
                 <a href="{{ route('admin.schedule.download-template') }}" class="btn btn-outline" download>
                     <x-icon name="download" /> Unduh Template Kaprodi (CSV)
                 </a>
-                <a href="{{ route('blade.admin.mind-mapping') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.komponen-ui') }}" class="btn btn-secondary">
                     <x-icon name="grid" /> Mind Mapping Kampus
                 </a>
                 <a href="{{ url('/') }}" class="btn btn-primary">
@@ -55,15 +55,6 @@
                 </div>
             </div>
         </section>
-
-                <span class="eyebrow">KALENDER RUANG TERPUSAT</span>
-                <h1>Jadwal & Ketersediaan</h1>
-                <p>Pantau jadwal kuliah reguler, pemindahan pertemuan, dan peminjaman organisasi dari satu tampilan.</p>
-            </div>
-            <a href="{{ url('/') }}" class="btn btn-primary">
-                <x-icon name="plus" /> Buka di Mode Interaktif
-            </a>
-        </div>
 
         <div class="schedule-admin-stats">
             <x-stat-card icon="calendar" tone="blue" label="Jadwal reguler" value="16" note="Seluruh program studi" />

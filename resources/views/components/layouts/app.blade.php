@@ -12,28 +12,28 @@
 </head>
 <body>
     @php
-        $role = $role ?? 'student';
-        $activePage = $activePage ?? 'dashboard';
+        $isMahasiswa = request()->is('mahasiswa*');
         
         $studentNav = [
-            ['id' => 'dashboard', 'route' => 'blade.dashboard', 'label' => 'Dashboard', 'icon' => 'grid'],
-            ['id' => 'letters', 'route' => 'blade.letters', 'label' => 'Layanan Pengajuan Surat', 'icon' => 'file'],
-            ['id' => 'resources', 'route' => 'blade.resources', 'label' => 'Peminjaman Barang & Ruangan', 'icon' => 'box'],
-            ['id' => 'letter-history', 'route' => 'blade.history.letters', 'label' => 'Riwayat Pengajuan', 'icon' => 'history'],
-            ['id' => 'loan-history', 'route' => 'blade.history.loans', 'label' => 'Riwayat Peminjaman', 'icon' => 'calendar'],
-            ['id' => 'notifications', 'route' => 'blade.notifications', 'label' => 'Notifikasi', 'icon' => 'bell'],
-            ['id' => 'settings', 'route' => 'blade.settings', 'label' => 'Pengaturan akun', 'icon' => 'settings'],
+            ['id' => 'dashboard', 'route' => 'mahasiswa.dashboard', 'label' => 'Dashboard', 'icon' => 'grid'],
+            ['id' => 'letters', 'route' => 'mahasiswa.surat', 'label' => 'Layanan Pengajuan Surat', 'icon' => 'file'],
+            ['id' => 'resources', 'route' => 'mahasiswa.peminjaman', 'label' => 'Peminjaman Barang & Ruangan', 'icon' => 'box'],
+            ['id' => 'letter-history', 'route' => 'mahasiswa.riwayat-pengajuan', 'label' => 'Riwayat Pengajuan', 'icon' => 'history'],
+            ['id' => 'loan-history', 'route' => 'mahasiswa.riwayat-peminjaman', 'label' => 'Riwayat Peminjaman', 'icon' => 'calendar'],
+            ['id' => 'notifications', 'route' => 'mahasiswa.notifikasi', 'label' => 'Notifikasi', 'icon' => 'bell'],
+            ['id' => 'settings', 'route' => 'mahasiswa.pengaturan', 'label' => 'Pengaturan akun', 'icon' => 'settings'],
         ];
 
         $adminNav = [
-            ['id' => 'admin-dashboard', 'route' => 'blade.admin.dashboard', 'label' => 'Dashboard Admin', 'icon' => 'grid'],
-            ['id' => 'admin-letters', 'route' => 'blade.admin.letters', 'label' => 'Data Pengajuan Surat', 'icon' => 'file'],
-            ['id' => 'admin-resources', 'route' => 'blade.admin.resources', 'label' => 'Manajemen Barang & Ruangan', 'icon' => 'box'],
-            ['id' => 'admin-schedule', 'route' => 'blade.admin.schedule', 'label' => 'Jadwal dan Ketersediaan', 'icon' => 'clock'],
-            ['id' => 'components', 'route' => 'blade.components', 'label' => 'Komponen UI', 'icon' => 'chart'],
+            ['id' => 'admin-dashboard', 'route' => 'admin.dashboard', 'label' => 'Dashboard Admin', 'icon' => 'grid'],
+            ['id' => 'admin-letters', 'route' => 'admin.data-surat', 'label' => 'Data Pengajuan Surat', 'icon' => 'file'],
+            ['id' => 'admin-resources', 'route' => 'admin.manajemen-barang-ruangan', 'label' => 'Manajemen Barang & Ruangan', 'icon' => 'box'],
+            ['id' => 'admin-schedule', 'route' => 'admin.jadwal', 'label' => 'Jadwal dan Ketersediaan', 'icon' => 'clock'],
+            ['id' => 'admin-mind-mapping', 'route' => 'admin.mind-mapping', 'label' => 'Mind Mapping Jadwal', 'icon' => 'chart'],
+            ['id' => 'components', 'route' => 'admin.komponen-ui', 'label' => 'Komponen UI', 'icon' => 'settings'],
         ];
 
-        $navItems = $role === 'student' ? $studentNav : $adminNav;
+        $navItems = $isMahasiswa ? $studentNav : $adminNav;
     @endphp
 
     <div class="app-shell" id="appShell">
@@ -58,7 +58,7 @@
                 @foreach ($navItems as $item)
                     <a
                         href="{{ route($item['route']) }}"
-                        class="nav-item {{ $activePage === $item['id'] ? 'active' : '' }}"
+                        class="nav-item {{ request()->routeIs($item['route']) ? 'active' : '' }}"
                     >
                         <x-icon :name="$item['icon']" />
                         <span>{{ $item['label'] }}</span>
@@ -76,7 +76,7 @@
                 <button type="button" class="btn btn-outline">Pusat Bantuan</button>
             </div>
 
-            <a href="{{ route('blade.login') }}" class="logout">
+            <a href="{{ route('mahasiswa.login') }}" class="logout">
                 <x-icon name="logout" />
                 <span>Keluar</span>
             </a>
@@ -96,19 +96,15 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <a href="{{ $role === 'student' ? route('blade.admin.dashboard') : route('blade.dashboard') }}" class="role-switch">
-                        {{ $role === 'student' ? 'Mode Mahasiswa' : 'Mode Admin' }}
-                        <x-icon name="chevron" :size="15" />
-                    </a>
-                    <a href="{{ route('blade.notifications') }}" class="icon-btn notification" aria-label="Notifikasi">
+                    <a href="{{ route('mahasiswa.notifikasi') }}" class="icon-btn notification" aria-label="Notifikasi">
                         <x-icon name="bell" />
                         <i></i>
                     </a>
                     <div class="profile">
-                        <div class="avatar">{{ $role === 'student' ? 'AR' : 'DP' }}</div>
+                        <div class="avatar">{{ $isMahasiswa ? 'AR' : 'DP' }}</div>
                         <div>
-                            <strong>{{ $role === 'student' ? 'Alya Rahmadani' : 'Dimas Pratama' }}</strong>
-                            <span>{{ $role === 'student' ? 'Mahasiswa · 2201024' : 'Admin Layanan' }}</span>
+                            <strong>{{ $isMahasiswa ? 'Alya Rahmadani' : 'Dimas Pratama' }}</strong>
+                            <span>{{ $isMahasiswa ? 'Mahasiswa · 2201024' : 'Admin Layanan' }}</span>
                         </div>
                         <x-icon name="chevron" :size="16" />
                     </div>
