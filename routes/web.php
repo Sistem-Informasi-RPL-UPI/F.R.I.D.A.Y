@@ -41,13 +41,14 @@ Route::get('/admin/mind-mapping/download-excel', function () {
 })->name('admin.mind-mapping.download-excel');
 
 Route::get('/admin/schedule/download-template', function () {
-    $filePath = public_path('downloads/TEMPLATE_JADWAL_KAPRODI_UPI_CIBIRU.csv');
+    $filePath = public_path('downloads/TEMPLATE_JADWAL_KAPRODI_2023-2024.xlsx');
     if (! file_exists($filePath)) {
-        abort(404, 'File Template CSV Kaprodi belum tersedia.');
+        abort(404, 'File Template Excel Kaprodi belum tersedia.');
     }
 
-    return response()->download($filePath, 'TEMPLATE_JADWAL_KAPRODI_UPI_CIBIRU.csv', [
-        'Content-Type' => 'text/csv; charset=UTF-8',
+    return response()->download($filePath, 'TEMPLATE_JADWAL_KAPRODI_2023-2024.xlsx', [
+        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Cache-Control' => 'no-store, no-cache, must-revalidate',
     ]);
 })->name('admin.schedule.download-template');
 
