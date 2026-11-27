@@ -1,6 +1,6 @@
 <x-layouts.app pageTitle="Formulir Pengajuan Surat" activePage="letters" role="student">
     <div class="page narrow">
-        <a href="{{ route('mahasiswa.surat') }}" class="back">
+        <a href="{{ route('blade.letters') }}" class="back">
             Layanan Pengajuan Surat <x-icon name="chevron" :size="15" /> Formulir Pengajuan
         </a>
         <div class="page-intro">
@@ -118,10 +118,10 @@
         </section>
 
         <div class="form-footer">
-            <a href="{{ route('mahasiswa.surat') }}" class="btn btn-ghost">Batal</a>
+            <a href="{{ route('blade.letters') }}" class="btn btn-ghost">Batal</a>
             <div>
                 <button type="button" class="btn btn-outline">Simpan Draft</button>
-                <a href="{{ route('mahasiswa.riwayat-pengajuan') }}" class="btn btn-primary">
+                <a href="{{ route('blade.history.letters') }}" class="btn btn-primary">
                     Kirim Pengajuan <x-icon name="arrow" :size="16" />
                 </a>
             </div>

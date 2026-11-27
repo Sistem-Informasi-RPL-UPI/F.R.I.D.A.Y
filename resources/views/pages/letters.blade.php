@@ -6,7 +6,7 @@
                 <h1>Layanan Pengajuan Surat</h1>
                 <p>Pilih jenis surat yang kamu butuhkan dan lengkapi persyaratannya secara daring.</p>
             </div>
-            <a href="{{ route('mahasiswa.riwayat-pengajuan') }}" class="btn btn-outline">
+            <a href="{{ route('blade.history.letters') }}" class="btn btn-outline">
                 <x-icon name="history" :size="18" /> Riwayat Surat
             </a>
         </div>
@@ -38,7 +38,7 @@
                         </span>
                     </div>
                 </div>
-                <a href="{{ route('mahasiswa.surat.create') }}" class="btn btn-outline">
+                <a href="{{ route('blade.letters.create') }}" class="btn btn-outline">
                     Ajukan Surat <x-icon name="arrow" :size="16" />
                 </a>
             </article>
@@ -59,7 +59,7 @@
                         </span>
                     </div>
                 </div>
-                <a href="{{ route('mahasiswa.surat.create') }}" class="btn btn-outline">
+                <a href="{{ route('blade.letters.create') }}" class="btn btn-outline">
                     Ajukan Surat <x-icon name="arrow" :size="16" />
                 </a>
             </article>
@@ -80,7 +80,7 @@
                         </span>
                     </div>
                 </div>
-                <a href="{{ route('mahasiswa.surat.create') }}" class="btn btn-outline">
+                <a href="{{ route('blade.letters.create') }}" class="btn btn-outline">
                     Ajukan Surat <x-icon name="arrow" :size="16" />
                 </a>
             </article>

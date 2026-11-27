@@ -6,7 +6,7 @@
                 <h1>Riwayat Peminjaman</h1>
                 <p>Pantau status dan jadwal seluruh permohonan peminjamanmu.</p>
             </div>
-            <a href="{{ route('mahasiswa.peminjaman') }}" class="btn btn-primary">
+            <a href="{{ route('blade.resources') }}" class="btn btn-primary">
                 <x-icon name="box" /> Ajukan Peminjaman
             </a>
         </div>

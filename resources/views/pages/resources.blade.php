@@ -6,7 +6,7 @@
                 <h1>Peminjaman Barang & Ruangan</h1>
                 <p>Temukan barang atau ruangan laboratorium, lalu cek ketersediaannya sebelum mengajukan.</p>
             </div>
-            <a href="{{ route('mahasiswa.riwayat-peminjaman') }}" class="btn btn-outline">
+            <a href="{{ route('blade.history.loans') }}" class="btn btn-outline">
                 <x-icon name="history" /> Riwayat Peminjaman
             </a>
         </div>
@@ -50,7 +50,7 @@
                         <span>Ketersediaan</span>
                         <strong>3 dari 5 unit</strong>
                     </div>
-                    <a href="{{ route('mahasiswa.riwayat-peminjaman') }}" class="btn btn-outline">
+                    <a href="{{ route('blade.history.loans') }}" class="btn btn-outline">
                         Pinjam Barang <x-icon name="arrow" :size="16" />
                     </a>
                 </div>

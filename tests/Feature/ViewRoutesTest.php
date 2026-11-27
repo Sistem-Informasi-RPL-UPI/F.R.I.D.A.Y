@@ -9,43 +9,45 @@ class ViewRoutesTest extends TestCase
     public function test_react_home_view_is_successful(): void
     {
         $response = $this->get('/');
-        $response->assertStatus(302);
-        $response->assertRedirect('/mahasiswa/dashboard');
+        $response->assertStatus(200);
+        $response->assertSee('<div id="root"></div>', false);
     }
 
-    public function test_mahasiswa_dashboard_view_is_successful(): void
+    public function test_blade_dashboard_view_is_successful(): void
     {
-        $response = $this->get('/mahasiswa/dashboard');
+        $response = $this->get('/blade/dashboard');
         $response->assertStatus(200);
         $response->assertSee('Sistem Informasi RPL');
-        // $response->assertSee('Halo, Alya Rahmadani'); // Need to check if this string still exists in the view
+        $response->assertSee('Halo, Alya Rahmadani');
     }
 
-    public function test_mahasiswa_letters_views_are_successful(): void
+    public function test_blade_letters_views_are_successful(): void
     {
-        $this->get('/mahasiswa/pengajuan-surat')->assertStatus(200)->assertSee('Layanan Pengajuan Surat');
+        $this->get('/blade/letters')->assertStatus(200)->assertSee('Layanan Pengajuan Surat');
+        $this->get('/blade/letters/create')->assertStatus(200)->assertSee('Formulir Pengajuan Surat');
+        $this->get('/blade/letters/detail')->assertStatus(200)->assertSee('Surat Pengantar Magang');
     }
 
-    public function test_mahasiswa_resources_and_history_views_are_successful(): void
+    public function test_blade_resources_and_history_views_are_successful(): void
     {
-        // $this->get('/mahasiswa/peminjaman')->assertStatus(200)->assertSee('Peminjaman Barang & Ruangan');
-        $this->get('/mahasiswa/riwayat-pengajuan')->assertStatus(200)->assertSee('Riwayat Pengajuan');
-        $this->get('/mahasiswa/riwayat-peminjaman')->assertStatus(200)->assertSee('Riwayat Peminjaman');
+        $this->get('/blade/resources')->assertStatus(200)->assertSee('Peminjaman Barang & Ruangan');
+        $this->get('/blade/history/letters')->assertStatus(200)->assertSee('Riwayat Pengajuan Surat');
+        $this->get('/blade/history/loans')->assertStatus(200)->assertSee('Riwayat Peminjaman');
     }
 
     public function test_blade_admin_views_are_successful(): void
     {
-        $this->get('/admin/dashboard')->assertStatus(200)->assertSee('Dashboard Admin');
-        $this->get('/admin/data-surat')->assertStatus(200)->assertSee('Data Pengajuan Surat');
-        $this->get('/admin/manajemen-barang-ruangan')->assertStatus(200)->assertSee('Manajemen Barang & Ruangan');
-        $this->get('/admin/jadwal')->assertStatus(200)->assertSee('Jadwal');
+        $this->get('/blade/admin')->assertStatus(200)->assertSee('Dashboard Admin');
+        $this->get('/blade/admin/letters')->assertStatus(200)->assertSee('Data Pengajuan Surat');
+        $this->get('/blade/admin/resources')->assertStatus(200)->assertSee('Manajemen Barang & Ruangan');
+        $this->get('/blade/admin/schedule')->assertStatus(200)->assertSee('Jadwal & Ketersediaan');
     }
 
     public function test_blade_additional_views_are_successful(): void
     {
-        $this->get('/mahasiswa/notifikasi')->assertStatus(200)->assertSee('Notifikasi');
-        $this->get('/mahasiswa/pengaturan')->assertStatus(200)->assertSee('Pengaturan akun');
-        // $this->get('/admin/komponen-ui')->assertStatus(200)->assertSee('Komponen UI');
-        $this->get('/mahasiswa/login')->assertStatus(200)->assertSee('Masuk');
+        $this->get('/blade/notifications')->assertStatus(200)->assertSee('Notifikasi');
+        $this->get('/blade/settings')->assertStatus(200)->assertSee('Pengaturan Akun');
+        $this->get('/blade/components')->assertStatus(200)->assertSee('Komponen UI');
+        $this->get('/blade/login')->assertStatus(200)->assertSee('Masuk ke Akun');
     }
 }
