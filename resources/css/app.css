@@ -1087,13 +1087,24 @@ table.mind-mapping-table {
 .mind-mapping-table thead tr:nth-child(2) th {
   background: #0f172a;
   color: #38bdf8;
-  border-bottom: 2px solid #475569;
+  border-bottom: 1px solid #334155;
   border-right: 1px solid #334155;
-  padding: 8px 10px;
-  font-size: 12px;
+  padding: 6px 8px;
+  font-size: 11.5px;
   font-weight: 800;
   text-align: center;
-  min-width: 110px;
+  min-width: 122px;
+}
+
+.mind-mapping-table thead tr.header-row-num th {
+  background: #090e1a;
+  color: #94a3b8;
+  border-bottom: 2px solid #475569;
+  border-right: 1px solid #334155;
+  padding: 4px 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: center;
 }
 
 .mind-mapping-table th.col-sticky-1,
@@ -1107,14 +1118,121 @@ table.mind-mapping-table {
 .mind-mapping-table th.col-sticky-2,
 .mind-mapping-table td.col-sticky-2 {
   position: sticky;
-  left: 70px;
+  left: 68px;
+  z-index: 50;
+  background: #0f172a;
+}
+
+.mind-mapping-table th.col-sticky-3,
+.mind-mapping-table td.col-sticky-3 {
+  position: sticky;
+  left: 168px;
   z-index: 50;
   background: #0f172a;
 }
 
 .mind-mapping-table thead th.col-sticky-1,
-.mind-mapping-table thead th.col-sticky-2 {
+.mind-mapping-table thead th.col-sticky-2,
+.mind-mapping-table thead th.col-sticky-3 {
   z-index: 60;
+}
+
+.mind-mapping-table tbody td.col-pos {
+  background: #0f172a;
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 11px;
+  text-align: center;
+  vertical-align: middle;
+  border-right: 2px solid #334155;
+  width: 38px;
+}
+
+.mind-mapping-table td.matrix-drop-cell:hover {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.mind-mapping-table td.is-drag-valid {
+  background: rgba(34, 197, 94, 0.24) !important;
+  outline: 2.5px solid #22c55e;
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.5);
+}
+
+.mind-mapping-table td.is-drag-invalid {
+  background: rgba(239, 68, 68, 0.26) !important;
+  outline: 2.5px solid #ef4444;
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.55);
+  cursor: not-allowed;
+}
+
+/* Parkir Jadwal (Tempat Simpan Sementara) */
+.parking-dock {
+  background: #f8fafc;
+  border: 2px dashed #94a3b8;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  transition: all 0.15s ease;
+}
+
+.parking-dock.drag-over {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.parking-dock-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.parking-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+  gap: 8px;
+}
+
+.parking-card {
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: grab;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.12s ease;
+}
+
+.parking-card:active {
+  cursor: grabbing;
+}
+
+.parking-card:hover {
+  transform: translateY(-1px);
+}
+
+.parking-empty-slot {
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 8px;
+  min-height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  background: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  gap: 2px;
+}
+
+.parking-empty-slot small {
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-weight: 500;
 }
 
 .mind-mapping-table tbody td {

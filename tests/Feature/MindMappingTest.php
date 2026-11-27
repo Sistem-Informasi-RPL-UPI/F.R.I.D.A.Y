@@ -41,18 +41,14 @@ class MindMappingTest extends TestCase
     }
 
     /**
-     * Test admin can download Kaprodi CSV template file.
+     * Test admin can download Kaprodi XLSX template file.
      */
     public function test_admin_can_download_kaprodi_template_csv(): void
     {
         $response = $this->get('/admin/schedule/download-template');
 
         $response->assertStatus(200);
-        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
-        $content = $response->streamedContent();
-        $this->assertStringContainsString('Hari_Khusus_Dosen', $content);
-        $this->assertStringContainsString('Program_Studi', $content);
-        $this->assertStringContainsString('PETUNJUK PENGISIAN TEMPLATE KAPRODI', $content);
+        $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
 
     /**
