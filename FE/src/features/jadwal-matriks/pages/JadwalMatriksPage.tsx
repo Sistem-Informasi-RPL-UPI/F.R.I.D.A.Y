@@ -7,6 +7,7 @@ import {
   buildOfflineHtmlDocument,
   exportMatrixImage,
   getProdiCardClass,
+  TOTAL_POS,
   triggerBlobDownload,
   useJadwalStore,
   type CandidateSegmentInput,
@@ -1060,18 +1061,20 @@ export function JadwalMatriksPage() {
                 </FormField>
               </div>
               <div className="ds-col-4">
-                <FormField id="q-pos" label="Pos Awal (1–14)">
+                <FormField id="q-pos" label={`Pos Awal (1–${TOTAL_POS})`}>
                   <select
                     id="q-pos"
                     className="ds-select"
                     value={quickPos}
                     onChange={(e) => setQuickPos(Number(e.target.value))}
                   >
-                    {Array.from({ length: 14 }, (_, i) => i + 1).map((p) => (
-                      <option key={p} value={p}>
-                        Pos {p}
-                      </option>
-                    ))}
+                    {Array.from({ length: TOTAL_POS }, (_, i) => i + 1).map(
+                      (p) => (
+                        <option key={p} value={p}>
+                          Pos {p}
+                        </option>
+                      ),
+                    )}
                   </select>
                 </FormField>
               </div>

@@ -133,6 +133,7 @@ export interface JadwalStoreContextValue {
     fileName?: string,
   ) => {
     acceptedCount: number;
+    autoRegisteredDosenCount: number;
     pendingDosenCount: number;
     rejectedCount: number;
     rejectedReasons: string[];
@@ -152,6 +153,10 @@ export interface JadwalStoreContextValue {
     courseId: number,
     input: { kodeDosen1: string; kodeDosen2?: string | null },
   ) => { ok: boolean; error?: string };
+  autoRegisterAllPendingLecturers: () => {
+    registeredLecturersCount: number;
+    resolvedCoursesCount: number;
+  };
   deleteCourse: (courseId: number) => void;
   clearAllCourses: () => void;
   generateSchedule: () => AuditReport;
@@ -196,7 +201,7 @@ const INITIAL_DOSEN: RawDosenRecord[] = [
       kodeDosen: 'DSN001',
       hari: [...WORK_DAYS],
       startTime: '07:00',
-      endTime: '18:00',
+      endTime: '17:00',
       isCustom: false,
     },
   },
@@ -220,7 +225,7 @@ const INITIAL_DOSEN: RawDosenRecord[] = [
       kodeDosen: 'DSN003',
       hari: [...WORK_DAYS],
       startTime: '07:00',
-      endTime: '18:00',
+      endTime: '17:00',
       isCustom: false,
     },
   },
@@ -533,7 +538,9 @@ function evaluatePlacementAgainstList(
           };
         }
         const allowStart = timeToMinutes(k.startTime);
-        const allowEnd = timeToMinutes(k.endTime);
+        // Allow 10-minute grace for 17:00 default end time so Pos 11 (16:20-17:10 at 50m/SKS) remains valid
+        const rawEnd = timeToMinutes(k.endTime);
+        const allowEnd = k.endTime === '17:00' ? rawEnd + 10 : rawEnd;
         if (segStart < allowStart || segEnd > allowEnd) {
           return {
             valid: false,
@@ -605,60 +612,143 @@ function evaluatePlacementAgainstList(
 
 const JadwalStoreContext = createContext<JadwalStoreContextValue | null>(null);
 
+function loadInitialState(): {
+  dosen: RawDosenRecord[];
+  courses: RawCourseRecord[];
+  pengaturanWaktu: PengaturanWaktu;
+} {
+  let dosen: RawDosenRecord[] = INITIAL_DOSEN;
+  let courses: RawCourseRecord[] = INITIAL_COURSES;
+  let pengaturanWaktu: PengaturanWaktu = DEFAULT_SETTINGS;
+
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as {
+          dosen?: RawDosenRecord[];
+          courses?: RawCourseRecord[];
+          pengaturanWaktu?: PengaturanWaktu;
+        };
+        if (Array.isArray(parsed.dosen) && parsed.dosen.length > 0) {
+          dosen = parsed.dosen.map((d) => ({
+            ...d,
+            ketersediaan: {
+              ...d.ketersediaan,
+              endTime:
+                !d.ketersediaan.isCustom && d.ketersediaan.endTime === '18:00'
+                  ? '17:00'
+                  : d.ketersediaan.endTime,
+            },
+          }));
+        }
+        if (Array.isArray(parsed.courses)) {
+          courses = parsed.courses.map((c) => {
+            const validSegs = (c.segments ?? []).every(
+              (s) => s.pos + s.len - 1 <= TOTAL_POS,
+            );
+            return validSegs
+              ? c
+              : {
+                  ...c,
+                  segments: [],
+                  parkedReason:
+                    'Dikembalikan ke parkir karena penyesuaian batas jam sore (07:00–17:00)',
+                };
+          });
+        }
+        if (parsed.pengaturanWaktu) {
+          pengaturanWaktu = parsed.pengaturanWaktu;
+        }
+      }
+    } catch {
+      // Fallback to initial seed
+    }
+  }
+
+  // Auto-migrate any pending_dosen rows so their lecturers are automatically added to Kelola Dosen
+  if (courses.some((c) => c.statusAntrean === 'pending_dosen')) {
+    const nextDosen = [...dosen];
+    const usedCodes = new Set(nextDosen.map((d) => d.kode.toUpperCase()));
+    let seq = nextDosen.length + 1;
+
+    const registerIfMissing = (rawText: string | null): string | null => {
+      const clean = (rawText ?? '').trim();
+      if (
+        !clean ||
+        clean === '-' ||
+        clean === 'Dosen 1 kosong' ||
+        clean === 'Dosen kosong (dihapus)'
+      ) {
+        return null;
+      }
+      const existing = matchDosenByCodeOrName(clean, nextDosen);
+      if (existing) return existing.kode;
+
+      const codePrefixMatch = /^([A-Z]{1,6}\d{1,5})\s*[-–:]\s*(.+)$/i.exec(
+        clean,
+      );
+      let kode = codePrefixMatch?.[1]?.toUpperCase() ?? '';
+      const nama = codePrefixMatch?.[2]?.trim() || clean;
+
+      if (!kode || usedCodes.has(kode)) {
+        do {
+          kode = `DSN${String(seq++).padStart(3, '0')}`;
+        } while (usedCodes.has(kode));
+      }
+
+      usedCodes.add(kode);
+      nextDosen.push({
+        kode,
+        nama,
+        status: 'Dosen Tetap',
+        ketersediaan: {
+          kodeDosen: kode,
+          hari: [...WORK_DAYS],
+          startTime: '07:00',
+          endTime: '17:00',
+          isCustom: false,
+        },
+      });
+      return kode;
+    };
+
+    courses = courses.map((mk) => {
+      if (mk.statusAntrean !== 'pending_dosen') return mk;
+      const k1 =
+        mk.kodeDosen1 ??
+        registerIfMissing(mk.rawDosen1) ??
+        nextDosen[0]?.kode ??
+        null;
+      const k2 =
+        mk.kodeDosen2 ??
+        (mk.rawDosen2 ? registerIfMissing(mk.rawDosen2) : null);
+      if (!k1) return mk;
+      return {
+        ...mk,
+        kodeDosen1: k1,
+        kodeDosen2: k2 && k2 !== k1 ? k2 : null,
+        rawDosen1: null,
+        rawDosen2: null,
+        statusAntrean: 'ready' as const,
+      };
+    });
+    dosen = nextDosen;
+  }
+
+  return { dosen, courses, pengaturanWaktu };
+}
+
 export function JadwalProvider({ children }: { children: ReactNode }) {
-  const [rawDosen, setRawDosen] = useState<RawDosenRecord[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = window.localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved) as { dosen?: RawDosenRecord[] };
-          if (Array.isArray(parsed.dosen) && parsed.dosen.length > 0) {
-            return parsed.dosen;
-          }
-        }
-      } catch {
-        // Fallback to initial seed
-      }
-    }
-    return INITIAL_DOSEN;
-  });
-
-  const [rawCourses, setRawCourses] = useState<RawCourseRecord[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = window.localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved) as { courses?: RawCourseRecord[] };
-          if (Array.isArray(parsed.courses)) {
-            return parsed.courses;
-          }
-        }
-      } catch {
-        // Fallback to initial seed
-      }
-    }
-    return INITIAL_COURSES;
-  });
-
+  const [initialState] = useState(loadInitialState);
+  const [rawDosen, setRawDosen] = useState<RawDosenRecord[]>(
+    initialState.dosen,
+  );
+  const [rawCourses, setRawCourses] = useState<RawCourseRecord[]>(
+    initialState.courses,
+  );
   const [pengaturanWaktu, setPengaturanWaktu] = useState<PengaturanWaktu>(
-    () => {
-      if (typeof window !== 'undefined') {
-        try {
-          const saved = window.localStorage.getItem(STORAGE_KEY);
-          if (saved) {
-            const parsed = JSON.parse(saved) as {
-              pengaturanWaktu?: PengaturanWaktu;
-            };
-            if (parsed.pengaturanWaktu) {
-              return parsed.pengaturanWaktu;
-            }
-          }
-        } catch {
-          // Fallback
-        }
-      }
-      return DEFAULT_SETTINGS;
-    },
+    initialState.pengaturanWaktu,
   );
 
   const [lastAudit, setLastAudit] = useState<AuditReport | null>(null);
@@ -804,7 +894,7 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
           kodeDosen: kode,
           hari: [...WORK_DAYS],
           startTime: '07:00',
-          endTime: '18:00',
+          endTime: '17:00',
           isCustom: false,
         },
       };
@@ -1029,7 +1119,7 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
         };
       }
       const startTime = input.startTime ?? '07:00';
-      const endTime = input.endTime ?? '18:00';
+      const endTime = input.endTime ?? '17:00';
       if (timeToMinutes(startTime) >= timeToMinutes(endTime)) {
         return {
           ok: false,
@@ -1041,7 +1131,7 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
         hari.length === WORK_DAYS.length &&
         WORK_DAYS.every((wd) => hari.includes(wd)) &&
         startTime === '07:00' &&
-        endTime === '18:00';
+        endTime === '17:00';
 
       setRawDosen((prev) =>
         prev.map((d) =>
@@ -1084,9 +1174,104 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
         ),
       );
 
+      const nextDosenList = [...rawDosen];
+      const usedDosenCodes = new Set(
+        nextDosenList.map((d) => d.kode.toUpperCase()),
+      );
+      let dosenSeq = nextDosenList.length + 1;
+      let autoRegisteredDosenCount = 0;
+
+      function resolveOrAutoCreateDosen(
+        rawNameOrCode: string,
+        explicitCode?: string,
+      ): string | null {
+        const cleanCode = (explicitCode ?? '').trim().toUpperCase();
+        const cleanName = rawNameOrCode.trim();
+        if (
+          (!cleanCode || cleanCode === '-') &&
+          (!cleanName || cleanName === '-')
+        ) {
+          return null;
+        }
+
+        // 1. If explicit code is provided (from Kode Dosen 1 / Kode Dosen 2 column)
+        if (cleanCode && cleanCode !== '-') {
+          const existingByCode = nextDosenList.find(
+            (d) => d.kode.toUpperCase() === cleanCode,
+          );
+          if (existingByCode) {
+            // If existing lecturer only had a placeholder name equal to its code and now we have a full name, enrich it
+            if (
+              cleanName &&
+              cleanName !== '-' &&
+              existingByCode.nama.toUpperCase() === existingByCode.kode
+            ) {
+              existingByCode.nama = cleanName;
+            }
+            return existingByCode.kode;
+          }
+
+          const nama = cleanName && cleanName !== '-' ? cleanName : cleanCode;
+          usedDosenCodes.add(cleanCode);
+          autoRegisteredDosenCount++;
+          nextDosenList.push({
+            kode: cleanCode,
+            nama,
+            status: 'Dosen Tetap',
+            ketersediaan: {
+              kodeDosen: cleanCode,
+              hari: [...WORK_DAYS],
+              startTime: '07:00',
+              endTime: '18:00',
+              isCustom: false,
+            },
+          });
+          return cleanCode;
+        }
+
+        // 2. Otherwise match by code or name from single cell (9-column backward compatibility)
+        const matched = matchDosenByCodeOrName(cleanName, nextDosenList);
+        if (matched) return matched.kode;
+
+        const codePrefixMatch = /^([A-Z]{1,6}\d{1,5})\s*[-–:]\s*(.+)$/i.exec(
+          cleanName,
+        );
+        let kode = codePrefixMatch?.[1]?.toUpperCase() ?? '';
+        const nama = codePrefixMatch?.[2]?.trim() || cleanName;
+
+        if (!kode || usedDosenCodes.has(kode)) {
+          if (
+            /^[A-Z]{2,6}\d{1,5}$/i.test(cleanName) &&
+            !usedDosenCodes.has(cleanName.toUpperCase())
+          ) {
+            kode = cleanName.toUpperCase();
+          } else {
+            do {
+              kode = `DSN${String(dosenSeq++).padStart(3, '0')}`;
+            } while (usedDosenCodes.has(kode));
+          }
+        }
+
+        usedDosenCodes.add(kode);
+        autoRegisteredDosenCount++;
+        nextDosenList.push({
+          kode,
+          nama,
+          status: 'Dosen Tetap',
+          ketersediaan: {
+            kodeDosen: kode,
+            hari: [...WORK_DAYS],
+            startTime: '07:00',
+            endTime: '18:00',
+            isCustom: false,
+          },
+        });
+        return kode;
+      }
+
       const newRecords: RawCourseRecord[] = [];
       let acceptedCount = 0;
-      let pendingDosenCount = 0;
+      const pendingDosenCount = 0;
       const rejectedReasons: string[] = [];
 
       for (const row of rows) {
@@ -1104,14 +1289,15 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
           continue;
         }
 
-        const matched1 = matchDosenByCodeOrName(row.dosen1, rawDosen);
-        const matched2 = row.dosen2
-          ? matchDosenByCodeOrName(row.dosen2, rawDosen)
-          : null;
-
-        const d1Missing = !row.dosen1.trim() || !matched1;
-        const d2Missing = Boolean(row.dosen2.trim()) && !matched2;
-        const isPending = d1Missing || d2Missing;
+        const kodeDosen1 =
+          resolveOrAutoCreateDosen(row.dosen1, row.kodeDosen1) ??
+          resolveOrAutoCreateDosen('Dosen Pengampu');
+        const rawCode2 =
+          row.dosen2 || row.kodeDosen2
+            ? resolveOrAutoCreateDosen(row.dosen2, row.kodeDosen2)
+            : null;
+        const kodeDosen2 =
+          rawCode2 && rawCode2 !== kodeDosen1 ? rawCode2 : null;
 
         const splitClasses = splitCombinedClasses(row.kelas);
         for (const kelas of splitClasses) {
@@ -1140,23 +1326,23 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
             sks,
             semester,
             kelas,
-            kodeDosen1: matched1?.kode ?? null,
-            kodeDosen2: matched2?.kode ?? null,
-            rawDosen1: d1Missing ? row.dosen1 || 'Dosen 1 kosong' : null,
-            rawDosen2: d2Missing ? row.dosen2 : null,
+            kodeDosen1,
+            kodeDosen2,
+            rawDosen1: null,
+            rawDosen2: null,
             kebutuhanRuang,
-            statusAntrean: isPending ? 'pending_dosen' : 'ready',
+            statusAntrean: 'ready',
             segments: [],
             parkedReason,
             sourceFile: row.sourceFile || fileName,
           });
 
-          if (isPending) {
-            pendingDosenCount++;
-          } else {
-            acceptedCount++;
-          }
+          acceptedCount++;
         }
+      }
+
+      if (autoRegisteredDosenCount > 0) {
+        setRawDosen(nextDosenList);
       }
 
       if (newRecords.length > 0) {
@@ -1176,6 +1362,7 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
 
       return {
         acceptedCount,
+        autoRegisteredDosenCount,
         pendingDosenCount,
         rejectedCount: rejectedReasons.length,
         rejectedReasons,
@@ -1326,6 +1513,84 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
     },
     [rawDosen],
   );
+
+  const autoRegisterAllPendingLecturers = useCallback(() => {
+    const nextDosen = [...rawDosen];
+    const usedCodes = new Set(nextDosen.map((d) => d.kode.toUpperCase()));
+    let seq = nextDosen.length + 1;
+    let registeredLecturersCount = 0;
+
+    function ensureLecturerRegistered(rawText: string | null): string | null {
+      const clean = (rawText ?? '').trim();
+      if (!clean || clean === '-' || clean === 'Dosen 1 kosong') return null;
+
+      const existing = matchDosenByCodeOrName(clean, nextDosen);
+      if (existing) return existing.kode;
+
+      // Check if rawText starts with a code like "DSN015 - Nama" or "D015 Nama"
+      const codePrefixMatch = /^([A-Z]{1,6}\d{1,5})\s*[-–:]?\s*(.+)$/i.exec(
+        clean,
+      );
+      let kode = codePrefixMatch?.[1]?.toUpperCase() ?? '';
+      const nama = codePrefixMatch?.[2]?.trim() || clean;
+
+      if (!kode || usedCodes.has(kode)) {
+        do {
+          kode = `DSN${String(seq++).padStart(3, '0')}`;
+        } while (usedCodes.has(kode));
+      }
+
+      usedCodes.add(kode);
+      registeredLecturersCount++;
+      nextDosen.push({
+        kode,
+        nama,
+        status: 'Dosen Tetap',
+        ketersediaan: {
+          kodeDosen: kode,
+          hari: [...WORK_DAYS],
+          startTime: '07:00',
+          endTime: '17:00',
+          isCustom: false,
+        },
+      });
+      return kode;
+    }
+
+    let resolvedCoursesCount = 0;
+    const nextCourses = rawCourses.map((mk) => {
+      if (mk.statusAntrean !== 'pending_dosen') return mk;
+      const kode1 =
+        mk.kodeDosen1 ??
+        ensureLecturerRegistered(mk.rawDosen1) ??
+        nextDosen[0]?.kode ??
+        null;
+      const kode2 =
+        mk.kodeDosen2 ??
+        (mk.rawDosen2 ? ensureLecturerRegistered(mk.rawDosen2) : null);
+
+      if (kode1) {
+        resolvedCoursesCount++;
+        return {
+          ...mk,
+          kodeDosen1: kode1,
+          kodeDosen2: kode2 && kode2 !== kode1 ? kode2 : null,
+          rawDosen1: null,
+          rawDosen2: null,
+          statusAntrean: 'ready' as const,
+        };
+      }
+      return mk;
+    });
+
+    setRawDosen(nextDosen);
+    setRawCourses(nextCourses);
+
+    return {
+      registeredLecturersCount,
+      resolvedCoursesCount,
+    };
+  }, [rawCourses, rawDosen]);
 
   const deleteCourse = useCallback((courseId: number) => {
     setRawCourses((prev) => prev.filter((c) => c.id !== courseId));
@@ -1724,7 +1989,7 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    const maxAutoPos = 12;
+    const maxAutoPos = TOTAL_POS;
 
     for (const mk of [...stage1, ...stage2]) {
       const codes = [mk.kodeDosen1, mk.kodeDosen2].filter(Boolean) as string[];
@@ -1732,7 +1997,7 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
 
       let allowedDays: DayName[] = [...WORK_DAYS];
       let winStart = timeToMinutes('07:00');
-      let winEnd = timeToMinutes('18:00');
+      let winEnd = timeToMinutes('17:00') + 10;
 
       codes.forEach((code, idx) => {
         const k = dosenMap.get(code)?.ketersediaan;
@@ -1743,7 +2008,9 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
           allowedDays = allowedDays.filter((d) => dDays.includes(d));
         }
         winStart = Math.max(winStart, timeToMinutes(k?.startTime ?? '07:00'));
-        winEnd = Math.min(winEnd, timeToMinutes(k?.endTime ?? '18:00'));
+        const endStr = k?.endTime ?? '17:00';
+        const rawEnd = timeToMinutes(endStr) + (endStr === '17:00' ? 10 : 0);
+        winEnd = Math.min(winEnd, rawEnd);
       });
 
       if (allowedDays.length === 0 || winStart >= winEnd) {
@@ -1888,11 +2155,8 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
     for (const [code, byDay] of Object.entries(lecturerDailySks)) {
       const d = dosenMap.get(code);
       const allowed = d?.ketersediaan.hari ?? [...WORK_DAYS];
-      const vals = allowed.map((day) => byDay[day] ?? 0);
-      const maxSks = vals.length > 0 ? Math.max(...vals) : 0;
-      const minSks = vals.length > 0 ? Math.min(...vals) : 0;
-      const diff = maxSks - minSks;
-      maxDailyDiff = Math.max(maxDailyDiff, diff);
+      const allVals = allowed.map((day) => byDay[day] ?? 0);
+      const activeVals = allVals.filter((v) => v > 0);
 
       const roomMap = lecturerRoomUses[code] ?? {};
       const totalClasses = Object.values(roomMap).reduce((a, b) => a + b, 0);
@@ -1901,12 +2165,29 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
         singleRoomLecturersCount++;
       }
 
+      // Compare across active teaching days when lecturer teaches fewer classes than available days,
+      // or across all allowed days if classes were stacked onto fewer days than available.
+      const stackedWhenEmptyDayAvailable =
+        totalClasses > activeVals.length && activeVals.length < allowed.length;
+      const comparisonVals =
+        stackedWhenEmptyDayAvailable || activeVals.length === 0
+          ? allVals
+          : activeVals;
+
+      const maxSks =
+        comparisonVals.length > 0 ? Math.max(...comparisonVals) : 0;
+      const minSks =
+        comparisonVals.length > 0 ? Math.min(...comparisonVals) : 0;
+      const diff = maxSks - minSks;
+      maxDailyDiff = Math.max(maxDailyDiff, diff);
+
       let catatan: string | null = null;
-      if (diff > 2) {
+      // Only report a balancing warning when a lecturer has >= 2 classes and an actual imbalance (> 3 SKS or stacked days)
+      if (totalClasses >= 2 && diff > 3) {
         catatan =
           allowed.length <= 1
             ? 'Dosen hanya mengizinkan 1 hari mengajar.'
-            : 'Dipengaruhi bobot SKS mata kuliah atau slot bebas bentrok cohort.';
+            : 'Beban SKS menumpuk di hari tertentu karena keterbatasan slot bebas bentrok cohort.';
         balancingNotes.push({
           kodeDosen: code,
           namaDosen: d?.nama ?? code,
@@ -2010,6 +2291,7 @@ export function JadwalProvider({ children }: { children: ReactNode }) {
     importCourseRows,
     addManualCourse,
     mapPendingCourseLecturers,
+    autoRegisterAllPendingLecturers,
     deleteCourse,
     clearAllCourses,
     generateSchedule,

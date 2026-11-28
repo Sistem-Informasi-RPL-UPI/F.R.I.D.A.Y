@@ -188,7 +188,7 @@ export interface UploadedFileChip {
 }
 
 export const MORNING_MAX_POS = 6;
-export const TOTAL_POS = 14;
+export const TOTAL_POS = 11;
 
 /**
  * Exact 37 rooms from PRD Lampiran A and MAP JADWAL GANJIL 2023-2024_kosong.xlsx.

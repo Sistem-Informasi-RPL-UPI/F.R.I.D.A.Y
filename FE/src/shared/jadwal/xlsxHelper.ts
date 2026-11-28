@@ -15,7 +15,9 @@ export interface ParsedCourseRow {
   sks: number;
   semester: string;
   kelas: string;
+  kodeDosen1?: string;
   dosen1: string;
+  kodeDosen2?: string;
   dosen2: string;
   kebutuhanRuang: KebutuhanRuang;
   sourceFile: string;
@@ -144,10 +146,19 @@ export function buildZipArchive(
 }
 
 /**
- * FR-M1 & FR-M2: Builds the 1-sheet Kaprodi .xlsx template in the browser
- * with 9 header columns (A1..I1) and Excel dropdown validations for
- * Program Studi (A2:A500) and Kebutuhan Ruang Kelas (I2:I500).
- * Dosen 1 (G) and Dosen 2 (H) have no dropdown.
+ * Builds the 1-sheet Kaprodi .xlsx template in the browser
+ * with 11 header columns (A1..K1):
+ * A: Program Studi (Dropdown)
+ * B: Kode Mata Kuliah
+ * C: Nama Mata Kuliah
+ * D: SKS
+ * E: Semester
+ * F: Kelas
+ * G: Kode Dosen 1
+ * H: Nama Dosen 1
+ * I: Kode Dosen 2
+ * J: Nama Dosen 2
+ * K: Kebutuhan Ruang Kelas (Dropdown)
  */
 export function buildKaprodiTemplateXlsx(): Uint8Array {
   const headers = [
@@ -157,12 +168,14 @@ export function buildKaprodiTemplateXlsx(): Uint8Array {
     'SKS',
     'Semester',
     'Kelas',
-    'Dosen 1',
-    'Dosen 2',
+    'Kode Dosen 1',
+    'Nama Dosen 1',
+    'Kode Dosen 2',
+    'Nama Dosen 2',
     'Kebutuhan Ruang Kelas',
   ];
 
-  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
   const headerCells = headers
     .map(
       (h, idx) =>
@@ -179,7 +192,7 @@ export function buildKaprodiTemplateXlsx(): Uint8Array {
     <dataValidation type="list" allowBlank="1" showInputMessage="1" showErrorMessage="1" sqref="A2:A500">
       <formula1>"PGSD,PGPAUD,Teknik Komputer,RPL,PMM"</formula1>
     </dataValidation>
-    <dataValidation type="list" allowBlank="1" showInputMessage="1" showErrorMessage="1" sqref="I2:I500">
+    <dataValidation type="list" allowBlank="1" showInputMessage="1" showErrorMessage="1" sqref="K2:K500">
       <formula1>"Ruang Kelas Biasa,Laboratorium Praktikum,Online"</formula1>
     </dataValidation>
   </dataValidations>
@@ -238,9 +251,14 @@ async function inflateRawBytes(compressed: Uint8Array): Promise<Uint8Array> {
   if (typeof DecompressionStream !== 'undefined') {
     const ds = new DecompressionStream('deflate-raw');
     const writer = ds.writable.getWriter();
-    await writer.write(compressed as unknown as BufferSource);
-    await writer.close();
     const reader = ds.readable.getReader();
+
+    // Write and read concurrently so TransformStream backpressure never deadlocks on large (>16KB) sheets
+    const writeTask = (async () => {
+      await writer.write(compressed as unknown as BufferSource);
+      await writer.close();
+    })();
+
     const chunks: Uint8Array[] = [];
     let total = 0;
     for (;;) {
@@ -251,6 +269,8 @@ async function inflateRawBytes(compressed: Uint8Array): Promise<Uint8Array> {
         total += value.length;
       }
     }
+    await writeTask;
+
     const result = new Uint8Array(total);
     let offset = 0;
     for (const c of chunks) {
@@ -374,12 +394,13 @@ export async function parseXlsxRowsByCoordinate(
   const doc = parser.parseFromString(sheetXml, 'application/xml');
   const rowElements = Array.from(doc.getElementsByTagName('row'));
   const rows: Array<Record<string, string>> = [];
+  const fallbackCols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+  let headerMap: Record<string, string> = {};
 
-  for (const rowEl of rowElements) {
+  for (let rIdx = 0; rIdx < rowElements.length; rIdx++) {
+    const rowEl = rowElements[rIdx]!;
     const rowNum = rowEl.getAttribute('r') ?? '';
-    if (rowNum === '1') {
-      continue; // Skip header row
-    }
+    const isHeaderRow = rowNum === '1' || (rowNum === '' && rIdx === 0);
 
     const rowData: Record<string, string> = {
       A: '',
@@ -391,15 +412,18 @@ export async function parseXlsxRowsByCoordinate(
       G: '',
       H: '',
       I: '',
+      J: '',
+      K: '',
     };
 
     const cells = Array.from(rowEl.getElementsByTagName('c'));
     let hasValue = false;
 
-    for (const cell of cells) {
+    for (let cIdx = 0; cIdx < cells.length; cIdx++) {
+      const cell = cells[cIdx]!;
       const ref = cell.getAttribute('r') ?? '';
       const colMatch = /^([A-Z]+)\d+$/i.exec(ref);
-      const col = colMatch?.[1]?.toUpperCase() ?? '';
+      const col = colMatch?.[1]?.toUpperCase() ?? fallbackCols[cIdx] ?? '';
       if (!col) continue;
 
       const type = cell.getAttribute('t') ?? '';
@@ -426,7 +450,18 @@ export async function parseXlsxRowsByCoordinate(
       }
     }
 
+    if (isHeaderRow) {
+      headerMap = rowData;
+      continue;
+    }
+
     if (hasValue) {
+      rowData.__FORMAT =
+        (headerMap.G ?? '').toUpperCase().includes('KODE') ||
+        (headerMap.K ?? '') !== '' ||
+        rowData.K !== ''
+          ? '11_COL'
+          : '9_COL';
       rows.push(rowData);
     }
   }
@@ -468,36 +503,86 @@ export async function parseCourseFile(file: File): Promise<ParsedCourseRow[]> {
     const coordRows = await parseXlsxRowsByCoordinate(buf);
     return coordRows
       .filter((r) => (r.B ?? '') !== '' || (r.C ?? '') !== '')
-      .map((r) => ({
-        prodi: normalizeProdi(r.A ?? 'RPL'),
-        kode: (r.B ?? '').trim().toUpperCase(),
-        nama: (r.C ?? '').trim(),
-        sks: normalizeSks(r.D),
-        semester: normalizeDecimalText(r.E || '1'),
-        kelas: normalizeDecimalText(r.F || 'A'),
-        dosen1: (r.G ?? '').trim(),
-        dosen2: (r.H ?? '').trim() === '-' ? '' : (r.H ?? '').trim(),
-        kebutuhanRuang: normalizeKebutuhanRuang(r.I ?? 'Ruang Kelas Biasa'),
-        sourceFile: file.name,
-      }));
+      .map((r) => {
+        const is11Col = r.__FORMAT === '11_COL';
+        if (is11Col) {
+          const k1 = (r.G ?? '').trim() === '-' ? '' : (r.G ?? '').trim();
+          const n1 = (r.H ?? '').trim() === '-' ? '' : (r.H ?? '').trim();
+          const k2 = (r.I ?? '').trim() === '-' ? '' : (r.I ?? '').trim();
+          const n2 = (r.J ?? '').trim() === '-' ? '' : (r.J ?? '').trim();
+          return {
+            prodi: normalizeProdi(r.A ?? 'RPL'),
+            kode: (r.B ?? '').trim().toUpperCase(),
+            nama: (r.C ?? '').trim(),
+            sks: normalizeSks(r.D),
+            semester: normalizeDecimalText(r.E || '1'),
+            kelas: normalizeDecimalText(r.F || 'A'),
+            kodeDosen1: k1 ? normalizeKodeDosen(k1) : undefined,
+            dosen1: n1 || k1,
+            kodeDosen2: k2 ? normalizeKodeDosen(k2) : undefined,
+            dosen2: n2 || k2,
+            kebutuhanRuang: normalizeKebutuhanRuang(r.K ?? 'Ruang Kelas Biasa'),
+            sourceFile: file.name,
+          };
+        }
+
+        return {
+          prodi: normalizeProdi(r.A ?? 'RPL'),
+          kode: (r.B ?? '').trim().toUpperCase(),
+          nama: (r.C ?? '').trim(),
+          sks: normalizeSks(r.D),
+          semester: normalizeDecimalText(r.E || '1'),
+          kelas: normalizeDecimalText(r.F || 'A'),
+          dosen1: (r.G ?? '').trim(),
+          dosen2: (r.H ?? '').trim() === '-' ? '' : (r.H ?? '').trim(),
+          kebutuhanRuang: normalizeKebutuhanRuang(r.I ?? 'Ruang Kelas Biasa'),
+          sourceFile: file.name,
+        };
+      });
   }
 
   const text = await file.text();
   const rows = parseDelimitedRows(text);
   return rows
     .filter((cols) => (cols[1] ?? '') !== '' || (cols[2] ?? '') !== '')
-    .map((cols) => ({
-      prodi: normalizeProdi(cols[0] ?? 'RPL'),
-      kode: (cols[1] ?? '').trim().toUpperCase(),
-      nama: (cols[2] ?? '').trim(),
-      sks: normalizeSks(cols[3]),
-      semester: normalizeDecimalText(cols[4] || '1'),
-      kelas: normalizeDecimalText(cols[5] || 'A'),
-      dosen1: (cols[6] ?? '').trim(),
-      dosen2: (cols[7] ?? '').trim() === '-' ? '' : (cols[7] ?? '').trim(),
-      kebutuhanRuang: normalizeKebutuhanRuang(cols[8] ?? 'Ruang Kelas Biasa'),
-      sourceFile: file.name,
-    }));
+    .map((cols) => {
+      const is11Col = cols.length >= 11;
+      if (is11Col) {
+        const k1 = (cols[6] ?? '').trim() === '-' ? '' : (cols[6] ?? '').trim();
+        const n1 = (cols[7] ?? '').trim() === '-' ? '' : (cols[7] ?? '').trim();
+        const k2 = (cols[8] ?? '').trim() === '-' ? '' : (cols[8] ?? '').trim();
+        const n2 = (cols[9] ?? '').trim() === '-' ? '' : (cols[9] ?? '').trim();
+        return {
+          prodi: normalizeProdi(cols[0] ?? 'RPL'),
+          kode: (cols[1] ?? '').trim().toUpperCase(),
+          nama: (cols[2] ?? '').trim(),
+          sks: normalizeSks(cols[3]),
+          semester: normalizeDecimalText(cols[4] || '1'),
+          kelas: normalizeDecimalText(cols[5] || 'A'),
+          kodeDosen1: k1 ? normalizeKodeDosen(k1) : undefined,
+          dosen1: n1 || k1,
+          kodeDosen2: k2 ? normalizeKodeDosen(k2) : undefined,
+          dosen2: n2 || k2,
+          kebutuhanRuang: normalizeKebutuhanRuang(
+            cols[10] ?? 'Ruang Kelas Biasa',
+          ),
+          sourceFile: file.name,
+        };
+      }
+
+      return {
+        prodi: normalizeProdi(cols[0] ?? 'RPL'),
+        kode: (cols[1] ?? '').trim().toUpperCase(),
+        nama: (cols[2] ?? '').trim(),
+        sks: normalizeSks(cols[3]),
+        semester: normalizeDecimalText(cols[4] || '1'),
+        kelas: normalizeDecimalText(cols[5] || 'A'),
+        dosen1: (cols[6] ?? '').trim(),
+        dosen2: (cols[7] ?? '').trim() === '-' ? '' : (cols[7] ?? '').trim(),
+        kebutuhanRuang: normalizeKebutuhanRuang(cols[8] ?? 'Ruang Kelas Biasa'),
+        sourceFile: file.name,
+      };
+    });
 }
 
 export async function parseDosenFile(file: File): Promise<ParsedDosenRow[]> {

@@ -347,8 +347,8 @@ class PrdScheduleEngine
             }
         }
 
-        // Candidate start positions that never cross break (Pos 1..6 and Pos 7..12)
-        $maxAutoPos = 12;
+        // Candidate start positions that never cross break (Pos 1..6 and Pos 7..11)
+        $maxAutoPos = TimeSlotCalculator::TOTAL_POS;
 
         foreach (array_merge($stage1, $stage2) as $mk) {
             $sks = (int) $mk->sks;
@@ -553,25 +553,29 @@ class PrdScheduleEngine
                 $dailyValues[$d] = (int) ($byDay[$d] ?? 0);
             }
 
-            $maxSks = $dailyValues !== [] ? max($dailyValues) : 0;
-            $minSks = $dailyValues !== [] ? min($dailyValues) : 0;
-            $diff = $maxSks - $minSks;
-            $maxDiffOverall = max($maxDiffOverall, $diff);
-
             $roomUses = $lecturerRoomUses[$code] ?? [];
             $totalClasses = array_sum($roomUses);
             $distinctRooms = count($roomUses);
+
+            $activeValues = array_values(array_filter($dailyValues, fn (int $v): bool => $v > 0));
+            $stackedWhenEmptyDayAvailable = $totalClasses > count($activeValues) && count($activeValues) < count($allowedDays);
+            $comparisonValues = ($stackedWhenEmptyDayAvailable || $activeValues === []) ? array_values($dailyValues) : $activeValues;
+
+            $maxSks = $comparisonValues !== [] ? max($comparisonValues) : 0;
+            $minSks = $comparisonValues !== [] ? min($comparisonValues) : 0;
+            $diff = $maxSks - $minSks;
+            $maxDiffOverall = max($maxDiffOverall, $diff);
 
             if ($totalClasses >= 2 && $distinctRooms === 1) {
                 $singleRoomLecturersCount++;
             }
 
             $note = null;
-            if ($diff > 2) {
+            if ($totalClasses >= 2 && $diff > 3) {
                 if (count($allowedDays) <= 1) {
                     $note = 'Dosen hanya mengizinkan 1 hari mengajar.';
                 } else {
-                    $note = 'Dipengaruhi ukuran SKS mata kuliah atau keterbatasan slot bebas bentrok cohort.';
+                    $note = 'Beban SKS menumpuk di hari tertentu karena keterbatasan slot bebas bentrok cohort.';
                 }
                 $balancingNotes[] = [
                     'kodeDosen' => $code,

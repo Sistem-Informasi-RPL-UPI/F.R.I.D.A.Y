@@ -88,7 +88,7 @@ describe('application foundation & PRD Mind Mapping Jadwal v1.3 multi-page workf
     fireEvent.change(screen.getByLabelText(/Ruangan \(1–37\)/i), {
       target: { value: '3' },
     });
-    fireEvent.change(screen.getByLabelText(/Pos Awal \(1–14\)/i), {
+    fireEvent.change(screen.getByLabelText(/Pos Awal/i), {
       target: { value: '4' },
     });
 

@@ -12,7 +12,7 @@ class KetersediaanDosen extends Model
 
     public const DEFAULT_START_TIME = '07:00';
 
-    public const DEFAULT_END_TIME = '18:00';
+    public const DEFAULT_END_TIME = '17:00';
 
     protected $fillable = [
         'kode_dosen',

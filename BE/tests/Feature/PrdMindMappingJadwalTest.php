@@ -119,9 +119,10 @@ it('imports courses with combined classes, zero SKS fallback, and holds unregist
         ],
     ])->assertOk();
 
-    // 3A & B splits into 2 accepted courses + RL999 (1 accepted with 0 SKS) = 3 accepted, 1 pending lecturer
-    expect($importRes->json('data.accepted_count'))->toBe(3);
-    expect($importRes->json('data.pending_lecturer_count'))->toBe(1);
+    // 3A & B splits into 2 accepted courses + RL999 (1 accepted with 0 SKS) + MM202 (1 accepted with auto-registered lecturer) = 4 accepted
+    expect($importRes->json('data.accepted_count'))->toBe(4);
+    expect($importRes->json('data.auto_registered_lecturer_count'))->toBe(1);
+    expect($importRes->json('data.pending_lecturer_count'))->toBe(0);
 
     $list = $this->getJson('/api/v1/mata-kuliah')->assertOk()->json('data');
     $rl999 = collect($list)->firstWhere('kode', 'RL999');
@@ -130,14 +131,8 @@ it('imports courses with combined classes, zero SKS fallback, and holds unregist
     expect($rl999['status'])->toBe('Diparkir');
 
     $mm202 = collect($list)->firstWhere('kode', 'MM202');
-    expect($mm202['statusAntrean'])->toBe('pending_dosen');
-
-    // Map pending lecturer to DSN201 so it enters the ready queue
-    $this->putJson("/api/v1/mata-kuliah/{$mm202['id']}", [
-        'kodeDosen1' => 'DSN201',
-    ])
-        ->assertOk()
-        ->assertJsonPath('data.statusAntrean', 'ready');
+    expect($mm202['statusAntrean'])->toBe('ready');
+    expect($mm202['dosen1']['nama'])->toBe('Dosen Belum Ada');
 });
 
 it('generates conflict-free schedule, enforces hard constraints, splits across break on confirmation, and recalculates time settings', function (): void {

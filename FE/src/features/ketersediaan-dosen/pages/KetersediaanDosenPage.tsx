@@ -27,7 +27,7 @@ export function KetersediaanDosenPage() {
   const [activeDosen, setActiveDosen] = useState<Dosen | null>(null);
   const [selectedDays, setSelectedDays] = useState<DayName[]>([...WORK_DAYS]);
   const [startTime, setStartTime] = useState('07:00');
-  const [endTime, setEndTime] = useState('18:00');
+  const [endTime, setEndTime] = useState('17:00');
   const [modalError, setModalError] = useState<string | null>(null);
   const [savedBanner, setSavedBanner] = useState<string | null>(null);
 
@@ -87,7 +87,7 @@ export function KetersediaanDosenPage() {
     if (!activeDosen) return;
     updateKetersediaanDosen(activeDosen.kode, { reset: true });
     setSavedBanner(
-      `Jadwal mengajar ${activeDosen.kode} (${activeDosen.nama}) direset ke Bebas Fleksibel (Senin–Jumat 07:00–18:00).`,
+      `Jadwal mengajar ${activeDosen.kode} (${activeDosen.nama}) direset ke Bebas Fleksibel (Senin–Jumat 07:00–17:00).`,
     );
     setActiveDosen(null);
   }
@@ -375,10 +375,10 @@ export function KetersediaanDosenPage() {
                   variant="outline"
                   onClick={() => {
                     setStartTime('07:00');
-                    setEndTime('18:00');
+                    setEndTime('17:00');
                   }}
                 >
-                  Semua Jam (07:00–18:00)
+                  Semua Jam (07:00–17:00)
                 </Button>
                 <Button
                   size="sm"
@@ -395,10 +395,10 @@ export function KetersediaanDosenPage() {
                   variant="outline"
                   onClick={() => {
                     setStartTime('13:00');
-                    setEndTime('18:00');
+                    setEndTime('17:00');
                   }}
                 >
-                  Siang/Sore (13:00–18:00)
+                  Siang/Sore (13:00–17:00)
                 </Button>
               </div>
 

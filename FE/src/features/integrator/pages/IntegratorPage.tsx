@@ -31,6 +31,7 @@ export function IntegratorPage() {
     importCourseRows,
     addManualCourse,
     mapPendingCourseLecturers,
+    autoRegisterAllPendingLecturers,
     addDosen,
     deleteCourse,
     clearAllCourses,
@@ -125,7 +126,7 @@ export function IntegratorPage() {
     if (files.length === 0) return;
 
     let totalAccepted = 0;
-    let totalPending = 0;
+    let totalAutoDosen = 0;
     let totalRejected = 0;
 
     for (const file of files) {
@@ -133,7 +134,7 @@ export function IntegratorPage() {
         const rows = await parseCourseFile(file);
         const res = importCourseRows(rows, file.name);
         totalAccepted += res.acceptedCount;
-        totalPending += res.pendingDosenCount;
+        totalAutoDosen += res.autoRegisteredDosenCount;
         totalRejected += res.rejectedCount;
       } catch {
         totalRejected++;
@@ -141,9 +142,13 @@ export function IntegratorPage() {
     }
 
     e.target.value = '';
+    const autoDosenNote =
+      totalAutoDosen > 0
+        ? `, serta ${totalAutoDosen} dosen baru otomatis terdaftar ke Kelola Dosen`
+        : '';
     setFeedback({
-      tone: totalPending > 0 ? 'warning' : 'success',
-      text: `Ringkasan Unggah (${files.length} berkas): ${totalAccepted} MK berhasil masuk antrean, ${totalPending} MK menunggu pemetaan dosen${totalRejected > 0 ? `, ${totalRejected} baris duplikat/ditolak` : ''}.`,
+      tone: 'success',
+      text: `Ringkasan Unggah (${files.length} berkas): ${totalAccepted} MK langsung masuk antrean siap generate${autoDosenNote}${totalRejected > 0 ? ` (${totalRejected} baris duplikat/ditolak)` : ''}.`,
     });
   }
 
@@ -536,6 +541,20 @@ export function IntegratorPage() {
                 Dosen Belum Terdaftar — Petakan atau Daftarkan Dosen Baru
               </h6>
             </div>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => {
+                const res = autoRegisterAllPendingLecturers();
+                setFeedback({
+                  tone: 'success',
+                  text: `Berhasil mendaftarkan ${res.registeredLecturersCount} dosen baru secara otomatis dan memasukkan ${res.resolvedCoursesCount} mata kuliah ke antrean siap generate!`,
+                });
+              }}
+            >
+              Daftarkan Semua Dosen Baru Otomatis ({pendingDosenCourses.length}{' '}
+              MK)
+            </Button>
           </div>
 
           <div className="ds-table-wrap">

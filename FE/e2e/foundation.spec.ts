@@ -52,7 +52,7 @@ test('the built SPA boots and handles navigation without a backend', async ({
   // Trigger break split confirmation (5 SKS at SENIN Room 3 Pos 4 -> 3 SKS + 2 SKS)
   await page.getByText('Praktikum Jaringan & Sistem Tertanam').click();
   await page.getByLabel('Ruangan (1–37)').selectOption('3');
-  await page.getByLabel('Pos Awal (1–14)').selectOption('4');
+  await page.getByLabel(/Pos Awal/i).selectOption('4');
   await page.getByRole('button', { name: 'Tempatkan di Slot Ini' }).click();
   await expect(
     page.getByRole('heading', { name: 'Pecah Mata Kuliah di Jam Istirahat?' }),

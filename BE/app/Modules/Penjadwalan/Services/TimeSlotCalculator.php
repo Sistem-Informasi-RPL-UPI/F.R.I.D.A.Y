@@ -15,7 +15,7 @@ class TimeSlotCalculator
 
     public const MORNING_MAX_POS = 6;
 
-    public const TOTAL_POS = 14;
+    public const TOTAL_POS = 11;
 
     public static function timeToMinutes(string $hhmm): int
     {

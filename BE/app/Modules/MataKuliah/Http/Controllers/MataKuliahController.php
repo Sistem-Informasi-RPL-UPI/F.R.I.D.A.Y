@@ -276,7 +276,72 @@ class MataKuliahController extends Controller
         $allDosen = Dosen::query()->get();
         $accepted = [];
         $pendingLecturers = [];
+        $autoRegisteredLecturers = [];
         $rejected = [];
+        $autoRegister = $request->boolean('autoRegisterLecturers', true);
+
+        $resolveOrCreateDosen = function (string $rawText, ?string $explicitKode = null) use (&$allDosen, &$autoRegisteredLecturers, $autoRegister): ?Dosen {
+            $cleanKode = CourseNormalizer::normalizeKodeDosen((string) $explicitKode);
+            $clean = trim($rawText);
+            if ($cleanKode === '-') {
+                $cleanKode = '';
+            }
+            if ($clean === '-') {
+                $clean = '';
+            }
+
+            if ($cleanKode === '' && $clean === '') {
+                return null;
+            }
+
+            if ($cleanKode !== '') {
+                $byCode = $allDosen->first(fn (Dosen $d): bool => mb_strtoupper($d->kode) === $cleanKode);
+                if ($byCode !== null || ! $autoRegister) {
+                    return $byCode;
+                }
+
+                $newDosen = Dosen::query()->create([
+                    'kode' => $cleanKode,
+                    'nama' => $clean !== '' ? $clean : $cleanKode,
+                    'status' => 'Dosen Tetap',
+                ]);
+                $allDosen->push($newDosen);
+                $autoRegisteredLecturers[] = $newDosen->kode;
+
+                return $newDosen;
+            }
+
+            $matched = CourseNormalizer::matchDosen($clean, $allDosen);
+            if ($matched !== null || ! $autoRegister) {
+                return $matched;
+            }
+
+            $kode = '';
+            $nama = $clean;
+            if (preg_match('/^([A-Z]{1,6}\d{1,5})\s*[-–:]\s*(.+)$/iu', $clean, $m)) {
+                $kode = mb_strtoupper($m[1]);
+                $nama = trim($m[2]);
+            }
+
+            $existingCodes = $allDosen->pluck('kode')->map(fn ($c): string => mb_strtoupper((string) $c))->all();
+            if ($kode === '' || in_array($kode, $existingCodes, true)) {
+                $seq = count($existingCodes) + 1;
+                do {
+                    $kode = sprintf('DSN%03d', $seq++);
+                } while (in_array($kode, $existingCodes, true));
+            }
+
+            $newDosen = Dosen::query()->create([
+                'kode' => $kode,
+                'nama' => $nama,
+                'status' => 'Dosen Tetap',
+            ]);
+
+            $allDosen->push($newDosen);
+            $autoRegisteredLecturers[] = $newDosen->kode;
+
+            return $newDosen;
+        };
 
         foreach ($rows as $idx => $row) {
             if (! is_array($row)) {
@@ -289,8 +354,10 @@ class MataKuliahController extends Controller
             $sks = CourseNormalizer::normalizeSks($row['sks'] ?? 0);
             $semester = CourseNormalizer::normalizeDecimal($row['semester'] ?? '1');
             $rawKelas = (string) ($row['kelas'] ?? 'A');
-            $rawDosen1 = trim((string) ($row['dosen1'] ?? $row['dosen_1'] ?? $row['kodeDosen1'] ?? ''));
-            $rawDosen2 = trim((string) ($row['dosen2'] ?? $row['dosen_2'] ?? $row['kodeDosen2'] ?? ''));
+            $rawKodeDosen1 = trim((string) ($row['kodeDosen1'] ?? $row['kode_dosen_1'] ?? ''));
+            $rawKodeDosen2 = trim((string) ($row['kodeDosen2'] ?? $row['kode_dosen_2'] ?? ''));
+            $rawDosen1 = trim((string) ($row['dosen1'] ?? $row['nama_dosen_1'] ?? $row['dosen_1'] ?? $rawKodeDosen1));
+            $rawDosen2 = trim((string) ($row['dosen2'] ?? $row['nama_dosen_2'] ?? $row['dosen_2'] ?? $rawKodeDosen2));
             if ($rawDosen2 === '-') {
                 $rawDosen2 = '';
             }
@@ -309,10 +376,15 @@ class MataKuliahController extends Controller
                 continue;
             }
 
-            $matchedDosen1 = CourseNormalizer::matchDosen($rawDosen1, $allDosen);
-            $matchedDosen2 = $rawDosen2 !== '' ? CourseNormalizer::matchDosen($rawDosen2, $allDosen) : null;
+            $matchedDosen1 = $resolveOrCreateDosen($rawDosen1 !== '' ? $rawDosen1 : 'Dosen Pengampu', $rawKodeDosen1);
+            $matchedDosen2 = ($rawDosen2 !== '' || $rawKodeDosen2 !== '')
+                ? $resolveOrCreateDosen($rawDosen2, $rawKodeDosen2)
+                : null;
+            if ($matchedDosen1 !== null && $matchedDosen2 !== null && $matchedDosen1->kode === $matchedDosen2->kode) {
+                $matchedDosen2 = null;
+            }
 
-            $d1Missing = $rawDosen1 === '' || $matchedDosen1 === null;
+            $d1Missing = $matchedDosen1 === null;
             $d2Missing = $rawDosen2 !== '' && $matchedDosen2 === null;
             $isPending = $d1Missing || $d2Missing;
 
@@ -374,6 +446,7 @@ class MataKuliahController extends Controller
         return response()->json([
             'data' => [
                 'accepted_count' => count($accepted),
+                'auto_registered_lecturer_count' => count($autoRegisteredLecturers),
                 'pending_lecturer_count' => count($pendingLecturers),
                 'rejected_count' => count($rejected),
                 'rejected' => $rejected,
