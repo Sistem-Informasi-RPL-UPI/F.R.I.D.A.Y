@@ -14,4 +14,9 @@ export {
   type FormFieldProps,
   type InputProps,
 } from './FormField';
+export { MahasiswaLayout } from './MahasiswaLayout';
+export {
+  MahasiswaSidebar,
+  type MahasiswaSidebarProps,
+} from './MahasiswaSidebar';
 export { Navbar, type NavbarProps } from './Navbar';
