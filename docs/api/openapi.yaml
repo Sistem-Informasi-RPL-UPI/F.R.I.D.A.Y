@@ -1,11 +1,176 @@
 openapi: 3.1.2
 info:
-  title: FRIDAY Academic & Facilities API
-  version: 1.0.0
-  description: REST API for UPI Kampus Cibiru Academic Scheduling, Mind Mapping, Facilities, and Loans.
+  title: FRIDAY Academic & Mind Mapping Jadwal API
+  version: 1.3.0
+  description: REST API for UPI Kampus Cibiru Mind Mapping Jadwal Perkuliahan 2023/2024 (v1.3), Academic Scheduling, Facilities, and Loans.
 servers:
   - url: http://localhost:8000/api/v1
 paths:
+  /dosen:
+    get:
+      summary: Daftar data dosen beserta jumlah MK, total SKS, dan 4 statistik
+      responses:
+        '200':
+          description: Daftar dosen dan statistik
+    post:
+      summary: Tambah dosen baru (kode unik otomatis huruf besar)
+      responses:
+        '201':
+          description: Dosen ditambahkan
+        '422':
+          description: Kode dosen duplikat atau validasi gagal
+  /dosen/impor:
+    post:
+      summary: Impor data dosen dari berkas .xlsx / .csv
+      responses:
+        '200':
+          description: Ringkasan dosen terimpor dan kode duplikat yang dilewati
+  /dosen/{kode}:
+    put:
+      summary: Ubah data dosen (perubahan kode/nama otomatis berlaku di seluruh MK)
+      parameters:
+        - name: kode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dosen diperbarui
+    delete:
+      summary: Hapus dosen (meminta konfirmasi bila masih mengampu MK)
+      parameters:
+        - name: kode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dosen dihapus
+        '409':
+          description: Dosen masih mengampu MK (butuh konfirmasi force=1)
+  /dosen/{kode}/ketersediaan:
+    get:
+      summary: Ambil pengaturan hari dan jam mengajar dosen
+      parameters:
+        - name: kode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Data ketersediaan dosen
+    put:
+      summary: Simpan atau reset hari dan jam mengajar dosen
+      parameters:
+        - name: kode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ketersediaan dosen diperbarui
+  /ruangan:
+    get:
+      summary: Daftar 37 ruangan referensi (Gedung B 1–18, Gedung E 19–22, Smart Class & Lab 23–37)
+      responses:
+        '200':
+          description: 37 ruangan referensi sesuai Lampiran A
+  /mata-kuliah:
+    get:
+      summary: Daftar antrean mata kuliah beserta 4 statistik antrean
+      responses:
+        '200':
+          description: Daftar mata kuliah dan statistik
+    post:
+      summary: Tambah mata kuliah manual (mendukung pemecahan kelas gabungan)
+      responses:
+        '201':
+          description: Mata kuliah ditambahkan
+        '422':
+          description: Validasi gagal
+    delete:
+      summary: Kosongkan seluruh antrean mata kuliah
+      responses:
+        '200':
+          description: Antrean dikosongkan
+  /mata-kuliah/impor:
+    post:
+      summary: Impor baris mata kuliah hasil parser FE; mengembalikan baris diterima, menunggu dosen, dan ditolak
+      responses:
+        '200':
+          description: Hasil impor mata kuliah
+  /mata-kuliah/{id}:
+    put:
+      summary: Ubah mata kuliah atau petakan dosen belum terdaftar
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mata kuliah diperbarui
+    delete:
+      summary: Hapus satu baris mata kuliah
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mata kuliah dihapus
+  /jadwal:
+    get:
+      summary: Ambil kondisi matriks 37 ruangan, daftar parkir, dan setting waktu aktif
+      responses:
+        '200':
+          description: State matriks jadwal dan parkir
+  /jadwal/generate:
+    post:
+      summary: Jalankan generator jadwal awal bebas bentrok beserta laporan audit pemerataan
+      responses:
+        '200':
+          description: Hasil generate dan laporan audit
+  /mata-kuliah/{id}/jadwal:
+    put:
+      summary: Pindah slot jadwal, pecah di jam istirahat, atau kembalikan ke parkir
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Jadwal mata kuliah diperbarui
+        '422':
+          description: Melanggar hard constraint atau butuh konfirmasi pecah di jam istirahat
+  /jadwal/swap:
+    post:
+      summary: Tukar slot jadwal antara dua mata kuliah (swap dengan MK terpecah ditolak)
+      responses:
+        '200':
+          description: Jadwal berhasil ditukar
+        '422':
+          description: Swap ditolak karena konflik atau MK terpecah
+  /pengaturan-waktu:
+    get:
+      summary: Ambil konfigurasi durasi SKS, jam mulai pagi, istirahat, dan jadwal Jumat
+      responses:
+        '200':
+          description: Konfigurasi setting waktu
+    put:
+      summary: Perbarui setting waktu dan hitung ulang seluruh label jam serta matrix_cells
+      responses:
+        '200':
+          description: Setting waktu diperbarui
   /auth/login:
     post:
       summary: Authenticate session user

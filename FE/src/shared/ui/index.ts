@@ -1,3 +1,4 @@
+export { AdminLayout } from './AdminLayout';
 export { Alert, type AlertProps, type AlertTone } from './Alert';
 export { Badge, type BadgeProps, type BadgeTone } from './Badge';
 export {

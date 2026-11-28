@@ -247,6 +247,11 @@ main {
   color: var(--color-danger);
 }
 
+.ds-badge--teal {
+  background-color: var(--color-online-teal-soft);
+  color: var(--color-online-teal);
+}
+
 .ds-field {
   display: flex;
   flex-direction: column;
@@ -367,4 +372,434 @@ main {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+}
+
+/* 08. Admin Multi-Page Layout & Left Sidebar (PRD v1.3 Section 3B) */
+.ds-admin-layout {
+  display: flex;
+  min-height: calc(100vh - 3.5rem);
+  background-color: var(--color-neutral);
+  position: relative;
+}
+
+.ds-sidebar {
+  width: 268px;
+  flex-shrink: 0;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-3);
+  transition: width var(--transition-fast);
+  position: sticky;
+  top: 3.5rem;
+  height: calc(100vh - 3.5rem);
+  overflow-y: auto;
+  z-index: 90;
+}
+
+.ds-sidebar--collapsed {
+  width: 64px;
+  padding: var(--space-4) var(--space-2);
+}
+
+.ds-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0 var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-3);
+}
+
+.ds-sidebar__group {
+  margin-bottom: var(--space-4);
+}
+
+.ds-sidebar__group-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
+  padding: 0 var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.ds-sidebar__divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--space-3) var(--space-2);
+}
+
+.ds-sidebar__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-ink-secondary);
+  font-weight: 600;
+  font-size: var(--text-body-sm-size);
+  text-decoration: none;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+  margin-bottom: var(--space-1);
+}
+
+.ds-sidebar__link:hover {
+  background-color: var(--color-neutral);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.ds-sidebar__link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.ds-sidebar__link--active {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.ds-sidebar__link-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.ds-sidebar__icon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  background-color: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.ds-sidebar__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ds-sidebar__badge--danger {
+  background-color: var(--color-danger);
+  color: var(--color-ink-inverse);
+}
+
+.ds-sidebar__badge--accent {
+  background-color: var(--color-accent);
+  color: var(--color-ink-primary);
+}
+
+.ds-admin-workspace {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-6);
+  max-width: 100%;
+}
+
+.ds-mobile-drawer-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .ds-mobile-drawer-toggle {
+    display: inline-flex;
+  }
+
+  .ds-sidebar {
+    position: fixed;
+    top: 3.5rem;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform var(--transition-fast);
+    box-shadow: var(--shadow-lg);
+    width: 268px;
+  }
+
+  .ds-sidebar--drawer-open {
+    transform: translateX(0);
+  }
+
+  .ds-admin-workspace {
+    padding: var(--space-4);
+  }
+}
+
+/* 09. Mind Mapping Matrix 37 Rooms & Prodi Course Cards */
+.ds-matrix-scroll {
+  overflow: auto;
+  max-height: 74vh;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  position: relative;
+}
+
+.ds-matrix-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+  font-size: 0.75rem;
+}
+
+.ds-matrix-table th,
+.ds-matrix-table td {
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 6px 8px;
+  vertical-align: top;
+}
+
+.ds-matrix-sticky-top-1 {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: var(--color-primary);
+  color: var(--color-ink-inverse);
+  height: 30px;
+}
+
+.ds-matrix-sticky-top-2 {
+  position: sticky;
+  top: 30px;
+  z-index: 30;
+  background-color: var(--color-surface-muted);
+  color: var(--color-ink-primary);
+  height: 30px;
+}
+
+.ds-matrix-sticky-top-3 {
+  position: sticky;
+  top: 60px;
+  z-index: 30;
+  background-color: var(--color-neutral);
+  color: var(--color-ink-secondary);
+  height: 26px;
+}
+
+.ds-matrix-sticky-col-1 {
+  position: sticky;
+  left: 0;
+  width: 74px;
+  min-width: 74px;
+  max-width: 74px;
+  z-index: 20;
+  background-color: var(--color-surface);
+  font-weight: 700;
+}
+
+.ds-matrix-sticky-col-2 {
+  position: sticky;
+  left: 74px;
+  width: 98px;
+  min-width: 98px;
+  max-width: 98px;
+  z-index: 20;
+  background-color: var(--color-surface);
+  white-space: nowrap;
+}
+
+.ds-matrix-sticky-col-3 {
+  position: sticky;
+  left: 172px;
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  z-index: 20;
+  background-color: var(--color-surface);
+  text-align: center;
+  font-weight: 700;
+  border-right: 2px solid var(--color-border-strong) !important;
+}
+
+.ds-matrix-corner {
+  z-index: 40 !important;
+}
+
+.ds-matrix-break-row td {
+  background-color: var(--color-accent-soft) !important;
+  color: var(--color-warning);
+  font-weight: 700;
+  text-align: center;
+}
+
+.ds-matrix-slot {
+  width: 152px;
+  min-width: 152px;
+  min-height: 52px;
+  transition:
+    outline var(--transition-fast),
+    background-color var(--transition-fast);
+  position: relative;
+}
+
+.ds-matrix-slot--valid {
+  outline: 2px solid var(--color-success) !important;
+  outline-offset: -2px;
+  background-color: var(--color-success-soft) !important;
+}
+
+.ds-matrix-slot--invalid {
+  outline: 2px solid var(--color-danger) !important;
+  outline-offset: -2px;
+  background-color: var(--color-danger-soft) !important;
+}
+
+.ds-matrix-slot--split {
+  outline: 2px solid var(--color-warning) !important;
+  outline-offset: -2px;
+  background-color: var(--color-warning-soft) !important;
+}
+
+.ds-course-card {
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  border-left: 4px solid var(--color-primary);
+  background-color: var(--color-primary-soft);
+  color: var(--color-ink-primary);
+  cursor: grab;
+  user-select: none;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.ds-course-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.ds-course-card--highlight {
+  outline: 3px solid var(--color-accent);
+  box-shadow: var(--shadow-lg);
+}
+
+.ds-course-card--pgsd {
+  background-color: var(--color-prodi-pgsd-soft);
+  border-left-color: var(--color-prodi-pgsd);
+}
+
+.ds-course-card--pgpaud {
+  background-color: var(--color-prodi-pgpaud-soft);
+  border-left-color: var(--color-prodi-pgpaud);
+}
+
+.ds-course-card--rpl {
+  background-color: var(--color-prodi-rpl-soft);
+  border-left-color: var(--color-prodi-rpl);
+}
+
+.ds-course-card--pmm {
+  background-color: var(--color-prodi-pmm-soft);
+  border-left-color: var(--color-prodi-pmm);
+}
+
+.ds-course-card--tekkom {
+  background-color: var(--color-prodi-tekkom-soft);
+  border-left-color: var(--color-prodi-tekkom);
+}
+
+.ds-course-card--mkdu {
+  background-color: var(--color-prodi-mkdu-soft);
+  border-left-color: var(--color-prodi-mkdu);
+}
+
+/* Floating Alert bottom-right (PRD FR-X6) */
+.ds-floating-alert {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 9999;
+  max-width: 420px;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background-color: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  border-left: 5px solid var(--color-danger);
+  color: var(--color-ink-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Modal Dialog */
+.ds-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 34, 57, 0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 9500;
+}
+
+.ds-modal {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+.ds-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-body-sm-size);
+}
+
+.ds-table th,
+.ds-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.ds-table th {
+  background-color: var(--color-surface-muted);
+  font-weight: 700;
+  color: var(--color-ink-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
