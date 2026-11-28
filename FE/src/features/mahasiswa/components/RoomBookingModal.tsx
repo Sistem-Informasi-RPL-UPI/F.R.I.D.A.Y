@@ -5,7 +5,12 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { ApiError } from '../../../shared/api/client';
 import { Badge, Button, FormField, Input } from '../../../shared/ui';
+import {
+  shouldUseBackendApi,
+  submitRoomLoanToApi,
+} from '../api/roomBookingApi';
 import type { BookableRoom, RoomBookingRecord } from '../data/campusBuildings';
 
 export interface RoomBookingModalProps {
@@ -125,8 +130,32 @@ export function RoomBookingModal({
     });
   }, [room, defaultDate, reset]);
 
-  function onValidSubmit(values: BookingFormValues) {
+  async function onValidSubmit(values: BookingFormValues) {
     if (!room) return;
+
+    if (shouldUseBackendApi() && room.backendRoomId !== undefined) {
+      try {
+        const savedRecord = await submitRoomLoanToApi({
+          roomId: room.backendRoomId,
+          date: values.date,
+          startTime: values.startTime,
+          endTime: values.endTime,
+          attendeeCount: Number(values.attendeeCount),
+          organizer: values.organizer.trim(),
+          purpose: values.purpose.trim(),
+        });
+        onSubmitBooking(savedRecord);
+        toast.success(`Pengajuan peminjaman ${room.code} berhasil dikirim.`);
+        onClose();
+      } catch (err) {
+        const message =
+          err instanceof ApiError
+            ? err.message
+            : 'Gagal mengirim pengajuan peminjaman ruangan.';
+        toast.error(message);
+      }
+      return;
+    }
 
     const record = createBookingRecord(room, values);
     onSubmitBooking(record);
