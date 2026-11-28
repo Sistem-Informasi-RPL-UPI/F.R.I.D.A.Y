@@ -82,9 +82,14 @@ class TimeSlotCalculator
         ];
 
         $cursor = $afternoonStart;
+        $maxDayEndMinutes = 17 * 60; // 17:00 sharp
         for ($pos = self::MORNING_MAX_POS + 1; $pos <= self::TOTAL_POS; $pos++) {
             $start = self::minutesToTime($cursor);
-            $end = self::minutesToTime($cursor + $durasi);
+            $rawNext = $cursor + $durasi;
+            $cappedNext = ($pos === self::TOTAL_POS && $cursor < $maxDayEndMinutes && $rawNext > $maxDayEndMinutes)
+                ? $maxDayEndMinutes
+                : $rawNext;
+            $end = self::minutesToTime($cappedNext);
             $slots[] = [
                 'pos' => $pos,
                 'isBreak' => false,
@@ -93,7 +98,7 @@ class TimeSlotCalculator
                 'label' => "{$start} - {$end}",
                 'session' => 'siang',
             ];
-            $cursor += $durasi;
+            $cursor = $cappedNext;
         }
 
         return $slots;

@@ -637,9 +637,17 @@ export function buildDayTimeSlots(
   });
 
   cursor = afternoonStart;
+  const maxDayEndMinutes = 17 * 60; // 17:00 sharp
   for (let pos = MORNING_MAX_POS + 1; pos <= TOTAL_POS; pos++) {
     const startTime = minutesToTime(cursor);
-    const endTime = minutesToTime(cursor + durasi);
+    const rawNext = cursor + durasi;
+    const cappedNext =
+      pos === TOTAL_POS &&
+      cursor < maxDayEndMinutes &&
+      rawNext > maxDayEndMinutes
+        ? maxDayEndMinutes
+        : rawNext;
+    const endTime = minutesToTime(cappedNext);
     slots.push({
       pos,
       isBreak: false,
@@ -648,7 +656,7 @@ export function buildDayTimeSlots(
       label: `${startTime} - ${endTime}`,
       session: 'siang',
     });
-    cursor += durasi;
+    cursor = cappedNext;
   }
 
   return slots;

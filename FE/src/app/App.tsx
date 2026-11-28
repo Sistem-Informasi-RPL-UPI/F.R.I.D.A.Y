@@ -1,4 +1,12 @@
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router';
+import {
+  AdminDashboardPage,
+  AdminNotifikasiPage,
+  AdminPeminjamanBarangPage,
+  AdminPeminjamanRuanganPage,
+  AdminPengaturanAkunPage,
+  AdminRiwayatLayananPage,
+} from '../features/admin-portal';
 import { LoginPage } from '../features/auth';
 import { DaftarMataKuliahPage } from '../features/daftar-mata-kuliah';
 import { DashboardPage } from '../features/dashboard';
@@ -29,18 +37,19 @@ import { AdminLayout, Button, MahasiswaLayout, Navbar } from '../shared/ui';
 export function App() {
   const location = useLocation();
 
-  // Portal Mahasiswa menampilkan layout sidebar mandiri (light theme 1440w) tanpa Navbar ganda
-  const isStudentRoute =
+  // Portal Mahasiswa & Area Admin Jadwal menampilkan layout sidebar mandiri (light theme 1440w) tanpa Navbar ganda
+  const isStandaloneSidebarRoute =
     location.pathname === '/' ||
     location.pathname === '/peminjaman-barang' ||
     location.pathname === '/peminjaman-ruangan' ||
     location.pathname === '/riwayat-peminjaman' ||
     location.pathname === '/notifikasi' ||
-    location.pathname === '/pengaturan-akun';
+    location.pathname === '/pengaturan-akun' ||
+    location.pathname.startsWith('/admin');
 
   return (
     <JadwalProvider>
-      {!isStudentRoute && (
+      {!isStandaloneSidebarRoute && (
         <Navbar
           brand={
             <Link
@@ -91,9 +100,10 @@ export function App() {
           <Route path="pengaturan-akun" element={<PengaturanAkunPage />} />
         </Route>
 
-        {/* Multi-page Admin Workspace with Left Sidebar (PRD v1.3 Section 3B) */}
+        {/* Multi-page Admin Workspace with Left Sidebar (PRD v1.3 Section 3B & Integrated Admin Menus) */}
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Navigate to="/admin/dosen" replace />} />
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="dosen" element={<KelolaDosenPage />} />
           <Route
             path="dosen/ketersediaan"
@@ -104,6 +114,17 @@ export function App() {
           <Route path="daftar-mata-kuliah" element={<DaftarMataKuliahPage />} />
           <Route path="pengaturan/waktu" element={<SettingWaktuPage />} />
           <Route path="pengaturan/ruangan" element={<ReferensiRuanganPage />} />
+          <Route
+            path="peminjaman-barang"
+            element={<AdminPeminjamanBarangPage />}
+          />
+          <Route
+            path="peminjaman-ruangan"
+            element={<AdminPeminjamanRuanganPage />}
+          />
+          <Route path="riwayat-layanan" element={<AdminRiwayatLayananPage />} />
+          <Route path="notifikasi" element={<AdminNotifikasiPage />} />
+          <Route path="pengaturan-akun" element={<AdminPengaturanAkunPage />} />
         </Route>
 
         <Route
