@@ -1,13 +1,14 @@
 import type { DayName, Ruangan } from '../../../shared/jadwal';
 
 /**
- * Konfigurasi master gedung, lantai, denah lantai, dan pemetaan ruangan peminjaman
- * untuk UPI Kampus Cibiru.
+ * Konfigurasi master gedung, lantai, denah lantai, dan fallback lokal ruangan
+ * peminjaman untuk UPI Kampus Cibiru.
  *
- * Catatan pemeliharaan:
- * Data lantai, denah lantai, dan daftar ruangan terpusat di file ini agar
- * penambahan/penyesuaian lantai maupun ruangan per gedung dapat dilakukan di
- * satu tempat tanpa mengubah komponen UI.
+ * Sumber data utama saat terhubung ke backend adalah:
+ * - `BE/database/seeders/CampusFacilitiesSeeder.php`
+ * - `GET /api/v1/facilities/rooms?bookable_only=1`
+ * Data lokal di file ini digunakan sebagai fallback mode offline/standalone
+ * serta konfigurasi tata letak visual peta kampus & denah SVG per lantai.
  */
 
 export type BookableBuildingId = 'A' | 'B' | 'E';
@@ -36,6 +37,7 @@ export interface BuildingConfig {
 
 export interface BookableRoom {
   id: string;
+  backendRoomId?: number;
   code: string;
   shortCode?: string;
   roomNumber?: number;
@@ -117,6 +119,9 @@ export interface CourtyardFloorPlanLayout {
 export type FloorPlanLayout =
   SingleWingFloorPlanLayout | CourtyardFloorPlanLayout;
 
+export type RoomBookingStatus =
+  'Menunggu Persetujuan' | 'Disetujui' | 'Ditolak' | 'Dibatalkan';
+
 export interface RoomBookingRecord {
   id: string;
   roomCode: string;
@@ -129,7 +134,7 @@ export interface RoomBookingRecord {
   attendeeCount: number;
   purpose: string;
   organizer: string;
-  status: 'Menunggu Persetujuan';
+  status: RoomBookingStatus;
   submittedAt: string;
 }
 

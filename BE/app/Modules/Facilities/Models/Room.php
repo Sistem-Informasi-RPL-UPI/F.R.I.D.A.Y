@@ -10,8 +10,10 @@ class Room extends Model
     protected $fillable = [
         'building_id',
         'code',
+        'short_code',
         'name',
         'floor',
+        'room_number',
         'capacity',
         'room_type',
         'facilities',
@@ -24,6 +26,7 @@ class Room extends Model
     {
         return [
             'floor' => 'integer',
+            'room_number' => 'integer',
             'capacity' => 'integer',
             'facilities' => 'array',
             'is_bookable' => 'boolean',

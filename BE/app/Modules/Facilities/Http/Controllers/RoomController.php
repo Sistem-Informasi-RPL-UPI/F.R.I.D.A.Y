@@ -12,10 +12,17 @@ class RoomController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Room::query()->with('building')->orderBy('code');
+        $query = Room::query()
+            ->with('building')
+            ->orderBy('floor')
+            ->orderBy('room_number')
+            ->orderBy('code');
 
         if ($request->filled('building_id')) {
             $query->where('building_id', $request->integer('building_id'));
+        }
+        if ($request->filled('floor')) {
+            $query->where('floor', $request->integer('floor'));
         }
         if ($request->boolean('bookable_only')) {
             $query->where('is_bookable', true)->where('is_active', true);
@@ -32,10 +39,12 @@ class RoomController extends Controller
         $data = $request->validate([
             'building_id' => ['required', 'exists:buildings,id'],
             'code' => ['required', 'string', 'max:24', 'unique:rooms,code'],
+            'short_code' => ['nullable', 'string', 'max:24'],
             'name' => ['required', 'string', 'max:120'],
             'floor' => ['integer', 'min:1', 'max:30'],
+            'room_number' => ['nullable', 'integer', 'min:1', 'max:255'],
             'capacity' => ['integer', 'min:1', 'max:1000'],
-            'room_type' => ['string', 'in:kelas,lab,aula,rapat'],
+            'room_type' => ['string', 'in:kelas,lab,aula,rapat,studio'],
             'facilities' => ['nullable', 'array'],
             'is_bookable' => ['boolean'],
             'is_schedulable' => ['boolean'],
@@ -52,10 +61,12 @@ class RoomController extends Controller
         $data = $request->validate([
             'building_id' => ['sometimes', 'exists:buildings,id'],
             'code' => ['sometimes', 'string', 'max:24', 'unique:rooms,code,'.$room->id],
+            'short_code' => ['nullable', 'string', 'max:24'],
             'name' => ['sometimes', 'string', 'max:120'],
             'floor' => ['integer', 'min:1', 'max:30'],
+            'room_number' => ['nullable', 'integer', 'min:1', 'max:255'],
             'capacity' => ['integer', 'min:1', 'max:1000'],
-            'room_type' => ['string', 'in:kelas,lab,aula,rapat'],
+            'room_type' => ['string', 'in:kelas,lab,aula,rapat,studio'],
             'facilities' => ['nullable', 'array'],
             'is_bookable' => ['boolean'],
             'is_schedulable' => ['boolean'],

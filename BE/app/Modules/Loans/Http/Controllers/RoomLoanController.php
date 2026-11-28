@@ -44,6 +44,13 @@ class RoomLoanController extends Controller
             ], 422);
         }
 
+        if (($data['attendee_count'] ?? 1) > $room->capacity) {
+            return response()->json([
+                'message' => "Jumlah peserta melebihi kapasitas maksimal ruangan ({$room->capacity} orang).",
+                'code' => 'CAPACITY_EXCEEDED',
+            ], 422);
+        }
+
         $hasOverlap = RoomLoan::query()
             ->where('room_id', $room->id)
             ->whereIn('status', ['pending', 'approved'])

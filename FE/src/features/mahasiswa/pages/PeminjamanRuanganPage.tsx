@@ -8,9 +8,14 @@ import {
   MapPin,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useJadwalStore } from '../../../shared/jadwal';
 import { Badge, Button } from '../../../shared/ui';
+import {
+  fetchBookableRoomsFromApi,
+  fetchRoomLoansFromApi,
+  shouldUseBackendApi,
+} from '../api/roomBookingApi';
 import { CampusMapSelector } from '../components/CampusMapSelector';
 import { RoomBookingModal } from '../components/RoomBookingModal';
 import { RoomResultsStep } from '../components/RoomResultsStep';
@@ -40,14 +45,42 @@ export function PeminjamanRuanganPage() {
     getTodayIsoDate(),
   );
   const [bookingRoom, setBookingRoom] = useState<BookableRoom | null>(null);
+  const [apiRooms, setApiRooms] = useState<BookableRoom[] | null>(null);
   const [submittedBookings, setSubmittedBookings] = useState<
     RoomBookingRecord[]
   >([]);
 
-  const allBookableRooms = useMemo(
+  const fallbackBookableRooms = useMemo(
     () => buildBookableRooms(jadwalRooms),
     [jadwalRooms],
   );
+
+  useEffect(() => {
+    if (!shouldUseBackendApi()) {
+      return;
+    }
+
+    let active = true;
+    Promise.allSettled([
+      fetchBookableRoomsFromApi(jadwalRooms),
+      fetchRoomLoansFromApi(),
+    ]).then(([roomsResult, loansResult]) => {
+      if (!active) return;
+
+      if (roomsResult.status === 'fulfilled' && roomsResult.value.length > 0) {
+        setApiRooms(roomsResult.value);
+      }
+      if (loansResult.status === 'fulfilled') {
+        setSubmittedBookings(loansResult.value);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [jadwalRooms]);
+
+  const allBookableRooms = apiRooms ?? fallbackBookableRooms;
 
   const roomCountByBuilding = useMemo<Record<BookableBuildingId, number>>(
     () => ({
