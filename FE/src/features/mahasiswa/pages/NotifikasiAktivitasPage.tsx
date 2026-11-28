@@ -1,3 +1,4 @@
+import { Bell } from 'lucide-react';
 import { Link } from 'react-router';
 
 export function NotifikasiAktivitasPage() {
@@ -14,8 +15,8 @@ export function NotifikasiAktivitasPage() {
       </div>
 
       <div className="mhs-placeholder-page__card">
-        <div className="mhs-placeholder-page__icon">
-          <i className="bi bi-bell" />
+        <div className="mhs-placeholder-page__icon" aria-hidden="true">
+          <Bell size={26} strokeWidth={1.9} />
         </div>
         <h4>Pusat Notifikasi Layanan</h4>
         <p>

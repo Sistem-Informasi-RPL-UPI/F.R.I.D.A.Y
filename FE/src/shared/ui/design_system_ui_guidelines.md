@@ -1,158 +1,127 @@
-# Design System & UI Guidelines (`DESIGN.md`)
+# Panduan UI/UX & Implementasi Frontend (`DESIGN.md`)
 
-Dokumen ini adalah panduan resmi desain dan pengembangan antarmuka (UI/UX) untuk Frontend **React + TypeScript** yang terhubung dengan **Laravel REST API**. Semua anggota tim wajib mengikuti standar library, token warna, tipografi, dan _spacing_ di bawah ini agar tampilan aplikasi tetap konsisten, modern, dan mudah dirawat.
-
----
-
-## 1. Tech Stack & Library Resmi (100% Gratis & Open-Source)
-
-Semua komponen UI dan logika frontend wajib menggunakan library berikut (dilarang menginstal library UI ganda seperti MUI/Bootstrap agar _bundle_ tetap ringan dan gaya tidak bentrok):
-
-| Kategori               | Library                         | Kegunaan Utama                                            |
-| :--------------------- | :------------------------------ | :-------------------------------------------------------- |
-| **Core & Build**       | React + TypeScript + Vite       | Pondasi aplikasi SPA                                      |
-| **Styling**            | Tailwind CSS                    | Utility-first CSS & responsivitas                         |
-| **UI Components**      | shadcn/ui                       | Komponen inti (Button, Input, Dialog, Card, dll.)         |
-| **Icons**              | Lucide React                    | Seluruh ikon UI (konsisten _stroke-based_)                |
-| **Animation**          | Motion (`motion/react`)         | Transisi halaman, modal, dan interaksi mikro              |
-| **Routing**            | React Router                    | Navigasi antar halaman                                    |
-| **API & Server State** | Axios + TanStack Query          | Komunikasi ke Laravel API, _caching_, dan _loading state_ |
-| **Client State**       | Zustand                         | State global UI (sidebar, tema, sesi user)                |
-| **Forms & Validation** | React Hook Form + Zod           | Manajemen form dan validasi skema                         |
-| **Data Tables**        | TanStack Table                  | Tabel kompleks (_sorting, filtering, pagination_)         |
-| **Charts**             | Recharts (via shadcn/ui Charts) | Visualisasi data & grafik dashboard                       |
-| **Notifications**      | Sonner                          | _Toast notification_ (sukses, error, info)                |
-| **Date Utilities**     | date-fns                        | Format dan manipulasi tanggal/waktu                       |
-| **Testing**            | Vitest + Playwright             | Unit testing & End-to-End testing                         |
-
-> **Sumber Komponen Tambahan (Opsional):** Jika butuh variasi komponen ekstra berbasis Tailwind + shadcn/ui, tim diperbolehkan _copy-paste_ dari **Origin UI** atau **shadcn/ui Blocks** selama tetap mengikuti token warna di dokumen ini.
+Dokumen ini adalah panduan praktis desain dan rekayasa antarmuka (UI/UX) untuk Frontend **FRIDAY** (**React 19 + TypeScript + Vite**) yang terhubung dengan **Laravel REST API**. Panduan ini melengkapi referensi token & komponen pada [DesignSistem.md](./DesignSistem.md) dan [tokens.css](./tokens.css).
 
 ---
 
-## 2. Sistem Warna (Color Tokens)
+## 1. Tech Stack & Aturan Library
 
-Kita menggunakan pendekatan **Semantic Color Tokens** (bukan _hardcode_ hex seperti `#3b82f6` di dalam komponen). Gunakan class Tailwind semantik seperti `bg-primary`, `text-muted-foreground`, atau `border-border` agar **Light Mode** dan **Dark Mode** otomatis bekerja.
+Gunakan hanya library resmi yang sudah terpasang di `FE/package.json`. **Dilarang** menambahkan framework CSS/UI ganda (seperti Bootstrap CSS, Bootstrap Icons CDN, MUI, atau Tailwind terpisah) maupun memuat aset dari CDN eksternal agar bundle ringan dan uji Playwright (`externalRequests === []`) selalu lulus.
 
-### Palet Utama (Light Mode & Dark Mode)
-
-| Token / Class Tailwind | Light Mode (Hex)       | Dark Mode (Hex)        | Kegunaan                                        |
-| :--------------------- | :--------------------- | :--------------------- | :---------------------------------------------- |
-| `background`           | `#FFFFFF`              | `#09090B`              | Latar belakang utama halaman                    |
-| `foreground`           | `#09090B`              | `#FAFAFA`              | Warna teks utama                                |
-| `card`                 | `#FFFFFF`              | `#121215`              | Latar belakang Card, Modal, Popover             |
-| `primary`              | `#2563EB` _(Blue 600)_ | `#3B82F6` _(Blue 500)_ | Tombol utama (CTA), link aktif, elemen fokus    |
-| `primary-foreground`   | `#FFFFFF`              | `#FFFFFF`              | Teks di atas warna `primary`                    |
-| `secondary`            | `#F4F4F5`              | `#27272A`              | Tombol sekunder, badge netral                   |
-| `muted`                | `#F4F4F5`              | `#27272A`              | Latar belakang halus (header tabel, _skeleton_) |
-| `muted-foreground`     | `#71717A`              | `#A1A1AA`              | Teks deskripsi, label bantu, _placeholder_      |
-| `border`               | `#E4E4E7`              | `#27272A`              | Garis pemisah, border Card, border Input        |
-
-### Warna Status (Feedback & Semantic)
-
-| Status                  | Warna Utama (Hex) | Class Rekomendasi                | Kegunaan                                   |
-| :---------------------- | :---------------- | :------------------------------- | :----------------------------------------- |
-| **Success**             | `#16A34A`         | `text-emerald-600 bg-emerald-50` | Data tersimpan, status aktif/lunas         |
-| **Warning**             | `#D97706`         | `text-amber-600 bg-amber-50`     | Peringatan, status menunggu (_pending_)    |
-| **Destructive / Error** | `#DC2626`         | `bg-destructive text-white`      | Hapus data, validasi form gagal, error API |
-| **Info**                | `#0284C7`         | `text-sky-600 bg-sky-50`         | Informasi sistem, tips bantuan             |
-
-> _Catatan: Jika proyek memiliki warna brand khusus (misal hijau atau ungu), cukup ubah nilai CSS variable `--primary` di file `src/index.css`._
+| Kategori                  | Stack Resmi FRIDAY                                                                  | Kegunaan Utama                                          |
+| ------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Core & Build**          | React 19 + TypeScript + Vite                                                        | Pondasi SPA dengan strict type checking                 |
+| **Design Tokens & CSS**   | CSS Custom Properties (`tokens.css`) + CSS Modular (`.ds-*`, `.mhs-*`, feature CSS) | Konsistensi warna, tipografi, grid, spasi, dan state    |
+| **UI Primitives**         | `src/shared/ui` + `@radix-ui/react-*` (`dialog`, `select`, `tabs`, `dropdown-menu`) | Komponen inti & overlay aksesibel WAI-ARIA              |
+| **Icons**                 | `lucide-react`                                                                      | Seluruh ikon UI stroke-based (100% offline/tree-shaken) |
+| **Animation**             | `motion/react`                                                                      | Transisi antar-langkah dan interaksi mikro halus        |
+| **Routing**               | `react-router` (Declarative Mode)                                                   | Navigasi Portal Mahasiswa & Workspace Admin             |
+| **API & Server State**    | `axios` (`src/shared/api/client.ts`) + `@tanstack/react-query`                      | Komunikasi ke Laravel REST API, caching, loading state  |
+| **Forms & Validation**    | `react-hook-form` + `zod` + `@hookform/resolvers`                                   | Manajemen form dan validasi skema terstruktur           |
+| **Data & Visualisasi**    | `@tanstack/react-table` + `recharts`                                                | Tabel data kompleks & grafik analitik                   |
+| **Notifications & Dates** | `sonner` + `date-fns`                                                               | Toast notification & format tanggal/waktu               |
+| **Class Utility**         | `clsx`                                                                              | Penggabungan nama class CSS kondisional                 |
+| **Testing**               | `vitest` + `@testing-library/react` + `@playwright/test`                            | Unit test terkolokasi & End-to-End testing              |
 
 ---
 
-## 3. Tipografi (Typography)
+## 2. Penggunaan Warna & Semantic Tokens
 
-### Font Family
+Semua warna wajib merujuk pada variabel CSS di [tokens.css](./tokens.css) agar konsisten di seluruh modul. **Dilarang menulis nilai HEX langsung** di file `.tsx` atau `.css` pada folder `src/features/*`.
 
-- **Primary Font (UI & Body):** `Inter` (Google Fonts) — bersih, modern, dan sangat terbaca untuk dashboard maupun web publik.
-- **Monospace Font (Kode, ID, Angka Tabel):** `JetBrains Mono` atau font mono bawaan sistem (`font-mono`).
+### Pemetaan Peran Warna
 
-### Skala Tipografi (Type Scale)
-
-| Peran                  | Class Tailwind                                  | Ukuran / Line Height | Weight         | Kegunaan                               |
-| :--------------------- | :---------------------------------------------- | :------------------- | :------------- | :------------------------------------- |
-| **Page Title (H1)**    | `text-2xl md:text-3xl font-bold tracking-tight` | 24px – 30px          | Bold (700)     | Judul utama halaman                    |
-| **Section Title (H2)** | `text-xl font-semibold tracking-tight`          | 20px / 28px          | SemiBold (600) | Judul sub-bagian atau Card besar       |
-| **Card Title (H3)**    | `text-base font-semibold`                       | 16px / 24px          | SemiBold (600) | Judul Card, Modal, atau Widget         |
-| **Body Default**       | `text-sm font-normal leading-relaxed`           | 14px / 22px          | Regular (400)  | Paragraf, isi tabel, teks umum         |
-| **Label / Form**       | `text-sm font-medium`                           | 14px / 20px          | Medium (500)   | Label input form, menu navigasi        |
-| **Caption / Helper**   | `text-xs text-muted-foreground`                 | 12px / 16px          | Regular (400)  | Teks bantuan form, _timestamp_, footer |
-
----
-
-## 4. Sistem Spacing, Padding & Layout (4px Grid System)
-
-Semua jarak (_margin, padding, gap_) wajib mengikuti kelipatan **4px** (skala standar Tailwind: `1 = 4px`, `2 = 8px`, `4 = 16px`, `6 = 24px`, `8 = 32px`). **Dilarang menggunakan nilai arbitrary** seperti `p-[13px]` atau `mt-[19px]`.
-
-### Standar Padding & Gap
-
-- **Page Container Padding:** `p-4 md:p-6 lg:p-8` (16px di mobile, 24px di tablet, 32px di desktop).
-- **Card Padding:** `p-4 md:p-6` (24px standar untuk desktop).
-- **Jarak Antar Section:** `space-y-6` atau `gap-6` (24px).
-- **Jarak Antar Elemen di dalam Card / Form:** `space-y-4` atau `gap-4` (16px).
-- **Jarak Label dengan Input:** `space-y-1.5` atau `gap-1.5` (6px).
-- **Jarak Antar Tombol (Action Group):** `gap-2` atau `gap-3` (8px – 12px).
-
-### Layout & Breakpoints
-
-- **Max Width Konten Utama:** `max-w-7xl mx-auto` (1280px) untuk web publik / container terpusat.
-- **Lebar Sidebar Dashboard:** `w-64` (256px) saat terbuka, `w-16` (64px) saat _collapsed_.
-- **Tinggi Navbar / Topbar:** `h-16` (64px).
-- **Breakpoints (Mobile-First):**
-  - Default: Mobile (`< 640px`)
-  - `sm`: `640px`
-  - `md`: `768px` (Tablet)
-  - `lg`: `1024px` (Laptop / Desktop)
-  - `xl`: `1280px` (Layar lebar)
+| Peran UI                   | Token CSS (`tokens.css`)                                                           | Nilai Referensi                   | Kapan Digunakan                                          |
+| -------------------------- | ---------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------- |
+| **Primary CTA & Brand**    | `--color-primary`, `--color-primary-hover`                                         | `#0101B7`                         | Tombol aksi utama, header brand, gedung aktif terpilih   |
+| **Primary Surface Tint**   | `--color-primary-soft`, `--color-primary-tint`                                     | `#E6E8FF`, `#F4F6FF`              | Highlight menu aktif, hover kartu/peta, badge kategori   |
+| **Secondary & Info Brand** | `--color-secondary`, `--color-secondary-soft`                                      | `#8DCCF1`, `#E5F5FD`              | Aksi sekunder, badge informasi gedung/jadwal             |
+| **Accent Highlight**       | `--color-accent`, `--color-accent-soft`                                            | `#FFD166`, `#FFF6DB`              | Penanda fokus terpilih, badge menunggu persetujuan       |
+| **Page & Surface**         | `--color-neutral`, `--color-surface`, `--color-surface-muted`                      | `#F2F7FF`, `#FFFFFF`, `#F8FAFF`   | Background aplikasi, kartu, modal, header tabel          |
+| **Text Hierarchy**         | `--color-ink-primary`, `--color-ink-secondary`, `--color-ink-muted`                | `#0B2239`, `#475569`, `#64748B`   | Heading, isi paragraf, hint/placeholder/metadata         |
+| **Borders**                | `--color-border`, `--color-border-strong`                                          | `#DCE6F5`, `#B8CAE6`              | Garis pemisah kartu, input, outline tombol               |
+| **Status Semantik**        | `--color-success`, `--color-warning`, `--color-danger`, `--color-info` (+ `-soft`) | Hijau / Amber / Merah / Biru Info | Feedback tersedia, penuh/terjadwal, error validasi, info |
 
 ---
 
-## 5. Border Radius, Border & Elevation (Shadow)
+## 3. Hierarki Tipografi
 
-### Border Radius
+Gunakan font lokal yang sudah terpasang (`@fontsource/lexend` dan `@fontsource/plus-jakarta-sans`):
 
-- **Card, Modal, Dialog:** `rounded-xl` (12px)
-- **Button, Input, Select, Dropdown:** `rounded-lg` (8px)
-- **Badge, Tag kecil:** `rounded-md` (6px) atau `rounded-full` (pill)
-- **Avatar & Icon Button bulat:** `rounded-full`
+- **Heading & Display (`var(--font-heading)` — Lexend):** Untuk judul halaman (`h2`/`h3`), nama gedung/ruangan utama, angka statistik, dan stepper title. Pertahankan hanya satu `<h1>` per rute aktif (`FRIDAY` di shell utama atau judul halaman standalone) demi aksesibilitas screen reader.
+- **Body & Controls (`var(--font-body)` — Plus Jakarta Sans):** Untuk deskripsi, isi tabel, label form, dan tombol.
+- **Kode & Referensi (`var(--font-mono)`):** Untuk kode ruangan (`B3.001`, `E2.005`), jam jadwal (`07:00 - 09:30`), NIM/NIP, dan nomor referensi peminjaman.
 
-### Border & Shadow
-
-Kita menggunakan gaya **Clean Modern UI** (utamakan border tipis dibanding shadow yang terlalu tebal):
-
-- **Card Default:** `border border-border bg-card shadow-xs`
-- **Dropdown / Popover:** `border border-border bg-popover shadow-md`
-- **Modal / Dialog:** `border border-border bg-background shadow-lg`
-
----
-
-## 6. Aturan Pemakaian Komponen
-
-1. **Buttons (`shadcn/ui Button`):**
-   - Hanya boleh ada **1 tombol `variant="default"` (Primary)** per layar/modal untuk aksi utama.
-   - Aksi batal/kembali gunakan `variant="outline"` atau `variant="ghost"`.
-   - Aksi hapus gunakan `variant="destructive"` dan wajib disertai _Confirmation Dialog_ (`AlertDialog`).
-2. **Icons (`Lucide React`):**
-   - Ukuran default di dalam tombol atau teks: `className="h-4 w-4"` (16px).
-   - Ukuran ikon navigasi/sidebar: `className="h-5 w-5"` (20px).
-   - Gunakan `strokeWidth={1.75}` atau default (`2`) secara konsisten.
-3. **Forms (`React Hook Form` + `Zod`):**
-   - Setiap form wajib memiliki validasi Zod dan menampilkan pesan error tepat di bawah input (`text-xs text-destructive`).
-   - Tombol _Submit_ wajib berubah menjadi `disabled` dengan ikon _spinner_ (`Loader2 className="animate-spin"`) saat sedang mengirim request ke API Laravel.
-4. **Loading & Empty States:**
-   - Jangan tampilkan layar putih kosong saat _fetching_ data dari Laravel API. Selalu gunakan komponen `Skeleton` (dari shadcn/ui).
-   - Jika data tabel kosong, tampilkan _Empty State_ yang rapi (Ikon + Judul singkat + Tombol aksi tambah data).
-5. **Notifications (`Sonner`):**
-   - Gunakan `toast.success("Data berhasil disimpan")` atau `toast.error("Gagal memuat data")` untuk semua feedback aksi API.
-6. **Animations (`Motion`):**
-   - Jaga durasi animasi tetap cepat dan halus: `duration: 0.2` sampai `0.3` detik. Hindari animasi berlebihan yang memperlambat kerja pengguna.
+| Peran di Halaman                | Ukuran / Token                                    | Weight        | Contoh Penggunaan                          |
+| ------------------------------- | ------------------------------------------------- | ------------- | ------------------------------------------ |
+| **Judul Section / Page Header** | `--text-h5-size` – `--text-h4-size` (`24px–32px`) | `700`         | Header halaman Peminjaman Ruangan          |
+| **Judul Kartu / Modal**         | `--text-h6-size` (`20px`) atau `1.1rem`           | `700` / `600` | Judul dialog pengajuan, nama gedung        |
+| **Body Default**                | `--text-body-md-size` (`16px` / `0.95rem`)        | `400`–`500`   | Deskripsi fasilitas, isi tabel             |
+| **Label Form & Tab**            | `--text-body-sm-size` (`13px`–`14px`)             | `600`         | Label input `FormField`, filter kategori   |
+| **Caption & Metadata**          | `12px` (`0.75rem`)                                | `500`–`600`   | Hint tanggal, catatan jam, subtitle lantai |
 
 ---
 
-## 7. Do & Don't untuk Tim Frontend
+## 4. Sistem Spacing, Grid & Responsivitas (Kelipatan 4px)
 
-- **DO:** Selalu cek komponen di `src/components/ui/` sebelum membuat komponen baru dari nol.
-- **DO:** Gunakan helper `cn()` dari `@/lib/utils` untuk menggabungkan class Tailwind secara kondisional.
-- **DO:** Pastikan semua halaman bisa diakses dengan nyaman di layar mobile (`375px`) maupun desktop (`1440px`).
-- **DON'T:** Jangan menulis _inline style_ (`style={{ color: 'red' }}`) kecuali untuk nilai dinamis dari JavaScript/Chart.
+Seluruh `margin`, `padding`, dan `gap` harus mengikuti skala `--space-*` berbasis **4px** (`4, 8, 12, 16, 24, 32, 48px`):
+
+- **Padding Area Konten Portal:** `20px–36px` pada desktop (`--space-6` / `--space-8`), `16px–20px` pada mobile (`--space-4`).
+- **Padding Kartu:** `--space-6` (`24px`) pada desktop, `--space-4` (`16px`) pada layar kecil.
+- **Jarak Antar Section:** `--space-6` (`24px`).
+- **Jarak Antar Elemen Form / Kartu:** `--space-4` (`16px`).
+- **Jarak Label dengan Input:** `--space-2` (`8px`).
+- **Jarak Antar Tombol (Action Group):** `--space-2` (`8px`) atau `--space-3` (`12px`).
+- **Breakpoints Standar:** Mobile (`< 640px` / uji di `375px`), Tablet (`<= 768px` / `<= 1024px`), Desktop (`1200px–1440px`). Pastikan tidak ada horizontal overflow yang tidak disengaja di `375px`.
+
+---
+
+## 5. Border Radius, Elevation & Gaya Visual (Clean Modern UI)
+
+Utamakan **border tipis + kontras permukaan yang bersih** dibanding bayangan tebal:
+
+- **Kartu & Panel Utama:** `border: 1px solid var(--color-border); background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs);`
+- **Panel Besar / Kontainer Denah:** `border-radius: var(--radius-xl);` (`24px`)
+- **Tombol & Alert:** `border-radius: var(--radius-md);` (`12px`)
+- **Input & Select:** `border-radius: var(--radius-sm);` (`8px`)
+- **Badge & Pill Filter:** `border-radius: var(--radius-pill);` (`9999px`)
+- **Modal & Dialog:** `border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);`
+
+---
+
+## 6. Aturan Komponen, Alur Multi-Langkah & Peta Interaktif
+
+1. **Buttons (`src/shared/ui/Button`):**
+   - Idealnya maksimal **1 tombol `variant="primary"`** per kartu/layar/modal untuk aksi utama agar hirarki jelas.
+   - Aksi batal/kembali gunakan `variant="outline"`.
+   - Aksi destruktif gunakan `variant="danger"` disertai konfirmasi eksplisit.
+2. **Icons (`lucide-react`):**
+   - Ukuran ikon di tombol/teks: `size={16}` (`16px`).
+   - Ukuran ikon navigasi sidebar/header kartu: `size={18}`–`20` (`18px–20px`).
+   - Gunakan `strokeWidth={1.75}` atau `2` secara konsisten di seluruh fitur.
+3. **Alur Multi-Langkah (Wizard / Stepper):**
+   - Tampilkan **Stepper indikator** yang jelas di bagian atas (`1. Pilih Gedung → 2. Pilih Lantai → 3. Hasil Ruangan`) dengan status aktif, selesai (menyertakan nilai pilihan seperti `Gedung B`, `Lantai 3`), dan terkunci/belum dipilih.
+   - Izinkan pengguna kembali ke langkah sebelumnya lewat Stepper maupun tombol `Ganti Gedung` / `Ganti Lantai`.
+4. **Peta / Denah Interaktif & Aksesibilitas:**
+   - Elemen interaktif di atas denah SVG wajib dapat dioperasikan via **mouse maupun keyboard** (`role="button"`, `tabIndex={0}`, `aria-pressed`, dukungan `Enter` & `Space`), dan selalu sediakan **daftar kartu sinkron (dual selector)** di sampingnya agar pengguna mobile/screen-reader tetap nyaman.
+   - Bedakan secara visual dan tegas antara **area aktif yang dapat dipilih** (Gedung A, B, E dengan border tegas & badge) dan **landmark non-peminjaman** (Gedung C, D, F, Asrama, UKM, Mesjid, Lapangan dalam tampilan muted non-interaktif).
+5. **Forms (`react-hook-form` + `zod`):**
+   - Setiap formulir peminjaman wajib memiliki validasi `zod` (termasuk cek rentang jam `endTime > startTime` dan kapasitas peserta `<= room.capacity`) dengan pesan error `role="alert"` tepat di bawah field.
+   - Tombol submit menampilkan spinner `Loader2` dan status `disabled` saat memproses pengajuan.
+6. **Loading & Empty States:**
+   - Gunakan state skeleton/loading saat memuat data API.
+   - Jika lantai belum memiliki daftar ruangan atau filter tidak menemukan hasil, tampilkan _Empty State_ yang informatif (ikon + judul + penjelasan + tombol reset/kembali).
+7. **Notifications (`sonner`) & Motion (`motion/react`):**
+   - Gunakan `toast.success(...)` atau `toast.error(...)` untuk feedback aksi pengguna.
+   - Jaga durasi transisi `motion/react` tetap singkat (`0.2s–0.3s`) dan hormati `@media (prefers-reduced-motion: reduce)`.
+
+---
+
+## 7. Do & Don't Tim Frontend
+
+- **DO:** Cek komponen di `src/shared/ui/index.ts` sebelum membuat komponen primitif baru.
+- **DO:** Gunakan `clsx` untuk menggabungkan class CSS kondisional.
+- **DO:** Jaga arah import `app -> features -> shared`.
+- **DO:** Uji halaman di viewport mobile (`375px`) dan desktop (`1440px`), serta pastikan tidak ada request eksternal.
+- **DON'T:** Jangan menuliskan kode HEX statis di `src/features/*` atau mengimpor CSS/icon dari CDN luar.
 - **DON'T:** Jangan menginstal library UI tambahan tanpa persetujuan tim.

@@ -1,52 +1,71 @@
+import {
+  Bell,
+  Building2,
+  HelpCircle,
+  History,
+  LayoutGrid,
+  LogOut,
+  Package,
+  Settings,
+  type LucideIcon,
+} from 'lucide-react';
 import { Link, NavLink } from 'react-router';
 
 export interface MahasiswaSidebarProps {
   onLogout?: () => void;
 }
 
-export function MahasiswaSidebar({ onLogout }: MahasiswaSidebarProps) {
-  const navItems = [
-    {
-      to: '/',
-      label: 'Dashboard',
-      iconClass: 'bi bi-grid-fill',
-      end: true,
-    },
-    {
-      to: '/peminjaman-barang',
-      label: 'Peminjaman Barang',
-      iconClass: 'bi bi-box-seam',
-    },
-    {
-      to: '/peminjaman-ruangan',
-      label: 'Peminjaman Ruangan',
-      iconClass: 'bi bi-building',
-    },
-    {
-      to: '/riwayat-peminjaman',
-      label: 'Riwayat Peminjaman',
-      iconClass: 'bi bi-clock-history',
-    },
-    {
-      to: '/notifikasi',
-      label: 'Notifikasi/Log Aktivitas',
-      iconClass: 'bi bi-bell',
-      badge: '3',
-    },
-    {
-      to: '/pengaturan-akun',
-      label: 'Pengaturan akun',
-      iconClass: 'bi bi-gear',
-    },
-  ];
+interface SidebarNavItem {
+  to: string;
+  label: string;
+  Icon: LucideIcon;
+  end?: boolean;
+  badge?: string;
+}
 
+const NAV_ITEMS: readonly SidebarNavItem[] = [
+  {
+    to: '/',
+    label: 'Dashboard',
+    Icon: LayoutGrid,
+    end: true,
+  },
+  {
+    to: '/peminjaman-barang',
+    label: 'Peminjaman Barang',
+    Icon: Package,
+  },
+  {
+    to: '/peminjaman-ruangan',
+    label: 'Peminjaman Ruangan',
+    Icon: Building2,
+  },
+  {
+    to: '/riwayat-peminjaman',
+    label: 'Riwayat Peminjaman',
+    Icon: History,
+  },
+  {
+    to: '/notifikasi',
+    label: 'Notifikasi/Log Aktivitas',
+    Icon: Bell,
+    badge: '3',
+  },
+  {
+    to: '/pengaturan-akun',
+    label: 'Pengaturan Akun',
+    Icon: Settings,
+  },
+];
+
+export function MahasiswaSidebar({ onLogout }: MahasiswaSidebarProps) {
   return (
     <aside className="mhs-sidebar" aria-label="Sidebar Navigasi Mahasiswa">
       <div className="mhs-sidebar__top">
         {/* Brand Header */}
         <Link to="/" className="mhs-sidebar__brand">
           <div className="mhs-sidebar__logo-box" aria-hidden="true">
-            R
+            F
           </div>
           <div className="mhs-sidebar__brand-text">
             <h1 className="mhs-sidebar__brand-title">FRIDAY</h1>
@@ -59,22 +78,20 @@ export function MahasiswaSidebar({ onLogout }: MahasiswaSidebarProps) {
         {/* Menu Section */}
         <div className="mhs-sidebar__menu-label">MENU UTAMA</div>
         <nav className="mhs-sidebar__nav">
-          {navItems.map((item) => (
+          {NAV_ITEMS.map(({ to, label, Icon, end, badge }) => (
             <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
+              key={to}
+              to={to}
+              end={end}
               className={({ isActive }) =>
                 `mhs-sidebar__nav-item ${isActive ? 'mhs-sidebar__nav-item--active' : ''}`
               }
             >
-              <span className="mhs-sidebar__nav-icon">
-                <i className={item.iconClass} />
+              <span className="mhs-sidebar__nav-icon" aria-hidden="true">
+                <Icon size={18} strokeWidth={1.9} />
               </span>
-              <span className="mhs-sidebar__nav-label">{item.label}</span>
-              {item.badge && (
-                <span className="mhs-sidebar__badge">{item.badge}</span>
-              )}
+              <span className="mhs-sidebar__nav-label">{label}</span>
+              {badge && <span className="mhs-sidebar__badge">{badge}</span>}
             </NavLink>
           ))}
         </nav>
@@ -84,7 +101,7 @@ export function MahasiswaSidebar({ onLogout }: MahasiswaSidebarProps) {
         {/* Help Card */}
         <div className="mhs-help-card">
           <div className="mhs-help-card__icon" aria-hidden="true">
-            <i className="bi bi-question-lg" />
+            <HelpCircle size={16} strokeWidth={2} />
           </div>
           <div className="mhs-help-card__title">Butuh bantuan?</div>
           <div className="mhs-help-card__desc">
@@ -107,7 +124,7 @@ export function MahasiswaSidebar({ onLogout }: MahasiswaSidebarProps) {
           className="mhs-sidebar__logout-btn"
           onClick={onLogout ?? (() => alert('Sesi Anda telah diakhiri.'))}
         >
-          <i className="bi bi-box-arrow-right" />
+          <LogOut size={18} strokeWidth={1.9} aria-hidden="true" />
           <span>Keluar</span>
         </button>
       </div>

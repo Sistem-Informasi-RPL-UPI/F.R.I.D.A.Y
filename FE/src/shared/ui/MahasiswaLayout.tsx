@@ -1,3 +1,4 @@
+import { ArrowUp, Bell, ChevronRight } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router';
 import { MahasiswaSidebar } from './MahasiswaSidebar';
 
@@ -41,7 +42,7 @@ export function MahasiswaLayout() {
               aria-label="Notifikasi"
               onClick={() => alert('Tidak ada notifikasi baru.')}
             >
-              <i className="bi bi-bell" />
+              <Bell size={18} strokeWidth={1.9} aria-hidden="true" />
               <span className="mhs-header__icon-dot" />
             </button>
 
@@ -56,7 +57,12 @@ export function MahasiswaLayout() {
                   Mahasiswa - 2201024
                 </span>
               </div>
-              <i className="bi bi-chevron-right mhs-header__chevron" />
+              <ChevronRight
+                size={14}
+                strokeWidth={2}
+                className="mhs-header__chevron"
+                aria-hidden="true"
+              />
             </div>
           </div>
         </header>
@@ -70,11 +76,11 @@ export function MahasiswaLayout() {
         <button
           type="button"
           className="mhs-floating-btn"
-          aria-label="Kembali atau Shortcut"
+          aria-label="Kembali ke atas"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           title="Scroll ke atas"
         >
-          <i className="bi bi-box-arrow-in-right" />
+          <ArrowUp size={18} strokeWidth={2} aria-hidden="true" />
         </button>
       </div>
     </div>

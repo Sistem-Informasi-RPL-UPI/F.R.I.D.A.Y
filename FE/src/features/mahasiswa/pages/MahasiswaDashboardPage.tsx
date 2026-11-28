@@ -1,46 +1,68 @@
+import {
+  ArrowRight,
+  Bell,
+  Building2,
+  Check,
+  ChevronRight,
+  Clock,
+  FileText,
+  Package,
+  type LucideIcon,
+} from 'lucide-react';
 import { Link } from 'react-router';
 
+interface DashboardStatCard {
+  id: string;
+  title: string;
+  count: string;
+  subtext: string;
+  Icon: LucideIcon;
+  iconBg: string;
+  iconColor: string;
+  accentColor: string;
+}
+
 export function MahasiswaDashboardPage() {
-  const statCards = [
+  const statCards: readonly DashboardStatCard[] = [
     {
       id: 'surat-aktif',
       title: 'Pengajuan Surat Aktif',
       count: '2',
       subtext: '1 sedang ditinjau',
-      iconClass: 'bi bi-file-earmark-text',
-      iconBg: '#EEF2FF',
-      iconColor: '#1D2BD7',
-      accentColor: '#E0E7FF',
+      Icon: FileText,
+      iconBg: 'var(--color-primary-soft)',
+      iconColor: 'var(--color-primary)',
+      accentColor: 'var(--color-primary-soft)',
     },
     {
       id: 'surat-selesai',
       title: 'Surat Selesai',
       count: '8',
       subtext: 'Semester ini',
-      iconClass: 'bi bi-check-lg',
-      iconBg: '#ECFDF5',
-      iconColor: '#10B981',
-      accentColor: '#D1FAE5',
+      Icon: Check,
+      iconBg: 'var(--color-success-soft)',
+      iconColor: 'var(--color-success)',
+      accentColor: 'var(--color-success-soft)',
     },
     {
       id: 'peminjaman-aktif',
       title: 'Peminjaman Aktif',
       count: '1',
       subtext: 'Kembali 20 Juni',
-      iconClass: 'bi bi-box-seam',
-      iconBg: '#F0F9FF',
-      iconColor: '#0284C7',
-      accentColor: '#E0F2FE',
+      Icon: Package,
+      iconBg: 'var(--color-info-soft)',
+      iconColor: 'var(--color-info)',
+      accentColor: 'var(--color-info-soft)',
     },
     {
       id: 'menunggu-persetujuan',
       title: 'Menunggu Persetujuan',
       count: '2',
       subtext: 'Perlu ditinjau admin',
-      iconClass: 'bi bi-clock',
-      iconBg: '#FFFBEB',
-      iconColor: '#F59E0B',
-      accentColor: '#FEF3C7',
+      Icon: Clock,
+      iconBg: 'var(--color-warning-soft)',
+      iconColor: 'var(--color-warning)',
+      accentColor: 'var(--color-warning-soft)',
     },
   ];
 
@@ -85,35 +107,46 @@ export function MahasiswaDashboardPage() {
         </div>
         <div className="mhs-hero__graphic" aria-hidden="true">
           <div className="mhs-hero__circle">
-            <i className="bi bi-file-earmark-text-fill" />
+            <FileText size={30} strokeWidth={1.8} />
           </div>
         </div>
       </section>
 
       {/* 2. Stat Cards (4 columns) */}
       <section className="mhs-stats-grid" aria-label="Statistik Layanan">
-        {statCards.map((card) => (
-          <div key={card.id} className="mhs-stat-card">
-            <div className="mhs-stat-card__header">
-              <div
-                className="mhs-stat-card__icon"
-                style={{ backgroundColor: card.iconBg, color: card.iconColor }}
-              >
-                <i className={card.iconClass} />
+        {statCards.map(
+          ({
+            id,
+            title,
+            count,
+            subtext,
+            Icon,
+            iconBg,
+            iconColor,
+            accentColor,
+          }) => (
+            <div key={id} className="mhs-stat-card">
+              <div className="mhs-stat-card__header">
+                <div
+                  className="mhs-stat-card__icon"
+                  style={{ backgroundColor: iconBg, color: iconColor }}
+                >
+                  <Icon size={18} strokeWidth={2} aria-hidden="true" />
+                </div>
+                <span className="mhs-stat-card__title">{title}</span>
               </div>
-              <span className="mhs-stat-card__title">{card.title}</span>
+              <div className="mhs-stat-card__body">
+                <span className="mhs-stat-card__count">{count}</span>
+                <span className="mhs-stat-card__subtext">{subtext}</span>
+              </div>
+              <div
+                className="mhs-stat-card__corner"
+                style={{ backgroundColor: accentColor }}
+                aria-hidden="true"
+              />
             </div>
-            <div className="mhs-stat-card__body">
-              <span className="mhs-stat-card__count">{card.count}</span>
-              <span className="mhs-stat-card__subtext">{card.subtext}</span>
-            </div>
-            <div
-              className="mhs-stat-card__corner"
-              style={{ backgroundColor: card.accentColor }}
-              aria-hidden="true"
-            />
-          </div>
-        ))}
+          ),
+        )}
       </section>
 
       {/* 3. Akses Cepat Section */}
@@ -129,40 +162,50 @@ export function MahasiswaDashboardPage() {
         </div>
 
         <div className="mhs-quick-access__cards">
-          {/* Card: Ajukan Surat */}
+          {/* Card: Pinjam Ruangan */}
           <Link
-            to="/notifikasi"
+            to="/peminjaman-ruangan"
             className="mhs-action-card mhs-action-card--primary"
           >
             <div className="mhs-action-card__icon-wrap">
-              <i className="bi bi-file-earmark-text" />
+              <Building2 size={20} strokeWidth={2} aria-hidden="true" />
             </div>
             <div className="mhs-action-card__info">
-              <span className="mhs-action-card__title">Ajukan Surat</span>
+              <span className="mhs-action-card__title">Pinjam Ruangan</span>
               <span className="mhs-action-card__sub">
-                Buat pengajuan surat akademik baru
+                Pilih gedung, lantai &amp; cek ketersediaan ruang
               </span>
             </div>
-            <i className="bi bi-arrow-right mhs-action-card__arrow" />
+            <ArrowRight
+              size={18}
+              strokeWidth={2}
+              className="mhs-action-card__arrow"
+              aria-hidden="true"
+            />
           </Link>
 
-          {/* Card: Pinjam Barang / Ruangan */}
+          {/* Card: Pinjam Barang / Alat */}
           <Link
             to="/peminjaman-barang"
             className="mhs-action-card mhs-action-card--outline"
           >
             <div className="mhs-action-card__icon-wrap">
-              <i className="bi bi-box-seam" />
+              <Package size={20} strokeWidth={2} aria-hidden="true" />
             </div>
             <div className="mhs-action-card__info">
               <span className="mhs-action-card__title">
-                Pinjam Barang / Ruangan
+                Pinjam Barang &amp; Alat
               </span>
               <span className="mhs-action-card__sub">
-                Cek jadwal dan ketersediaan lab
+                Cek inventaris peralatan laboratorium
               </span>
             </div>
-            <i className="bi bi-arrow-right mhs-action-card__arrow" />
+            <ArrowRight
+              size={18}
+              strokeWidth={2}
+              className="mhs-action-card__arrow"
+              aria-hidden="true"
+            />
           </Link>
         </div>
       </section>
@@ -212,7 +255,7 @@ export function MahasiswaDashboardPage() {
                       </span>
                     </td>
                     <td className="mhs-table__arrow-cell">
-                      <i className="bi bi-chevron-right" />
+                      <ChevronRight size={16} aria-hidden="true" />
                     </td>
                   </tr>
                 ))}
@@ -232,7 +275,7 @@ export function MahasiswaDashboardPage() {
               <p className="mhs-card__subtitle">Pengumuman untukmu</p>
             </div>
             <div className="mhs-info-card__bell" aria-hidden="true">
-              <i className="bi bi-bell" />
+              <Bell size={18} strokeWidth={2} />
             </div>
           </div>
 
