@@ -24,7 +24,7 @@ This document records the approved architecture. The starter implements the foun
 | Contract | OpenAPI 3.1.2 and generated TypeScript types |
 | Deployment | Provider-neutral; undecided |
 
-PHP 8.5, Node.js 24 LTS, and MySQL 8.4 are the runtime baselines. Exact resolved versions are recorded in the application manifests and lockfiles.
+PHP 8.5, Node.js 24 LTS (with Node.js 26 LTS also permitted in `FE/package.json`), and MySQL 8.4 are the runtime baselines. Exact resolved versions are recorded in the application manifests and lockfiles.
 
 ## System context
 

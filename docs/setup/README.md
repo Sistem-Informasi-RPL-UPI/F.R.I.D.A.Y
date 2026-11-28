@@ -7,7 +7,7 @@ Choose the backend, frontend, or both. Each application installs and runs indepe
 | Application | Required tools/services |
 | --- | --- |
 | Backend | PHP 8.5.x and required extensions, Composer 2, MySQL 8.4 with separate restricted development/test accounts |
-| Frontend | Node.js 24 LTS (`>=24.22.1 <25`), npm 11; matching Playwright Chromium for browser tests |
+| Frontend | Node.js 24 LTS or 26 LTS (`^24.22.1 || ^26.0.0`), npm 11–12 (`>=11 <13`); matching Playwright Chromium for browser tests |
 
 The [verified baseline](../verification/baseline.md) lists exact verified versions and Windows results. Other operating systems require the corresponding runtime/browser prerequisites and their own verification. Keep both application lockfiles; no root dependency installation is required.
 

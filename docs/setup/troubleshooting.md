@@ -28,7 +28,7 @@ If a new environment has no application key, generate it once for that environme
 
 ## Node.js, npm, and lint failures
 
-From `FE/`, check `node --version` and `npm --version`. The manifest requires Node `>=24.22.1 <25` and npm `>=11 <12`, with `engine-strict=true`. Select the supported runtime instead of disabling engine checks. On a fresh install use `npm ci` with the committed lockfile; it replaces the target dependency directory and fails on manifest drift.
+From `FE/`, check `node --version` and `npm --version`. The manifest requires Node `^24.22.1 || ^26.0.0` and npm `>=11 <13`, with `engine-strict=true`. Select the supported runtime instead of disabling engine checks. On a fresh install use `npm ci` with the committed lockfile; it replaces the target dependency directory and fails on manifest drift.
 
 Run both `npm run typecheck` and `npm run lint`. The Babel parser is intentional for the recorded TypeScript 7 compatibility decision and does not provide TypeScript-aware semantic linting. Do not replace it, downgrade the compiler, ignore peer requirements, or broadly suppress diagnostics without review. See [development standards](../development/standards.md).
 

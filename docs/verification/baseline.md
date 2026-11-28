@@ -31,5 +31,6 @@ This page records the environment in which the starter was last verified end to 
 - Browser binaries and package caches were already present; this was not an offline or empty-cache install.
 - The smoke tests cover navigation and boot behavior. They do not prove authentication, authorization, cookies, CORS, CSRF, session lifecycle, or production readiness.
 - Dependency audit results are a dated snapshot; rerun `composer audit --locked` and `npm audit` after dependency changes.
+- `FE/package.json` also permits Node.js 26 LTS (`^26.0.0`) and npm 12 (`<13`), but end-to-end verification was only performed on Node.js 24.22.1 / npm 11.4.1.
 
 For setup steps, see the [setup guide](../setup/README.md). For conventions, see [development standards](../development/standards.md).

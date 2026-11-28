@@ -4,7 +4,7 @@ Run these commands from `FE/`. The SPA installs, tests, and builds without PHP, 
 
 ## Prerequisites and installation
 
-Use Node.js 24 LTS; the verified version is 24.22.1 with npm 11.4.1. `.node-version`, `package.json`, and `.npmrc` record/enforce the supported runtime. Install the existing lockfile:
+Use Node.js 24 LTS or 26 LTS (`^24.22.1 || ^26.0.0`) with npm 11–12 (`>=11 <13`); the verified version is 24.22.1 with npm 11.4.1. `.node-version`, `package.json`, and `.npmrc` record/enforce the supported runtime. Install the existing lockfile:
 
 ```sh
 npm ci

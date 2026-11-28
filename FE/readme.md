@@ -4,7 +4,7 @@ Independent React + TypeScript SPA built with Vite and React Router Declarative 
 
 ## Setup
 
-Use Node.js 24 LTS (`>=24.22.1 <25`) and npm 11 (`>=11 <12`). The package manager baseline is npm 11.4.1; `.node-version`, `package.json`, and `.npmrc` record/enforce runtime expectations.
+Use Node.js 24 LTS or 26 LTS (`^24.22.1 || ^26.0.0`) and npm 11 or 12 (`>=11 <13`). The package manager baseline is npm 11.4.1; `.node-version`, `package.json`, and `.npmrc` record/enforce runtime expectations.
 
 On a new checkout, run `npm ci` from `FE/` to install the existing lockfile. It replaces the target `node_modules/`; do not repeat installation on a working setup without a reason. No environment file is required for the current shell. See [frontend setup](../docs/setup/frontend.md) and [environment configuration](../docs/setup/environment.md).
 
