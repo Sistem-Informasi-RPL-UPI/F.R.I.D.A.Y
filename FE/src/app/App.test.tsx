@@ -48,7 +48,7 @@ describe('application foundation & PRD Mind Mapping Jadwal v1.3 multi-page workf
     expect(screen.getByRole('heading', { name: 'Kelola Dosen' })).toBeTruthy();
 
     fireEvent.click(
-      screen.getByRole('link', { name: /Integrator & Generator/i }),
+      screen.getByRole('link', { name: /Penjadwalan & Mind Mapping/i }),
     );
     expect(
       screen.getByRole('heading', { name: /Integrator & Generator Jadwal/i }),

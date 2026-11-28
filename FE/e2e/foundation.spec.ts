@@ -39,6 +39,7 @@ test('the built SPA boots and handles navigation without a backend', async ({
     page.getByRole('heading', { name: 'Kelola Dosen' }),
   ).toBeVisible();
 
+  await page.getByRole('link', { name: /Penjadwalan & Mind Mapping/i }).click();
   await page.getByRole('link', { name: /Matriks Mind Mapping/i }).click();
   await expect(
     page.getByRole('heading', { name: /Matriks Mind Mapping \(37 Ruangan\)/i }),
