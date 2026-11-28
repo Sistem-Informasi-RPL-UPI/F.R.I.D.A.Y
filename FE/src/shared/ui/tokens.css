@@ -1,0 +1,98 @@
+/*
+ * FRIDAY Design System Tokens
+ * Source of truth: Group 60.png (Color Palette & Typography)
+ */
+
+:root {
+  /* 02. Colors — Brand Palette */
+  --color-primary: #0101b7; /* Vibrant Blue */
+  --color-primary-hover: #000094;
+  --color-primary-active: #000073;
+  --color-primary-soft: #e6e8ff;
+
+  --color-secondary: #8dccf1; /* Dreamy */
+  --color-secondary-hover: #6dbde9;
+  --color-secondary-soft: #e5f5fd;
+
+  --color-accent: #ffd166; /* WarmY */
+  --color-accent-hover: #f5be42;
+  --color-accent-soft: #fff6db;
+
+  --color-neutral: #f2f7ff; /* Alice */
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8faff;
+
+  /* Ink & Borders */
+  --color-ink-primary: #0b2239;
+  --color-ink-secondary: #475569;
+  --color-ink-muted: #64748b;
+  --color-ink-inverse: #ffffff;
+  --color-border: #dce6f5;
+  --color-border-strong: #b8cae6;
+
+  /* Semantic Status Colors */
+  --color-success: #15803d;
+  --color-success-soft: #dcfce7;
+  --color-warning: #b45309;
+  --color-warning-soft: #fef3c7;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fee2e2;
+  --color-info: #0369a1;
+  --color-info-soft: #e0f2fe;
+
+  /* 03. Typography — Font Families */
+  --font-heading: 'Lexend', system-ui, -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* 03. Typography — Heading Scale (Lexend) */
+  --text-h1-size: 3.5rem; /* 56px */
+  --text-h1-lh: 3.85rem; /* 61.6px */
+  --text-h2-size: 3rem; /* 48px */
+  --text-h2-lh: 3.3rem; /* 52.8px */
+  --text-h3-size: 2.5rem; /* 40px */
+  --text-h3-lh: 2.75rem; /* 44px */
+  --text-h4-size: 2rem; /* 32px */
+  --text-h4-lh: 2.2rem; /* 35.2px */
+  --text-h5-size: 1.5rem; /* 24px */
+  --text-h5-lh: 1.65rem; /* 26.4px */
+  --text-h6-size: 1.25rem; /* 20px */
+  --text-h6-lh: 1.375rem; /* 22px */
+
+  /* 03. Typography — Body Scale (Plus Jakarta Sans) */
+  --text-body-lg-size: 1.5rem; /* 24px */
+  --text-body-lg-lh: 2.1rem;
+  --text-body-md-size: 1rem; /* 16px */
+  --text-body-md-lh: 1.5rem;
+  --text-body-sm-size: 0.8125rem; /* 13px */
+  --text-body-sm-lh: 1.25rem;
+
+  /* 05. Spacing Scale (4px base) */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+  --space-20: 5rem; /* 80px */
+  --space-24: 6rem; /* 96px */
+
+  /* 04. Grid & Layout */
+  --container-max: 75rem; /* 1200px */
+  --grid-gutter: 1.5rem; /* 24px */
+
+  /* 07. Visual Elements — Radii & Elevation */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-md: 0.75rem; /* 12px */
+  --radius-lg: 1rem; /* 16px */
+  --radius-xl: 1.5rem; /* 24px */
+  --radius-pill: 9999px;
+
+  --shadow-sm: 0 2px 8px rgba(11, 34, 57, 0.06);
+  --shadow-md: 0 8px 24px rgba(11, 34, 57, 0.08);
+  --shadow-lg: 0 16px 40px rgba(1, 1, 183, 0.12);
+
+  /* Motion */
+  --transition-fast: 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}

@@ -1,0 +1,115 @@
+openapi: 3.1.2
+info:
+  title: FRIDAY Academic & Facilities API
+  version: 1.0.0
+  description: REST API for UPI Kampus Cibiru Academic Scheduling, Mind Mapping, Facilities, and Loans.
+servers:
+  - url: http://localhost:8000/api/v1
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate session user
+      responses:
+        '200':
+          description: Authenticated user profile
+        '422':
+          description: Invalid credentials
+  /auth/me:
+    get:
+      summary: Current authenticated user
+      responses:
+        '200':
+          description: User resource
+  /auth/logout:
+    post:
+      summary: Logout and invalidate session
+      responses:
+        '204':
+          description: Logged out
+  /facilities/buildings:
+    get:
+      summary: List buildings
+      responses:
+        '200':
+          description: Building list
+    post:
+      summary: Create building (Admin)
+      responses:
+        '201':
+          description: Building created
+  /facilities/rooms:
+    get:
+      summary: List rooms
+      responses:
+        '200':
+          description: Room list
+    post:
+      summary: Create room (Admin)
+      responses:
+        '201':
+          description: Room created
+  /facilities/items:
+    get:
+      summary: List borrowable items
+      responses:
+        '200':
+          description: Item list
+    post:
+      summary: Create item (Admin)
+      responses:
+        '201':
+          description: Item created
+  /loans/rooms:
+    get:
+      summary: List room loans
+      responses:
+        '200':
+          description: Room loan list
+    post:
+      summary: Request room loan
+      responses:
+        '201':
+          description: Room loan requested
+  /loans/items:
+    get:
+      summary: List item loans
+      responses:
+        '200':
+          description: Item loan list
+    post:
+      summary: Request item loan
+      responses:
+        '201':
+          description: Item loan requested
+  /academic/overview:
+    get:
+      summary: Fetch academic master overview
+      responses:
+        '200':
+          description: Academic master collections
+  /scheduling/generate:
+    post:
+      summary: Generate schedule run (Admin)
+      responses:
+        '201':
+          description: Schedule run generated
+  /scheduling/runs/{scheduleRun}/approve:
+    post:
+      summary: Approve conflict-free schedule run (Admin)
+      responses:
+        '200':
+          description: Schedule run approved
+  /scheduling/mind-mapping:
+    get:
+      summary: Get campus or building Mind Mapping matrix from approved schedule
+      responses:
+        '200':
+          description: Matrix dataset
+  /scheduling/mind-mapping/export-html:
+    get:
+      summary: Export self-contained offline HTML Mind Mapping
+      responses:
+        '200':
+          description: Self-contained HTML document
+          content:
+            text/html: {}
