@@ -1,49 +1,67 @@
-# FRIDAY — Laravel + React starter
+# FRIDAY — Laravel + React Starter
 
-A reusable technical starter for teams building a decoupled Laravel REST API and React SPA. The monorepo contains two independent applications, MySQL development/test configuration, smoke tests, code-quality tools, and team development documentation.
+Starter teknis *reusable* untuk tim pengembang yang membangun aplikasi *decoupled* **Laravel REST API** dan **React SPA**. Monorepo ini berisi dua aplikasi independen, konfigurasi MySQL untuk pengembangan dan pengujian, *smoke test*, *tools* kualitas kode, serta dokumentasi kerja tim.
 
-## Start here
+---
 
-- [Setup guide](docs/setup/README.md): choose backend, frontend, or both and follow the prerequisites.
-- [Backend README](BE/readme.md) and [frontend README](FE/readme.md): application commands and responsibilities.
-- [Environment configuration](docs/setup/environment.md) and [troubleshooting](docs/setup/troubleshooting.md).
-- [Onboarding checklist](docs/onboarding.md) and [contribution guide](CONTRIBUTING.md).
+## Mulai dari Sini
 
-Existing contributors should preserve their environment files, application keys, databases, and installed dependencies. Initial-install commands are for a new checkout or an intentional dependency installation; do not repeat them on an already configured workspace.
+- **[Panduan Setup](docs/setup/README.md):** Pilih setup Backend, Frontend, atau keduanya beserta prasyaratnya.
+- **[Backend README](BE/readme.md)** & **[Frontend README](FE/readme.md):** Daftar perintah dan tanggung jawab masing-masing aplikasi.
+- **[Konfigurasi Environment](docs/setup/environment.md)** & **[Troubleshooting](docs/setup/troubleshooting.md):** Pengaturan `.env` dan solusi kendala umum.
+- **[Checklist Onboarding](docs/onboarding.md)** & **[Panduan Kontribusi](CONTRIBUTING.md):** Alur bergabung dan aturan kontribusi tim.
 
-## Structure and stack
+> **Catatan untuk Kontributor Aktif:** Pertahankan file `.env`, *application key*, database, dan *dependencies* yang sudah terpasang. Perintah *initial-install* hanya untuk *checkout* baru atau instalasi ulang yang disengaja—jangan diulang pada *workspace* yang sudah berjalan.
 
-| Location | Responsibility | Baseline |
-| --- | --- | --- |
-| `BE/` | Independent Laravel REST backend; no Node.js asset build | Laravel 13, PHP 8.5, MySQL 8.4, Pest, Pint |
-| `FE/` | Independent browser SPA and static build | React, strict TypeScript, Vite, React Router Declarative Mode, Vitest, Playwright, ESLint, Prettier |
-| `docs/` | Architecture, setup, standards, onboarding, and verification | [Project scope](docs/scope.md) |
+---
 
-Use Composer from `BE/` and npm from `FE/`; each application owns its manifest and lockfile. There is no root install, combined development script, Docker setup, CI/CD configuration, or monorepo orchestrator. Frontend commands require no PHP, database, or live API. Backend commands require no frontend installation or Node.js.
+## Struktur & Tech Stack
 
-The backend follows a Modular Monolith design, and the frontend follows Feature-Based organization with `app -> features -> shared` dependencies. Module/feature directories are added only when a feature needs them. Application API versioning remains `/api/v1`; no application API operations are implemented in the starter. `GET /up` is Laravel's operational health route.
+| Direktori | Tanggung Jawab | Baseline |
+| :--- | :--- | :--- |
+| `BE/` | Backend REST API Laravel independen (tanpa *build* aset Node.js) | Laravel 13, PHP 8.5, MySQL 8.4, Pest, Pint |
+| `FE/` | Frontend SPA browser & *static build* independen | React, strict TypeScript, Vite, React Router (Declarative Mode), Vitest, Playwright, ESLint, Prettier |
+| `docs/` | Arsitektur, panduan setup, standar kode, *onboarding*, dan verifikasi | [Cakupan Proyek](docs/scope.md) |
 
-## Available checks
+### Aturan Dasar Monorepo
+- **Independensi Paket:** Jalankan `composer` di `BE/` dan `npm` di `FE/`; masing-masing aplikasi memiliki *manifest* dan *lockfile* sendiri. Tidak ada *root install*, *script* gabungan, Docker, CI/CD, atau *monorepo orchestrator*.
+- **Isolasi Runtime:** Perintah Frontend tidak membutuhkan PHP, database, atau API aktif. Sebaliknya, perintah Backend tidak membutuhkan instalasi Frontend atau Node.js.
+- **Pola Arsitektur:**
+  - **Backend:** *Modular Monolith*.
+  - **Frontend:** *Feature-Based* dengan arah ketergantungan `app -> features -> shared`.
+  - Direktori modul/fitur hanya dibuat ketika fitur tersebut benar-benar dibutuhkan.
+- **API & Health Check:** Versi API aplikasi menggunakan prefix `/api/v1` (belum ada *endpoint* bisnis pada starter ini). Rute `GET /up` adalah *health check* bawaan Laravel.
 
-| Application root | Command | Prerequisites |
-| --- | --- | --- |
-| `BE/` | `composer run check` | PHP/Composer dependencies and the prepared isolated MySQL test schema |
-| `FE/` | `npm run check` | Node.js/npm dependencies |
-| `FE/` | `npm run build` | Node.js/npm dependencies |
-| `FE/` | `npm run test:e2e` | Node.js/npm dependencies, matching Chromium, and free port 4173 |
+---
 
-Backend development serves `http://localhost:8000`; frontend development serves `http://localhost:5173`. Commands, formatters, test selection, and independence rules are documented in [development standards](docs/development/standards.md) and [testing conventions](docs/development/testing.md).
+## Daftar Pemeriksaan (*Checks*)
 
-## Scope and architecture
+| Root Aplikasi | Perintah | Prasyarat |
+| :--- | :--- | :--- |
+| `BE/` | `composer run check` | Dependensi PHP/Composer & skema MySQL test terisolasi |
+| `FE/` | `npm run check` | Dependensi Node.js/npm |
+| `FE/` | `npm run build` | Dependensi Node.js/npm |
+| `FE/` | `npm run test:e2e` | Dependensi Node.js/npm, Chromium yang sesuai, & port `4173` kosong |
 
-This starter includes technical foundations and team tooling. Authentication, login, registration, Sanctum setup, roles/permissions, dashboards, business modules, domain-specific schemas, and production deployment are outside its scope. Docker and CI/CD need separate approval. Deployment remains provider-neutral.
+- **Server Pengembangan:** Backend berjalan di `http://localhost:8000` dan Frontend di `http://localhost:5173`.
+- Detail perintah, *formatter*, pemilihan tes, dan aturan independensi tersedia di [Standar Pengembangan](docs/development/standards.md) dan [Konvensi Testing](docs/development/testing.md).
 
-Sanctum SPA Cookie Authentication remains the approved future authentication design. Axios, TanStack Query, React Hook Form, Zod, OpenAPI 3.1.2, and generated TypeScript API types remain approved choices for applicable future work; several are deliberately not installed because the starter has no corresponding feature.
+---
 
-The [architecture overview](docs/architecture/overview.md) and its linked documents describe the approved design, including future application examples. The [project scope](docs/scope.md) lists what the starter actually includes.
+## Cakupan & Arsitektur
 
-## Verification and collaboration
+Starter ini menyediakan fondasi teknis dan *tooling* tim. Hal-hal berikut berada **di luar cakupan starter**: autentikasi (*login/register*), setup Sanctum, *roles & permissions*, dashboard, modul bisnis, skema domain spesifik, dan *production deployment*. Penambahan Docker dan CI/CD memerlukan persetujuan terpisah, serta *deployment* tetap bersifat *provider-neutral*.
 
-The [verified baseline](docs/verification/baseline.md) records the environment in which the starter was last checked end to end: clean installs, MySQL isolation, independent artifacts, quality checks, dependency audits, and platform limits. It is a dated snapshot, not a guarantee for the current machine.
+**Pilihan Teknologi yang Disetujui untuk Pengembangan Selanjutnya:**
+- **Autentikasi:** Sanctum SPA Cookie Authentication.
+- **Frontend & Kontrak API:** Axios, TanStack Query, React Hook Form, Zod, OpenAPI 3.1.2, dan *generated TypeScript API types* (beberapa sengaja belum diinstal di starter karena belum ada fiturnya).
 
-Contributions target `Develop` through the documented [Git workflow](docs/development/workflow.md). AI agents must follow [AGENTS.md](AGENTS.md) and the application instructions before making changes.
+Pelajari rancangan lengkap beserta contoh penerapannya di [Ringkasan Arsitektur](docs/architecture/overview.md) dan daftar fitur aktual starter di [Cakupan Proyek](docs/scope.md).
+
+---
+
+## Verifikasi & Kolaborasi
+
+- **Baseline Terverifikasi:** Dokumen [Verified Baseline](docs/verification/baseline.md) mencatat lingkungan terakhir saat starter diuji *end-to-end* (*clean install*, isolasi MySQL, artefak independen, *quality checks*, audit dependensi, dan batasan platform). Dokumen ini adalah *snapshot* bertanggal, bukan jaminan untuk mesin lokal saat ini.
+- **Alur Git:** Seluruh kontribusi diarahkan ke branch `Develop` mengikuti [Git Workflow](docs/development/workflow.md).
+- **Aturan AI Agent:** AI *coding agent* wajib membaca dan mematuhi [AGENTS.md](AGENTS.md) serta instruksi aplikasi terkait sebelum melakukan perubahan kode.
