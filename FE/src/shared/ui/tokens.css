@@ -21,6 +21,25 @@
   --color-neutral: #f2f7ff; /* Alice */
   --color-surface: #ffffff;
   --color-surface-muted: #f8faff;
+  --color-primary-tint: #f4f6ff;
+
+  /* Campus Map Palette (Denah Kampus UPI Cibiru) */
+  --map-bg: #eef4fc;
+  --map-grid: #dce6f5;
+  --map-road: #ffffff;
+  --map-road-stroke: #cfdcf0;
+  --map-park-fill: #dcfce7;
+  --map-park-stroke: #86efac;
+  --map-court-fill: #d1fae5;
+  --map-court-stroke: #6ee7b7;
+  --map-water-fill: #bae6fd;
+  --map-water-stroke: #7dd3fc;
+  --map-inactive-fill: #e4ebf5;
+  --map-inactive-stroke: #c4d2e5;
+  --map-inactive-ink: #64748b;
+  --map-facility-fill: #e0f0fb;
+  --map-facility-stroke: #a5d3f2;
+  --map-facility-ink: #3b6d96;
 
   /* Ink & Borders */
   --color-ink-primary: #0b2239;
@@ -72,6 +91,8 @@
   /* 03. Typography — Font Families */
   --font-heading: 'Lexend', system-ui, -apple-system, sans-serif;
   --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono:
+    ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 
   /* 03. Typography — Heading Scale (Lexend) */
   --text-h1-size: 3.5rem; /* 56px */
@@ -118,10 +139,12 @@
   --radius-xl: 1.5rem; /* 24px */
   --radius-pill: 9999px;
 
+  --shadow-xs: 0 1px 2px rgba(11, 34, 57, 0.05);
   --shadow-sm: 0 2px 8px rgba(11, 34, 57, 0.06);
   --shadow-md: 0 8px 24px rgba(11, 34, 57, 0.08);
   --shadow-lg: 0 16px 40px rgba(1, 1, 183, 0.12);
 
   /* Motion */
   --transition-fast: 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-base: 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }

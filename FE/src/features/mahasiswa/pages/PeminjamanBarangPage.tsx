@@ -1,3 +1,4 @@
+import { Package } from 'lucide-react';
 import { Link } from 'react-router';
 
 export function PeminjamanBarangPage() {
@@ -14,8 +15,8 @@ export function PeminjamanBarangPage() {
       </div>
 
       <div className="mhs-placeholder-page__card">
-        <div className="mhs-placeholder-page__icon">
-          <i className="bi bi-box-seam" />
+        <div className="mhs-placeholder-page__icon" aria-hidden="true">
+          <Package size={26} strokeWidth={1.9} />
         </div>
         <h4>Belum ada pengajuan peminjaman barang</h4>
         <p>

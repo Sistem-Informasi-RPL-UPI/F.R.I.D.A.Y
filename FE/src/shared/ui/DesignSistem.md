@@ -1,61 +1,66 @@
 # FRIDAY UI Design System & Component Library
 
-Standar desain visual dan library komponen UI resmi untuk tim pengembang frontend repositori `F.R.I.D.A.Y` (**Sistem Informasi Akademik, Peminjaman Fasilitas & Mind Mapping Jadwal UPI Kampus Cibiru**).
+Standar desain visual, token CSS, dan pustaka komponen UI resmi untuk repositori `F.R.I.D.A.Y` (**Sistem Informasi Akademik, Peminjaman Fasilitas & Mind Mapping Jadwal UPI Kampus Cibiru**).
 
-Design system ini mengacu pada acuan visual master [Group 60.png](file:///d:/nitip/Group%2060.png).
+Dokumen ini menjadi referensi tunggal (**Source of Truth**) bersama [tokens.css](./tokens.css) dan panduan implementasi UI/UX di [design_system_ui_guidelines.md](./design_system_ui_guidelines.md).
 
 ---
 
 ## Daftar Isi (Index)
 
-Mengikuti struktur indeks master desain:
-
-1. [01. Logo](#01-logo)
-2. [02. Colors (Color Palette)](#02-colors)
+1. [01. Logo & Identitas Brand](#01-logo--identitas-brand)
+2. [02. Colors (Color Tokens)](#02-colors-color-tokens)
 3. [03. Typography](#03-typography)
 4. [04. Grid System](#04-grid-system)
 5. [05. Spacing](#05-spacing)
 6. [06. Component System](#06-component-system)
-7. [07. Visual Elements](#07-visual-elements)
-8. [Rekomendasi Library yang Relevan & Sesuai](#rekomendasi-library-yang-relevan--sesuai)
-9. [Aturan Penggunaan & Kompatibilitas](#aturan-penggunaan--kompatibilitas)
+7. [07. Visual Elements (Radius, Elevation & Motion)](#07-visual-elements-radius-elevation--motion)
+8. [08. Stack Library Resmi & Terpasang](#08-stack-library-resmi--terpasang)
+9. [09. Aturan Penggunaan & Kompatibilitas](#09-aturan-penggunaan--kompatibilitas)
 
 ---
 
-## 01. Logo
+## 01. Logo & Identitas Brand
 
-- **Wordmark:** Menggunakan tipografi **Lexend** (Weight: Bold `700`, tracking/letter-spacing `-0.02em`).
+- **Wordmark:** Menggunakan tipografi **Lexend** (Weight: Bold `700`, `letter-spacing: -0.02em`).
 - **Kombinasi Warna:**
-  - Latar terang (`#FFFFFF` / `#F2F7FF`): Teks berwarna Vibrant Blue (`#0101B7`).
+  - Latar terang (`#FFFFFF` / `#F2F7FF`): Teks berwarna Vibrant Blue (`#0101B7`) atau Deep Navy (`#0B2239`).
   - Latar gelap / Header bar (`#0101B7`): Teks berwarna Pure White (`#FFFFFF`).
-- **Clearance:** Berikan ruang kosong (_safe area_) minimal `16px` (`var(--space-4)`) di sekitar logo pada navigasi maupun sidebar.
+- **Clearance:** Berikan ruang kosong (_safe area_) minimal `16px` (`var(--space-4)`) di sekitar logo pada navigasi atas maupun sidebar.
 
 ---
 
-## 02. Colors
+## 02. Colors (Color Tokens)
 
-Seluruh warna dikelola terpusat melalui variabel CSS di [tokens.css](./tokens.css). Dilarang keras menuliskan kode HEX langsung di komponen fitur (`src/features/*`).
+Seluruh warna dikelola terpusat melalui CSS Custom Properties di [tokens.css](./tokens.css). **Dilarang keras menuliskan kode HEX langsung di komponen fitur (`src/features/*`) atau file CSS halaman fitur.**
 
 ### Brand Palette
 
-| Nama Token          | Nama Warna       | Kode HEX  | Peran & Penggunaan                                               |
-| ------------------- | ---------------- | --------- | ---------------------------------------------------------------- |
-| `--color-primary`   | **Vibrant Blue** | `#0101B7` | Brand header, tombol aksi utama (CTA), tautan aktif              |
-| `--color-secondary` | **Dreamy**       | `#8DCCF1` | Aksi sekunder, badge informasi, highlight jadwal                 |
-| `--color-accent`    | **WarmY**        | `#FFD166` | Aksen penarik perhatian, status menunggu persetujuan (_pending_) |
-| `--color-neutral`   | **Alice**        | `#F2F7FF` | Latar belakang (_background_) halaman web aplikasi               |
-| `--color-surface`   | **Pure White**   | `#FFFFFF` | Latar kartu (_Card_), modal dialog, dan tabel                    |
+| Nama Token               | Nama Warna       | Kode HEX  | Peran & Penggunaan                                                  |
+| ------------------------ | ---------------- | --------- | ------------------------------------------------------------------- |
+| `--color-primary`        | **Vibrant Blue** | `#0101B7` | Brand header, tombol aksi utama (CTA), elemen terpilih, link aktif  |
+| `--color-primary-hover`  | Primary Hover    | `#000094` | State hover tombol utama & elemen interaktif primer                 |
+| `--color-primary-active` | Primary Active   | `#000073` | State active/pressed tombol utama                                   |
+| `--color-primary-soft`   | Primary Soft     | `#E6E8FF` | Latar item navigasi aktif, badge primary, highlight hover peta      |
+| `--color-primary-tint`   | Primary Tint     | `#F4F6FF` | Latar kartu bantuan sidebar & highlight ringan                      |
+| `--color-secondary`      | **Dreamy**       | `#8DCCF1` | Aksi sekunder, badge informasi, highlight jadwal                    |
+| `--color-secondary-soft` | Secondary Soft   | `#E5F5FD` | Latar badge sekunder                                                |
+| `--color-accent`         | **WarmY**        | `#FFD166` | Aksen penarik perhatian, cincin sorot pilihan aktif, status pending |
+| `--color-accent-soft`    | Accent Soft      | `#FFF6DB` | Latar badge warning ringan & baris istirahat matriks                |
+| `--color-neutral`        | **Alice**        | `#F2F7FF` | Latar belakang utama halaman web aplikasi                           |
+| `--color-surface`        | **Pure White**   | `#FFFFFF` | Latar kartu (`Card`), modal dialog, sidebar, dan tabel              |
+| `--color-surface-muted`  | Surface Muted    | `#F8FAFF` | Header tabel, area kontainer sekunder, panel ringkasan              |
 
 ### Ink & Borders
 
 | Token CSS               | Nama          | Kode HEX  | Peran                                     |
 | ----------------------- | ------------- | --------- | ----------------------------------------- |
 | `--color-ink-primary`   | Deep Navy     | `#0B2239` | Teks judul (_Heading_) dan paragraf utama |
-| `--color-ink-secondary` | Slate Medium  | `#475569` | Paragraf sekunder, penjelasan             |
+| `--color-ink-secondary` | Slate Medium  | `#475569` | Paragraf sekunder, penjelasan, subjudul   |
 | `--color-ink-muted`     | Slate Light   | `#64748B` | Label form, hint, placeholder, metadata   |
 | `--color-ink-inverse`   | Pure White    | `#FFFFFF` | Teks di atas warna primary / banner       |
 | `--color-border`        | Ice Border    | `#DCE6F5` | Garis pemisah (_divider_), border kartu   |
-| `--color-border-strong` | Border Strong | `#B8CAE6` | Border input dan elemen interaktif        |
+| `--color-border-strong` | Border Strong | `#B8CAE6` | Border input, tombol outline, kontainer   |
 
 ### Semantic Status
 
@@ -64,11 +69,31 @@ Seluruh warna dikelola terpusat melalui variabel CSS di [tokens.css](./tokens.cs
 - **Danger:** `--color-danger` (`#B91C1C`) / Soft: `--color-danger-soft` (`#FEE2E2`)
 - **Info:** `--color-info` (`#0369A1`) / Soft: `--color-info-soft` (`#E0F2FE`)
 
+### Program Studi Semantic Palette (Jadwal & Matriks)
+
+| Prodi               | Token Utama            | Token Soft                  | Token Border                  |
+| ------------------- | ---------------------- | --------------------------- | ----------------------------- |
+| **PGSD**            | `--color-prodi-pgsd`   | `--color-prodi-pgsd-soft`   | `--color-prodi-pgsd-border`   |
+| **PGPAUD**          | `--color-prodi-pgpaud` | `--color-prodi-pgpaud-soft` | `--color-prodi-pgpaud-border` |
+| **RPL**             | `--color-prodi-rpl`    | `--color-prodi-rpl-soft`    | `--color-prodi-rpl-border`    |
+| **PMM**             | `--color-prodi-pmm`    | `--color-prodi-pmm-soft`    | `--color-prodi-pmm-border`    |
+| **Teknik Komputer** | `--color-prodi-tekkom` | `--color-prodi-tekkom-soft` | `--color-prodi-tekkom-border` |
+| **MKDU**            | `--color-prodi-mkdu`   | `--color-prodi-mkdu-soft`   | `--color-prodi-mkdu-border`   |
+| **Online / Daring** | `--color-online-teal`  | `--color-online-teal-soft`  | `--color-online-teal-border`  |
+
+### Campus Map Palette (Denah Kampus)
+
+Token khusus visualisasi denah vektor interaktif di `tokens.css`:
+
+- Kanvas & jalan: `--map-bg` (`#EEF4FC`), `--map-grid` (`#DCE6F5`), `--map-road` (`#FFFFFF`), `--map-road-stroke` (`#CFDCF0`)
+- Ruang terbuka & perairan: `--map-park-fill` / `--map-park-stroke`, `--map-court-fill` / `--map-court-stroke`, `--map-water-fill` / `--map-water-stroke`
+- Gedung non-peminjaman & fasilitas pendukung: `--map-inactive-fill` / `--map-inactive-stroke` / `--map-inactive-ink`, `--map-facility-fill` / `--map-facility-stroke` / `--map-facility-ink`
+
 ---
 
 ## 03. Typography
 
-Tipografi menggunakan kombinasi dua font Google Fonts: **Lexend** untuk display/heading dan **Plus Jakarta Sans** untuk body text.
+Tipografi menggunakan font lokal yang dibundel via `@fontsource`: **Lexend** (`--font-heading`) untuk display/heading, **Plus Jakarta Sans** (`--font-body`) untuk teks antarmuka & paragraf, serta `--font-mono` untuk kode ruangan, NIM/NIP, dan nomor referensi.
 
 ### Heading — `Lexend`
 
@@ -83,14 +108,14 @@ Tipografi menggunakan kombinasi dua font Google Fonts: **Lexend** untuk display/
 
 ### Body — `Plus Jakarta Sans`
 
-| Varian          | Ukuran               | Bobot yang Didukung                      | Variabel CSS          |
-| --------------- | -------------------- | ---------------------------------------- | --------------------- |
-| **Large Text**  | `24px` (`1.5rem`)    | Medium (500), Regular (400), Light (300) | `--text-body-lg-size` |
-| **Normal Text** | `16px` (`1rem`)      | Medium (500), Regular (400), Light (300) | `--text-body-md-size` |
-| **Small Text**  | `13px` (`0.8125rem`) | Medium (500), Regular (400), Light (300) | `--text-body-sm-size` |
+| Varian          | Ukuran               | Bobot yang Didukung                                      | Variabel CSS          |
+| --------------- | -------------------- | -------------------------------------------------------- | --------------------- |
+| **Large Text**  | `24px` (`1.5rem`)    | SemiBold (600), Medium (500), Regular (400), Light (300) | `--text-body-lg-size` |
+| **Normal Text** | `16px` (`1rem`)      | SemiBold (600), Medium (500), Regular (400), Light (300) | `--text-body-md-size` |
+| **Small Text**  | `13px` (`0.8125rem`) | SemiBold (600), Medium (500), Regular (400), Light (300) | `--text-body-sm-size` |
 
-> **Perhatian Khusus (Offline & E2E Testing):**
-> Pengujian Playwright pada starter ini mewajibkan **nol request eksternal** (`externalRequests === []`). Oleh karena itu, font tidak boleh dimuat via tag CDN `<link>` Google Fonts di `index.html`. Font harus dibundel lokal (lihat rekomendasi `@fontsource` di bawah).
+> **Aturan Offline & Playwright E2E:**
+> Pengujian E2E mewajibkan **nol request eksternal** (`externalRequests === []`). Font dan ikon **dilarang** dimuat via CDN eksternal di `index.html`. Gunakan `@fontsource/lexend`, `@fontsource/plus-jakarta-sans` (diimpor di `src/styles.css`), dan `lucide-react` untuk ikon.
 
 ---
 
@@ -103,7 +128,7 @@ Tipografi menggunakan kombinasi dua font Google Fonts: **Lexend** untuk display/
   - `.ds-col-6` (setengah lebar / 6 kolom)
   - `.ds-col-4` (sepertiga lebar / 4 kolom)
   - `.ds-col-3` (seperempat lebar / 3 kolom)
-- Pada viewport layar ponsel (`<= 768px`), kolom otomatis menumpuk menjadi 12 kolom penuh (_full width_).
+- Pada viewport layar ponsel (`<= 768px`), kolom `.ds-col-6`, `.ds-col-4`, dan `.ds-col-3` otomatis menumpuk menjadi 12 kolom penuh (_full width_).
 
 ---
 
@@ -126,37 +151,41 @@ Skala modular berbasis kelipatan **4px**:
 
 ## 06. Component System
 
-Semua komponen siap pakai diekspor melalui satu pintu masuk: `src/shared/ui/index.ts`.
+Semua komponen shared diekspor melalui satu pintu masuk: `src/shared/ui/index.ts`.
 
 ### 1. `Navbar`
 
-Komponen bilah navigasi atas (_top bar_) dengan latar belakang Vibrant Blue (`--color-primary`), brand logo Lexend, dan area konten/navigasi yang fleksibel.
+Bilah navigasi atas (`role="banner"`) dengan latar belakang Vibrant Blue (`--color-primary`), slot `brand`, `children` (area nav), dan `actions`.
 
 ```tsx
-import { Navbar } from '@/shared/ui';
 import { Link } from 'react-router';
+import { Button, Navbar } from '../shared/ui';
 
-// Penggunaan dasar (isian menu dapat dikosongkan terlebih dahulu):
 <Navbar
   brand={
     <Link to="/" className="ds-navbar__brand">
       FRIDAY
     </Link>
   }
->
-  {/* Isian navigasi dikosongkan atau diisi link/menu */}
-</Navbar>;
+  actions={
+    <Link to="/design-system">
+      <Button size="sm" variant="accent">
+        Design System
+      </Button>
+    </Link>
+  }
+/>;
 ```
 
 ### 2. `Button`
 
-Tombol interaktif dengan 5 varian dan 3 ukuran:
+Tombol interaktif dengan 5 varian dan 3 ukuran (`type` default `"button"`):
 
 - Varian: `primary`, `secondary`, `accent`, `outline`, `danger`
 - Ukuran: `sm`, `md`, `lg`
 
 ```tsx
-import { Button } from '@/shared/ui';
+import { Button } from '../shared/ui';
 
 <Button variant="primary" size="md">Simpan Jadwal</Button>
 <Button variant="outline" size="sm">Batal</Button>
@@ -164,10 +193,10 @@ import { Button } from '@/shared/ui';
 
 ### 3. `Card`
 
-Wadah konten dengan latar putih (`--color-surface`), border radius `16px`, dan drop-shadow halus (`--shadow-md`).
+Wadah konten dengan latar putih (`--color-surface`), border `1px solid var(--color-border)`, border radius `16px`, dan drop-shadow halus (`--shadow-md`).
 
 ```tsx
-import { Card } from '@/shared/ui';
+import { Card } from '../shared/ui';
 
 <Card>
   <h5>Judul Kartu</h5>
@@ -177,12 +206,12 @@ import { Card } from '@/shared/ui';
 
 ### 4. `Badge`
 
-Indikator status atau label kategori dalam bentuk pil (_pill radius_):
+Indikator status atau label kategori dalam bentuk pil (`--radius-pill`):
 
 - Tone: `primary`, `secondary`, `accent`, `success`, `danger`
 
 ```tsx
-import { Badge } from '@/shared/ui';
+import { Badge } from '../shared/ui';
 
 <Badge tone="success">Disetujui</Badge>
 <Badge tone="accent">Menunggu Persetujuan</Badge>
@@ -190,98 +219,90 @@ import { Badge } from '@/shared/ui';
 
 ### 5. `FormField` & `Input`
 
-Komponen input formulir aksesibel yang terintegrasi dengan label dan pesan error (`role="alert"`).
+Komponen input formulir aksesibel yang menghubungkan `label` (`htmlFor={id}`), input (`hasError` opsional), dan pesan error (`role="alert"`).
 
 ```tsx
-import { FormField, Input } from '@/shared/ui';
+import { FormField, Input } from '../shared/ui';
 
-<FormField label="Kode Ruangan" error={errors.code?.message} required>
-  <Input placeholder="Contoh: R.204" />
+<FormField id="room-code" label="Kode Ruangan" error={errors.code?.message}>
+  <Input
+    id="room-code"
+    hasError={Boolean(errors.code)}
+    placeholder="Contoh: B3.001"
+  />
 </FormField>;
 ```
 
 ### 6. `Alert`
 
-Banner notifikasi dan umpan balik pengguna:
+Banner notifikasi dan umpan balik pengguna (`role="status"`):
 
 - Tone: `info`, `success`, `warning`, `danger`
 
 ```tsx
-import { Alert } from '@/shared/ui';
+import { Alert } from '../shared/ui';
 
 <Alert tone="warning">Jadwal bertabrakan dengan mata kuliah lain!</Alert>;
 ```
 
+### 7. Layout Shells (`MahasiswaLayout`, `MahasiswaSidebar`, `AdminLayout`)
+
+- `MahasiswaLayout` + `MahasiswaSidebar`: Portal mahasiswa dengan sidebar kiri tetap, header dinamis per rute, dan area konten `<Outlet />`.
+- `AdminLayout`: Workspace admin multi-halaman dengan sidebar yang mendukung mode lipat (_collapsible_) dan drawer mobile.
+
 ---
 
-## 07. Visual Elements
+## 07. Visual Elements (Radius, Elevation & Motion)
 
 ### Border Radius
 
-- `--radius-sm` (`8px`): Elemen form (Input, Select, Textarea).
-- `--radius-md` (`12px`): Tombol (`Button`), banner notifikasi (`Alert`).
+- `--radius-sm` (`8px`): Elemen form (`Input`, `Select`, `Textarea`).
+- `--radius-md` (`12px`): Tombol (`Button`), banner notifikasi (`Alert`), item sidebar.
 - `--radius-lg` (`16px`): Kartu (`Card`), dialog box, modal.
-- `--radius-xl` (`24px`): Panel besar, drawer.
-- `--radius-pill` (`9999px`): Status Badge, pill tab.
+- `--radius-xl` (`24px`): Panel besar, hero banner, kontainer peta utama.
+- `--radius-pill` (`9999px`): Status `Badge`, pill filter, stepper tag.
 
 ### Elevation (Box Shadow)
 
-- `--shadow-sm`: `0 2px 8px rgba(11, 34, 57, 0.06)` — Elemen datar dengan pemisah halus.
+- `--shadow-xs`: `0 1px 2px rgba(11, 34, 57, 0.05)` — Kartu datar modern dengan border tipis.
+- `--shadow-sm`: `0 2px 8px rgba(11, 34, 57, 0.06)` — Elemen dengan pemisah halus.
 - `--shadow-md`: `0 8px 24px rgba(11, 34, 57, 0.08)` — Kartu standar dan dropdown menu.
 - `--shadow-lg`: `0 16px 40px rgba(1, 1, 183, 0.12)` — Modal, popover, dan elemen fokus mengapung.
 
 ### Transisi
 
 - `--transition-fast`: `150ms cubic-bezier(0.2, 0.8, 0.2, 1)` — Untuk _hover_, _focus_, dan _active state_.
+- `--transition-base`: `220ms cubic-bezier(0.2, 0.8, 0.2, 1)` — Untuk perpindahan langkah wizard dan seleksi peta.
 
 ---
 
-## Rekomendasi Library yang Relevan & Sesuai
+## 08. Stack Library Resmi & Terpasang
 
-Berdasarkan arsitektur proyek (React 19, TypeScript, Vite, Tailwind/CSS Tokens murni, kepatuhan Playwright E2E tanpa request eksternal), berikut daftar library yang **sangat relevan** dan direkomendasikan untuk pengembangan sistem UI:
+Seluruh library berikut sudah terpasang di `FE/package.json` dan siap dipakai langsung:
 
-### 1. Tipografi & Offline Font Bundling (Prioritas Tinggi)
-
-- **`@fontsource/lexend`** dan **`@fontsource/plus-jakarta-sans`**
-  - **Relevansi:** Sesuai acuan tipografi di `Group 60.png`.
-  - **Alasan Teknis:** Playwright E2E test memvalidasi `externalRequests === []`. Memuat Google Fonts lewat CDN luar akan menggagalkan tes. Fontsource membundel file `.woff2` langsung ke dalam Vite `dist/` sebagai aset lokal statis sehingga 100% offline dan performan tinggi.
-  - **Pemasangan:** `npm install @fontsource/lexend @fontsource/plus-jakarta-sans` lalu import di `src/styles.css`.
-
-### 2. Icon Library (Prioritas Tinggi)
-
-- **`lucide-react`**
-  - **Relevansi:** Ikon untuk navigasi Navbar, tombol aksi, filter tabel, dan status.
-  - **Alasan Teknis:** Ringan, mendukung tree-shaking otomatis (hanya ikon yang diimpor yang masuk bundle), konsisten dengan stroke 2px yang cocok dengan estetika Lexend & Plus Jakarta Sans, serta kompatibel penuh dengan React 19.
-  - **Pemasangan:** `npm install lucide-react`.
-
-### 3. Headless UI / Primitives Aksesibel (Rekomendasi untuk Komponen Lanjutan)
-
-- **`@radix-ui/react-navigation-menu`**, **`@radix-ui/react-dropdown-menu`**, **`@radix-ui/react-dialog`**
-  - **Relevansi:** Komponen navbar responsif, dropdown profil pengguna, modal konfirmasi peminjaman barang/ruangan.
-  - **Alasan Teknis:** Menyediakan logika aksesibilitas WAI-ARIA lengkap, navigasi keyboard (panah, Esc, Tab), dan focus management tanpa memaksakan style CSS apa pun. Sangat cocok diterapkan di atas token CSS murni kita (`.ds-navbar`, `.ds-card`, dll).
-  - **Alternatif:** `@headlessui/react` (jika ingin alternatif setara).
-
-### 4. Utility Penggabungan Class CSS (Rekomendasi Helper)
-
-- **`clsx`**
-  - **Relevansi:** Menggabungkan class name secara kondisional pada komponen UI (misal: aktif pada tautan navigasi, disabled, error).
-  - **Alasan Teknis:** Ukuran sangat kecil (< 1 KB), tanpa dependensi eksternal, dan aman dari overhead performa.
-  - **Pemasangan:** `npm install clsx`.
-
-### 5. Form & Client Validation (Sesuai Standar `AGENTS.md`)
-
-- **`react-hook-form`** & **`zod`** & **`@hookform/resolvers`**
-  - **Relevansi:** Formulir input peminjaman ruangan/barang, otentikasi login, serta input filter penjadwalan.
-  - **Alasan Teknis:** Sudah masuk daftar _approved stack_ di `AGENTS.md`. Memisahkan state form dari re-render berlebih pada React 19.
+| Kategori                  | Library Terpasang                                                              | Peran di FRIDAY                              |
+| ------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
+| **Core & Build**          | React 19 + TypeScript + Vite                                                   | Pondasi SPA dengan strict TypeScript         |
+| **Fonts (Offline)**       | `@fontsource/lexend`, `@fontsource/plus-jakarta-sans`                          | Bundel lokal `.woff2` tanpa CDN              |
+| **Icons**                 | `lucide-react`                                                                 | Seluruh ikon UI stroke-based yang konsisten  |
+| **Primitives / Dialog**   | `@radix-ui/react-dialog`, `tabs`, `select`, `dropdown-menu`, `navigation-menu` | Modal, tabs, select aksesibel (WAI-ARIA)     |
+| **Animation**             | `motion` (`motion/react`)                                                      | Transisi antar-step & interaksi mikro halus  |
+| **Routing**               | `react-router` (Declarative Mode)                                              | Navigasi Portal Mahasiswa & Admin            |
+| **API & Server State**    | `axios` + `@tanstack/react-query`                                              | Komunikasi REST API & caching state server   |
+| **Forms & Validation**    | `react-hook-form` + `zod` + `@hookform/resolvers`                              | Validasi skema form tanpa re-render berlebih |
+| **Data Tables & Charts**  | `@tanstack/react-table` + `recharts`                                           | Tabel data kompleks & grafik dashboard       |
+| **Notifications & Dates** | `sonner` + `date-fns`                                                          | Toast feedback & utilitas format tanggal     |
+| **Class Helper**          | `clsx`                                                                         | Penggabungan class CSS kondisional           |
+| **Testing**               | `vitest` + `@testing-library/react` + `@playwright/test`                       | Unit testing & E2E testing                   |
 
 ---
 
-## Aturan Penggunaan & Kompatibilitas
+## 09. Aturan Penggunaan & Kompatibilitas
 
 1. **Arah Ketergantungan (_Dependency Flow_):**
-   - Komponen di `src/shared/ui/` bersifat independen. Komponen shared dilarang mengimpor modul dari `src/features/` atau `src/app/`.
+   - `app -> features -> shared`. Modul di `src/shared/` dilarang mengimpor dari `src/features/` atau `src/app/`.
 2. **Kustomisasi & Ekstensi:**
-   - Gunakan prop `className` dan `style` untuk penyesuaian tata letak (margin/flex).
-   - Jangan mengubah token inti (`--color-primary`, dll) di tingkat lokal komponen fitur tanpa persetujuan arsitektur.
+   - Gunakan token CSS dari `tokens.css` serta prop `className`/`style` pada komponen shared.
+   - Jangan mengubah nilai token inti (`--color-primary`, dll.) di tingkat lokal komponen fitur.
 3. **Pratinjau Langsung (_Showcase_):**
-   - Jalankan `npm run dev` pada direktori `FE/` dan buka rute `/design-system` pada peramban untuk melihat seluruh katalog token warna, tipografi, dan varian komponen UI secara visual.
+   - Jalankan `npm run dev` pada direktori `FE/` dan buka `/design-system` untuk melihat katalog warna, tipografi, dan komponen UI.

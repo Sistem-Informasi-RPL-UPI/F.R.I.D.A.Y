@@ -1,3 +1,4 @@
+import { History } from 'lucide-react';
 import { Link } from 'react-router';
 
 export function RiwayatPeminjamanPage() {
@@ -14,8 +15,8 @@ export function RiwayatPeminjamanPage() {
       </div>
 
       <div className="mhs-placeholder-page__card">
-        <div className="mhs-placeholder-page__icon">
-          <i className="bi bi-clock-history" />
+        <div className="mhs-placeholder-page__icon" aria-hidden="true">
+          <History size={26} strokeWidth={1.9} />
         </div>
         <h4>Riwayat Aktivitas Lengkap</h4>
         <p>

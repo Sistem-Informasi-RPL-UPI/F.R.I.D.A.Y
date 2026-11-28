@@ -1,3 +1,4 @@
+import { Settings } from 'lucide-react';
 import { Link } from 'react-router';
 
 export function PengaturanAkunPage() {
@@ -14,8 +15,8 @@ export function PengaturanAkunPage() {
       </div>
 
       <div className="mhs-placeholder-page__card">
-        <div className="mhs-placeholder-page__icon">
-          <i className="bi bi-gear" />
+        <div className="mhs-placeholder-page__icon" aria-hidden="true">
+          <Settings size={26} strokeWidth={1.9} />
         </div>
         <h4>Profil Alya Rahmadani (2201024)</h4>
         <p>
